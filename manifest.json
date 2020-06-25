@@ -1,0 +1,35 @@
+{
+  "name": "WTF",
+  "version": "1.0",
+  "description": "Whats Ta Facil!",
+  "permissions": [
+    "activeTab",
+    "declarativeContent",
+    "storage"
+  ],
+  "options_page": "options.html",
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
+  },
+  "page_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/wtf16.png",
+      "32": "icons/wtf32.png",
+      "48": "icons/wtf48.png",
+      "64": "icons/wtf64.png",
+      "128": "icons/wtf128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/wtf16.png",
+    "32": "icons/wtf32.png",
+    "48": "icons/wtf48.png",
+    "64": "icons/wtf64.png",
+    "128": "icons/wtf128.png"
+  },
+  "manifest_version": 2
+}

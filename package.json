@@ -1,0 +1,22 @@
+{
+  "name": "wtf",
+  "version": "1.0.0",
+  "description": "Whats Ta Facil!",
+  "main": "background.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marcosvrs/wtf.git"
+  },
+  "keywords": [
+    "Whatsapp"
+  ],
+  "author": "Marcos V.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/marcosvrs/wtf/issues"
+  },
+  "homepage": "https://github.com/marcosvrs/wtf#readme"
+}
