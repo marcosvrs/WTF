@@ -1,14 +1,16 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 'use strict';
 
-chrome.runtime.onInstalled.addListener(function () {
-  chrome.storage.sync.set({ color: '#3aa757' }, function () {
-    console.log('The color is green.');
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.storage.sync.set({ contacts: '' });
+  chrome.storage.sync.get(['message', 'delay'], (data) => {
+    if (undefined === data.delay) {
+      chrome.storage.sync.set({ delay: 1000 });
+    }
+    if (undefined === data.message) {
+      chrome.storage.sync.set({ message: 'Enviado por WTF' });
+    }
   });
-  chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
+  chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {
     chrome.declarativeContent.onPageChanged.addRules([{
       conditions: [new chrome.declarativeContent.PageStateMatcher({
         pageUrl: { hostEquals: 'web.whatsapp.com' },
