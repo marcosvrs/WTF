@@ -53,6 +53,12 @@ async function sendMessage(contact, message, delay) {
 
     await sleep(SLEEP_DELAY);
 
+    const numberUnavailableModal = document.getElementsByClassName('overlay');
+
+    if (0 < numberUnavailableModal.length) {
+        return true;
+    }
+
     const inputChat = document.querySelector('[data-tab="1"]');
     simulateTextEvents(inputChat, message);
 
@@ -84,4 +90,4 @@ chrome.storage.sync.get(['contacts', 'message', 'delay'], async function (data) 
     }
 });
 
-//+55 13 99775-2190,+55 13 99662-0588,+55 13 99775-2190,+55 13 99662-0588,+55 13 99775-2190,+55 13 99662-0588,+55 13 99775-2190,+55 13 99662-0588,+55 13 99775-2190,+55 13 99662-0588,
+//+55 13 123123123,+55 13 3213213123,+55 13 123321123321,+55 13 99662-0588,+55 13 99775-2190,+55 13 99662-0588,+55 13 99775-2190,+55 13 99662-0588,+55 13 99775-2190,+55 13 99662-0588,
