@@ -4,90 +4,81 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function simulateMouseEvents(element, eventName) {
-    var mouseEvent = document.createEvent('MouseEvents');
-    mouseEvent.initEvent(eventName, true, true);
-    element.dispatchEvent(mouseEvent);
-}
-function simulateTextEvents(element, text) {
-    var textEvent = new Event('input', {
-        bubbles: true
+function setLog(log) {
+    chrome.storage.sync.get({ logs: [] }, (data) => {
+        const currentLogs = data.logs;
+        currentLogs.push(log + ` [${(new Date()).toLocaleString()}]`);
+        chrome.storage.sync.set({ logs: currentLogs });
     });
-    element.innerHTML = text;
-    element.focus();
-    element.dispatchEvent(textEvent);
 }
 
-async function sendMessage(contact, message, delay) {
-    const SLEEP_DELAY = 500;
-    console.log('start execution for the contact:', contact);
+function isLogin() {
     const LANDING_WINDOW_CLASS = 'landing-window';
-    const NEW_CONTACT_BUTTON_ID = 'startNonContactChat';
 
     const landingWindowElement = document.getElementsByClassName(LANDING_WINDOW_CLASS);
     if (0 < landingWindowElement.length) {
         alert('Faça o Login Primeiro!');
+        setLog('[ERRO] Login requerido');
 
         return false;
     }
 
-    const newContactButton = document.getElementById(NEW_CONTACT_BUTTON_ID);
-    if (null === newContactButton) {
-        alert('Faça o Download e configure WA Web Plus for Whatsapp corretamente!')
+    return true;
+}
 
-        return false;
+function parseContacts(contacts) {
+    const fn = [',', ';', '\t', '\n'].reduceRight((nextFn, delimiter) => v => String(v).split(delimiter).map(nextFn),
+        v => v);
+
+    return fn(contacts);
+}
+
+async function sendMessage(contact, message, delay) {
+    const SLEEP_DELAY = 500;
+
+    if (null === contact || undefined === contact) {
+        return;
     }
-    newContactButton.click();
 
-    await sleep(SLEEP_DELAY);
+    console.log({ contact });
 
-    const newContactInput = document.querySelector('.alerty-prompt input');
-    const newContactOkButton = document.querySelector('.alerty-action .btn-ok');
-    if (null === newContactInput) {
-        alert('Faça o Download e configure WA Web Plus for Whatsapp corretamente!')
+    const filteredContact = contact.replace(/\D/g, '');
+    if (null === filteredContact || '' === filteredContact || undefined === filteredContact) {
+        setLog(`[AVISO] O Número de telefone "${contact}" é inválido.`);
 
-        return false;
+        return;
     }
-    newContactInput.value = contact;
-    newContactOkButton.click();
+
+    const newContactLink = document.createElement('a');
+    newContactLink.setAttribute('href', `whatsapp://send?phone=${filteredContact}&text=${encodeURI(message)}`);
+    document.body.append(newContactLink);
+    newContactLink.click();
+    document.body.removeChild(newContactLink);
 
     await sleep(SLEEP_DELAY);
 
     const numberUnavailableModal = document.getElementsByClassName('overlay');
 
     if (0 < numberUnavailableModal.length) {
-        return true;
+        setLog(`[AVISO] O Número de telefone "${contact}" é inválido.`);
+
+        return;
     }
-
-    const inputChat = document.querySelector('[data-tab="1"]');
-    simulateTextEvents(inputChat, message);
-
-    await sleep(SLEEP_DELAY);
 
     const sendButton = document.querySelector('footer [data-icon="send"]');
     sendButton.click();
 
-    await sleep(delay);
+    setLog(`[SUCESSO] Mensagem enviada para "${contact}".`)
 
-    console.log('ends the execution for the contact:', contact);
-    return true;
+    await sleep(delay);
 }
 
-chrome.storage.sync.get(['contacts', 'message', 'delay'], async function (data) {
-    const contacts = data.contacts.split(',');
+chrome.storage.sync.get({ contacts: '', message: 'Enviado por WTF', delay: 1000 }, async function (data) {
+    if (!isLogin()) {
+        return;
+    }
+    let contacts = parseContacts(data.contacts).flat(Infinity);
     for (const contact of contacts) {
-        if (null === contact || '' === contact || undefined === contact) {
-            continue;
-        }
-        const filteredContact = contact.replace(/\D/g, '');
-        if (null === filteredContact || '' === filteredContact || undefined === filteredContact) {
-            alert('Defina um número válido para ', contact);
-
-            break;
-        }
-        console.log({ filteredContact });
-        await sendMessage(filteredContact, data.message, data.delay);
+        await sendMessage(contact, data.message, data.delay);
     }
 });
-
-//+55 13 123123123,+55 13 3213213123,+55 13 123321123321,+55 13 99662-0588,+55 13 99775-2190,+55 13 99662-0588,+55 13 99775-2190,+55 13 99662-0588,+55 13 99775-2190,+55 13 99662-0588,

@@ -9,14 +9,32 @@
 <body>
   <div class="container">
     <h1>WTF</h1>
-    <div class="form-group">
-      <label for=message>Escolha uma mensagem à ser enviada para os contatos</label>
-      <textarea id="message" class="form-control"></textarea>
+    <div class="card m-b-3">
+      <div class="card-header">
+        Configurações
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label for=message>Escolha uma mensagem à ser enviada para os contatos</label>
+          <textarea id="message" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="delay">Escolha o delay de quantos milisegundos entre as mensagens a serem enviadas</label>
+          <input id="delay" type="number" class="form-control">
+        </div>
+      </div>
     </div>
-    <div class="form-group">
-      <label for="delay">Escolha o delay de quantos milisegundos entre as mensagens a serem enviadas</label>
-      <input id="delay" type="number" class="form-control">
+    <div class="card">
+      <div class="card-header">
+        <span>Logs</span>
+        <button id="updateLogs" class="btn btn-success float-right">Atualizar</button>
+        <button id="clearLogs" class="btn btn-light float-right mr-1">Limpar</button>
+      </div>
+      <div class="card-body">
+        <ul class="list-group" id="logs"></ul>
+      </div>
     </div>
+
   </div>
   <script src="settings.js"></script>
 </body>
