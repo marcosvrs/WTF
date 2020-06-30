@@ -1,29 +1,8 @@
 {
+  "manifest_version": 2,
   "name": "WTF",
-  "version": "1.0",
-  "description": "Whats Ta Facil!",
-  "permissions": [
-    "activeTab",
-    "declarativeContent",
-    "storage"
-  ],
-  "options_page": "settings.html",
-  "background": {
-    "scripts": [
-      "background.js"
-    ],
-    "persistent": false
-  },
-  "page_action": {
-    "default_popup": "popup.html",
-    "default_icon": {
-      "16": "icons/wtf16.png",
-      "32": "icons/wtf32.png",
-      "48": "icons/wtf48.png",
-      "64": "icons/wtf64.png",
-      "128": "icons/wtf128.png"
-    }
-  },
+  "version": "2.1",
+  "description": "WTF",
   "icons": {
     "16": "icons/wtf16.png",
     "32": "icons/wtf32.png",
@@ -31,5 +10,34 @@
     "64": "icons/wtf64.png",
     "128": "icons/wtf128.png"
   },
-  "manifest_version": 2
+  "page_action": {
+    "default_icon": {
+      "16": "icons/wtf16.png",
+      "32": "icons/wtf32.png",
+      "48": "icons/wtf48.png",
+      "64": "icons/wtf64.png",
+      "128": "icons/wtf128.png"
+    },
+    "default_title": "WTF",
+    "default_popup": "popup.html"
+  },
+  "author": "Marcos V.",
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
+  "background": {
+    "persistent": false,
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "permissions": [
+    "activeTab",
+    "declarativeContent",
+    "storage"
+  ],
+  "storage": {
+    "managed_schema": "schema.json"
+  }
 }

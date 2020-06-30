@@ -1,11 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 'use strict';
 
 const submitForm = document.getElementById('submitForm');
 const contactList = document.getElementById('contactList');
+const settingsButton = document.getElementById('settings');
 
 submitForm.onsubmit = (event) => {
   chrome.storage.sync.set({ contacts: contactList.value }, () =>
@@ -15,3 +12,11 @@ submitForm.onsubmit = (event) => {
         { file: 'bootstrap.js' });
     }));
 };
+
+settingsButton.addEventListener('click', () => {
+  if (chrome.runtime.openOptionsPage) {
+    chrome.runtime.openOptionsPage();
+  } else {
+    window.open(chrome.runtime.getURL('options.html'));
+  }
+});

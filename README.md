@@ -1,2 +1,2 @@
 # WTF
-Whats Ta Facil
+WTF

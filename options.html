@@ -4,12 +4,43 @@
 <head lang="pt-br">
   <meta charset="UTF-8">
   <link rel="stylesheet" href="bootstrap.min.css">
+  <style>
+    body {
+      min-width: 50rem;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+    }
+
+    .toast-success {
+      color: #155724;
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+
+    .toast-success .toast-header {
+      color: inherit;
+      background-color: inherit;
+      border-color: inherit;
+    }
+
+    .toast .close {
+      color: inherit;
+    }
+
+    .toast-container {
+      position: relative;
+      min-height: 12rem;
+    }
+  </style>
 </head>
 
 <body>
   <div class="container">
-    <h1>WTF</h1>
-    <div class="card m-b-3">
+    <div class="card my-3">
       <div class="card-header">
         Configurações
       </div>
@@ -36,7 +67,17 @@
     </div>
 
   </div>
-  <script src="settings.js"></script>
+  <div class="toast-container" aria-live="polite" aria-atomic="true">
+    <div id="toast" class="toast fade toast-success" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header alert-heading">
+        <strong id="toastMessage" class="mr-auto">Opções Salvas!</strong>
+        <button id="closeToast" type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <script src="options.js"></script>
 </body>
 
 </html>
