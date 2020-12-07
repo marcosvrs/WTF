@@ -20,7 +20,6 @@ const closeToastButton = document.getElementById('closeToast');
 let timerId;
 
 function updateLogs(filter = 3) {
-  console.log({ filter });
   chrome.storage.sync.get(
     { message: 'Enviado por WTF', delay: 1000, check: 3, logs: [] },
     (data) => {

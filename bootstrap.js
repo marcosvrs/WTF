@@ -4,6 +4,12 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function eventFire(el, etype) {
+    var evt = document.createEvent("MouseEvents");
+    evt.initMouseEvent(etype, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+    el.dispatchEvent(evt);
+}
+
 function addLog(level, logMessage, logNumber = null) {
     chrome.storage.sync.get({ logs: [] }, (data) => {
         const currentLogs = data.logs;
@@ -72,34 +78,45 @@ async function sendMessage(contact, message, delay, check) {
 
     let repeat = 0;
     let chatTitle = null;
+    let sendButton = null;
     while (repeat <= check) {
-        console.log(`#main [title$="${filteredContact.substring(filteredContact.length - 4)}"]`);
         chatTitle = document.querySelector(`#main [title$="${filteredContact.substring(filteredContact.length - 4)}"]`);
 
-        if (chatTitle !== null) {
-            break;
+        if (check > 0 && chatTitle === null) {
+            repeat++;
+            await sleep(SLEEP_DELAY);
+
+            continue;
         }
 
         const numberUnavailableModal = document.getElementsByClassName(OVERLAY_CLASS_NAME);
 
         if (0 < numberUnavailableModal.length) {
-            addLog(1, 'O Número é inválido.', contact);
-            numberUnavailableModal[0].querySelector(OVERLAY_BUTTON_CSS_SELECTOR).click();
+            addLog(1, 'Número não encontrado pelo WhatsApp.', contact);
+            eventFire(numberUnavailableModal[0].querySelector(OVERLAY_BUTTON_CSS_SELECTOR), 'click');
 
             break;
         }
 
-        repeat++;
-        await sleep(SLEEP_DELAY);
+        sendButton = document.querySelector(SEND_BUTTON_CSS_SELECTOR);
+
+        if (sendButton === null) {
+            repeat++;
+            await sleep(SLEEP_DELAY);
+
+            continue;
+        }
+
+        break;
     }
 
-    if (check > 0 && chatTitle === null) {
+    if (sendButton === null || (check > 0 && chatTitle === null)) {
         addLog(1, 'Falha ao tentar abrir conversa. Verifique o número ou tente aumentar as tentativas de verificações.', contact);
+
         return;
     }
 
-    const sendButton = document.querySelector(SEND_BUTTON_CSS_SELECTOR);
-    sendButton.click();
+    eventFire(sendButton, 'click');
 
     addLog(3, 'Mensagem enviada', contact);
 
