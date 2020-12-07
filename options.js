@@ -3,10 +3,15 @@
 const SHOW_TOAST_CLASS = 'show';
 const SAVE_OPTIONS_TEXT = 'Opções Salvas';
 const LOG_CLEARED_TEXT = 'Log Limpo';
+const LOG_ERROR = 1;
+const LOG_WARNING = 2;
+const LOG_SUCCESS = 3;
 
 const messageTextInput = document.getElementById('message');
 const delayInput = document.getElementById('delay');
+const checkInput = document.getElementById('check');
 const logsList = document.getElementById('logs');
+const logLevelInput = document.getElementById('logLevel');
 const clearLogsButton = document.getElementById('clearLogs');
 const updateLogsButton = document.getElementById('updateLogs');
 const toastContainer = document.getElementById('toast');
@@ -14,30 +19,35 @@ const closeToastButton = document.getElementById('closeToast');
 
 let timerId;
 
-function updateLogs() {
+function updateLogs(filter = 3) {
+  console.log({ filter });
   chrome.storage.sync.get(
-    { message: 'Enviado por WTF', delay: 1000, logs: [] },
+    { message: 'Enviado por WTF', delay: 1000, check: 3, logs: [] },
     (data) => {
       messageTextInput.value = data.message;
       delayInput.value = data.delay;
+      checkInput.value = data.check;
       logsList.innerHTML = '';
       data.logs.reverse().forEach((log) => {
-        let alertClass = 'list-group-item-primary';
-        switch (true) {
-          case log.startsWith('[ERRO]'):
-            alertClass = 'list-group-item-danger';
+        if (log.level > filter) {
+          return;
+        }
+        let alertClass = 'table-primary';
+        switch (log.level) {
+          case LOG_ERROR:
+            alertClass = 'table-danger';
             break;
-          case log.startsWith('[AVISO]'):
-            alertClass = 'list-group-item-warning';
+          case LOG_WARNING:
+            alertClass = 'table-warning';
             break;
-          case log.startsWith('[SUCESSO]'):
-            alertClass = 'list-group-item-success';
+          case LOG_SUCCESS:
+            alertClass = 'table-success';
             break;
           default:
-            alertClass = 'list-group-item-primary';
+            alertClass = 'table-primary';
             break;
         }
-        logsList.innerHTML += `<li class="list-group-item ${alertClass}">${log}</li>`;
+        logsList.innerHTML += `<tr class="${alertClass}"><td>${log.number}</td><td>${log.message}</td><td>${log.date}</td></tr>`;
       });
     });
 }
@@ -54,18 +64,27 @@ function closeToast() {
   toastContainer.classList.remove('show');
 }
 
-messageTextInput.addEventListener('change', () =>
+messageTextInput.addEventListener('change', (event) =>
   chrome.storage.sync.set(
-    { message: messageTextInput.value }, () =>
+    { message: event.target.value }, () =>
     showToast(SAVE_OPTIONS_TEXT)
   )
 );
-delayInput.addEventListener('change', () =>
+delayInput.addEventListener('change', (event) =>
   chrome.storage.sync.set(
-    { delay: delayInput.value }, () =>
+    { delay: event.target.value }, () =>
     showToast(SAVE_OPTIONS_TEXT)
   )
 );
+checkInput.addEventListener('change', (event) =>
+  chrome.storage.sync.set(
+    { check: event.target.value }, () =>
+    showToast(SAVE_OPTIONS_TEXT)
+  )
+);
+logLevelInput.addEventListener('change', (event) => {
+  updateLogs(event.target.value);
+});
 clearLogsButton.addEventListener('click', () =>
   chrome.storage.sync.set({ logs: [] }, () => {
     logsList.innerHTML = '';
@@ -73,6 +92,8 @@ clearLogsButton.addEventListener('click', () =>
   })
 );
 closeToastButton.addEventListener('click', closeToast);
-updateLogsButton.addEventListener('click', updateLogs);
+updateLogsButton.addEventListener('click', () => {
+  updateLogs(logLevelInput.value);
+});
 
-updateLogs();
+updateLogs(3);

@@ -46,12 +46,16 @@
       </div>
       <div class="card-body">
         <div class="form-group">
-          <label for=message>Escolha uma mensagem à ser enviada para os contatos</label>
+          <label for=message>Escolha a mensagem à ser enviada para os contatos</label>
           <textarea id="message" class="form-control"></textarea>
         </div>
         <div class="form-group">
-          <label for="delay">Escolha o delay de quantos milisegundos entre as mensagens a serem enviadas</label>
+          <label for="delay">Escolha o intervalo em milisegundos entre as mensagens a serem enviadas</label>
           <input id="delay" type="number" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="check">Escolha a quantidade de tentativas de envio para o mesmo número. Defina 0 para enviar a mesagem sem checagem.</label>
+          <input id="check" type="number" class="form-control">
         </div>
       </div>
     </div>
@@ -60,9 +64,26 @@
         <span>Logs</span>
         <button id="updateLogs" class="btn btn-success float-right">Atualizar</button>
         <button id="clearLogs" class="btn btn-light float-right mr-1">Limpar</button>
+        <div class="col-auto float-right mr-1">
+          <select class="custom-select" id="logLevel">
+            <option value="1">Erros</option>
+            <option value="2">Erros e Avisos</option>
+            <option value="3" selected>Todos</option>
+          </select>
+        </div>
       </div>
-      <div class="card-body">
-        <ul class="list-group" id="logs"></ul>
+      <div class="card-body table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Número</th>
+              <th scope="col">Mensagem</th>
+              <th scope="col">Data, Hora</th>
+            </tr>
+          </thead>
+          <tbody id="logs">
+          </tbody>
+        </table>
       </div>
     </div>
 
