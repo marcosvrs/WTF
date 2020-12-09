@@ -10,6 +10,7 @@ const LOG_SUCCESS = 3;
 const messageTextInput = document.getElementById('message');
 const delayInput = document.getElementById('delay');
 const checkInput = document.getElementById('check');
+const titleCheckInput = document.getElementById('titleCheck');
 const logsList = document.getElementById('logs');
 const logLevelInput = document.getElementById('logLevel');
 const clearLogsButton = document.getElementById('clearLogs');
@@ -21,11 +22,12 @@ let timerId;
 
 function updateLogs(filter = 3) {
   chrome.storage.sync.get(
-    { message: 'Enviado por WTF', delay: 1000, check: 3, logs: [] },
+    { message: 'Enviado por WTF', delay: 1000, check: 5, titleCheck: true, logs: [] },
     (data) => {
       messageTextInput.value = data.message;
       delayInput.value = data.delay;
       checkInput.value = data.check;
+      titleCheckInput.checked = data.titleCheck;
       logsList.innerHTML = '';
       data.logs.reverse().forEach((log) => {
         if (log.level > filter) {
@@ -78,6 +80,12 @@ delayInput.addEventListener('change', (event) =>
 checkInput.addEventListener('change', (event) =>
   chrome.storage.sync.set(
     { check: event.target.value }, () =>
+    showToast(SAVE_OPTIONS_TEXT)
+  )
+);
+titleCheckInput.addEventListener('change', (event) =>
+  chrome.storage.sync.set(
+    { titleCheck: event.target.checked }, () =>
     showToast(SAVE_OPTIONS_TEXT)
   )
 );

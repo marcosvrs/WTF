@@ -4,9 +4,9 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function eventFire(el, etype) {
+function eventClickFire(el) {
     var evt = document.createEvent("MouseEvents");
-    evt.initMouseEvent(etype, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+    evt.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
     el.dispatchEvent(evt);
 }
 
@@ -53,11 +53,10 @@ function parseContacts(contacts) {
     });
 }
 
-async function sendMessage(contact, message, delay, check) {
+async function sendMessage(contact, message, check, titleCheck) {
     const SLEEP_DELAY = 500;
-    const OVERLAY_CLASS_NAME = 'overlay';
-    const OVERLAY_BUTTON_CSS_SELECTOR = '[role="button"]';
-    const SEND_BUTTON_CSS_SELECTOR = 'footer [data-icon="send"]';
+    const OVERLAY_BUTTON_CSS_SELECTOR = '.overlay [role="button"]';
+    const SEND_BUTTON_CSS_SELECTOR = 'footer [data-testid="send"]';
 
     if (undefined === contact || null === contact || '' === contact) {
         return;
@@ -77,64 +76,66 @@ async function sendMessage(contact, message, delay, check) {
     document.body.removeChild(newContactLink);
 
     let repeat = 0;
-    let chatTitle = null;
-    let sendButton = null;
+    let fail = 1;
     while (repeat <= check) {
-        chatTitle = document.querySelector(`#main [title$="${filteredContact.substring(filteredContact.length - 4)}"]`);
+        if (titleCheck) {
+            const chatTitle = document.querySelector(`#main [title$="${filteredContact.substring(filteredContact.length - 4)}"]`);
 
-        if (check > 0 && chatTitle === null) {
-            repeat++;
-            await sleep(SLEEP_DELAY);
+            if (chatTitle === null) {
+                fail = 1;
+                repeat++;
+                await sleep(SLEEP_DELAY);
 
-            continue;
+                continue;
+            }
         }
 
-        const numberUnavailableModal = document.getElementsByClassName(OVERLAY_CLASS_NAME);
-
-        if (0 < numberUnavailableModal.length) {
-            addLog(1, 'Número não encontrado pelo WhatsApp.', contact);
-            eventFire(numberUnavailableModal[0].querySelector(OVERLAY_BUTTON_CSS_SELECTOR), 'click');
-
-            break;
-        }
-
-        sendButton = document.querySelector(SEND_BUTTON_CSS_SELECTOR);
+        const sendButton = document.querySelector(SEND_BUTTON_CSS_SELECTOR);
 
         if (sendButton === null) {
+            fail = 1;
             repeat++;
             await sleep(SLEEP_DELAY);
 
             continue;
         }
+
+        eventClickFire(sendButton);
+
+        fail = 0;
 
         break;
     }
 
-    if (sendButton === null || (check > 0 && chatTitle === null)) {
-        addLog(1, 'Falha ao tentar abrir conversa. Verifique o número ou tente aumentar as tentativas de verificações.', contact);
+    if (fail > 0) {
+        const numberUnavailableModal = document.querySelector(OVERLAY_BUTTON_CSS_SELECTOR);
 
-        return;
+        if (numberUnavailableModal !== null) {
+            eventClickFire(numberUnavailableModal);
+            addLog(1, 'Número não encontrado pelo WhatsApp.', contact);
+        } else {
+            addLog(1, 'Falha ao tentar abrir conversa. Verifique o número ou tente aumentar as tentativas de verificações.', contact);
+        }
+
+        return false;
     }
 
-    eventFire(sendButton, 'click');
-
     addLog(3, 'Mensagem enviada', contact);
-
-    await sleep(delay);
 
     return true;
 }
 
-chrome.storage.sync.get({ contacts: '', message: 'Enviado por WTF', delay: 1000, check: 3 }, async function (data) {
+chrome.storage.sync.get({ contacts: '', message: 'Enviado por WTF', delay: 1000, check: 5, titleCheck: true }, async function (data) {
     if (!isLogin()) {
         return;
     }
     let contacts = parseContacts(data.contacts);
     let i = 0;
     for (const contact of contacts) {
-        if (true === await sendMessage(contact, data.message, data.delay, data.check)) {
+        if (true === await sendMessage(contact, data.message, data.check, data.titleCheck)) {
             i++;
         }
+        await sleep(data.delay);
     }
     alert(`${i} Mensagens Enviadas!`);
 });

@@ -1,6 +1,6 @@
 {
   "name": "wtf",
-  "version": "2.2.1",
+  "version": "2.3",
   "description": "WTF",
   "main": "background.js",
   "scripts": {
