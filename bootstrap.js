@@ -1,7 +1,5 @@
 'use strict';
 
-const SLEEP_DELAY = 1000;
-
 async function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -24,7 +22,7 @@ function isLogin() {
     const LANDING_WINDOW_CLASS = 'landing-window';
 
     const landingWindowElement = document.getElementsByClassName(LANDING_WINDOW_CLASS);
-    if (0 < landingWindowElement.length) {
+    if (landingWindowElement.length > 0) {
         alert('Faça o Login Primeiro!');
         throw new Error('Entre em sua conta primeiro')
     }
@@ -47,21 +45,20 @@ function parseContacts(contacts) {
 }
 
 async function sendAttachment(attachment) {
+    const SLEEP_DELAY = 500;
     const ATTACHMENT_MENU_BUTTON_CSS_SELECTOR = '[data-testid="clip"]';
     const ATTACHMENT_INPUT_CSS_SELECTOR = '[data-testid="mi-attach-media"] input[type=file]';
 
-
     const menuButton = document.querySelector(ATTACHMENT_MENU_BUTTON_CSS_SELECTOR);
-
+    
     if (menuButton === null) {
         return 2;
     }
-
+    
     menuButton.click();
-
-
+    
     await sleep(SLEEP_DELAY);
-
+    
     const attachmentInput = document.querySelector(ATTACHMENT_INPUT_CSS_SELECTOR);
 
     if (attachmentInput === null) {
@@ -82,10 +79,16 @@ async function sendAttachment(attachment) {
 
     await sleep(SLEEP_DELAY);
 
+    const findCanvas = document.getElementsByTagName('canvas');
+    if (findCanvas.length <= 0) {
+        return 4;
+    }
+
     return 0;
 }
 
 async function sendMessage(contact, message, attachment, check, titleCheck) {
+    const SLEEP_DELAY = 1000;
     const OVERLAY_BUTTON_CSS_SELECTOR = '.overlay [role="button"]';
     const SEND_BUTTON_CSS_SELECTOR = '[data-testid="send"]';
 
@@ -109,7 +112,7 @@ async function sendMessage(contact, message, attachment, check, titleCheck) {
     while (repeat <= check) {
         if (repeat > 0) {
             await sleep(SLEEP_DELAY);
-            addLog(2, `Trying for the ${repeat} time`, attachment !== null, contact);
+            addLog(2, `Tentando pela ${repeat} vez por causa do erro ${fail}`, attachment !== null, contact);
         }
 
         if (titleCheck) {
@@ -125,7 +128,7 @@ async function sendMessage(contact, message, attachment, check, titleCheck) {
 
         if (attachment !== null) {
             const attachmentResult = await sendAttachment(attachment);
-            if (0 >= attachmentResult) {
+            if (attachmentResult > 0) {
                 fail = attachmentResult;
                 repeat++;
 
@@ -153,20 +156,22 @@ async function sendMessage(contact, message, attachment, check, titleCheck) {
 
     if (numberUnavailableModal !== null) {
         numberUnavailableModal.click();
-        fail = 4;
+        fail = 6;
     }
 
     switch (fail) {
         case 1:
             throw new Error('Falha ao tentar abrir conversa. Verifique o número ou tente aumentar as tentativas de verificações.');
         case 2:
-            throw new Error('Attachment button not found!');
+            throw new Error('Botão de anexar não encontrado!');
         case 3:
-            throw new Error('Attachment input element not found!');
+            throw new Error('Elemento de anexar não encontrado!');
         case 4:
-            throw new Error('Número não encontrado pelo WhatsApp.');
+            throw new Error('Anexo não adicionado!');
         case 5:
             throw new Error('Título do chat não condiz com o número. Tem contatos salvos? Considere desativar a opção nas configurações.');
+        case 6:
+            throw new Error('Número não encontrado pelo WhatsApp.');
         default:
             addLog(3, 'Mensagem enviada', attachment !== null, contact);
             break;
