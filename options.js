@@ -28,15 +28,17 @@ function updateLogs(filter = 3) {
     (data) => {
       messageTextInput.value = data.message;
 
-      fetch(data.attachment.url).then((response) => response.blob()).then((blob) => {
-        const myFile = new File([blob], data.attachment.name, {
-          type: data.attachment.type,
-          lastModified: data.attachment.lastModified,
+      if (data.attachment !== null) {
+        fetch(data.attachment.url).then((response) => response.blob()).then((blob) => {
+          const myFile = new File([blob], data.attachment.name, {
+            type: data.attachment.type,
+            lastModified: data.attachment.lastModified,
+          });
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(myFile);
+          attachmentInput.files = dataTransfer.files;
         });
-        const dataTransfer = new DataTransfer();
-        dataTransfer.items.add(myFile);
-        attachmentInput.files = dataTransfer.files;
-      });
+      }
 
       delayInput.value = data.delay;
       checkInput.value = data.check;
