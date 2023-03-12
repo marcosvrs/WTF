@@ -50,6 +50,10 @@
           <textarea id="message" class="form-control"></textarea>
         </div>
         <div class="form-group">
+          <label for="attachment">Escolha um anexo, caso queira enviar.</label>
+          <input type="file" class="form-control-file" id="attachment">
+        </div>
+        <div class="form-group">
           <label for="delay">Escolha o intervalo em milisegundos entre as mensagens a serem enviadas</label>
           <input id="delay" type="number" class="form-control">
         </div>
@@ -82,6 +86,7 @@
             <tr>
               <th scope="col">Número</th>
               <th scope="col">Mensagem</th>
+              <th scope="col">Attachment</th>
               <th scope="col">Data, Hora</th>
             </tr>
           </thead>

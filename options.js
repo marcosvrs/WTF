@@ -8,6 +8,7 @@ const LOG_WARNING = 2;
 const LOG_SUCCESS = 3;
 
 const messageTextInput = document.getElementById('message');
+const attachmentInput = document.getElementById('attachment');
 const delayInput = document.getElementById('delay');
 const checkInput = document.getElementById('check');
 const titleCheckInput = document.getElementById('titleCheck');
@@ -21,10 +22,21 @@ const closeToastButton = document.getElementById('closeToast');
 let timerId;
 
 function updateLogs(filter = 3) {
-  chrome.storage.sync.get(
-    { message: 'Enviado por WTF', delay: 1000, check: 5, titleCheck: true, logs: [] },
+  chrome.storage.local.get(
+    { message: 'Enviado por WTF', attachment: null, delay: 1000, check: 5, titleCheck: true, logs: [] },
     (data) => {
       messageTextInput.value = data.message;
+
+      fetch(data.attachment.url).then((response) => response.blob()).then((blob) => {
+        const myFile = new File([blob], data.attachment.name, {
+          type: data.attachment.type,
+          lastModified: data.attachment.lastModified,
+      });
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(myFile);
+        attachmentInput.files = dataTransfer.files;
+      });
+
       delayInput.value = data.delay;
       checkInput.value = data.check;
       titleCheckInput.checked = data.titleCheck;
@@ -48,7 +60,7 @@ function updateLogs(filter = 3) {
             alertClass = 'table-primary';
             break;
         }
-        logsList.innerHTML += `<tr class="${alertClass}"><td>${log.number}</td><td>${log.message}</td><td>${log.date}</td></tr>`;
+        logsList.innerHTML += `<tr class="${alertClass}"><td>${log.number}</td><td>${log.message}</td><td>${!!log.attachment}</td><td>${log.date}</td></tr>`;
       });
     });
 }
@@ -66,25 +78,36 @@ function closeToast() {
 }
 
 messageTextInput.addEventListener('change', (event) =>
-  chrome.storage.sync.set(
+  chrome.storage.local.set(
     { message: event.target.value }, () =>
     showToast(SAVE_OPTIONS_TEXT)
   )
 );
+attachmentInput.addEventListener('change', (event) => {
+  const file = event.target.files[0];
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    chrome.storage.local.set(
+      { attachment: { name: file.name, type: file.type, url: ev.target.result, lastModified: file.lastModified } }, () =>
+      showToast(SAVE_OPTIONS_TEXT)
+    );
+  };
+  reader.readAsDataURL(file);
+});
 delayInput.addEventListener('change', (event) =>
-  chrome.storage.sync.set(
+  chrome.storage.local.set(
     { delay: event.target.value }, () =>
     showToast(SAVE_OPTIONS_TEXT)
   )
 );
 checkInput.addEventListener('change', (event) =>
-  chrome.storage.sync.set(
+  chrome.storage.local.set(
     { check: event.target.value }, () =>
     showToast(SAVE_OPTIONS_TEXT)
   )
 );
 titleCheckInput.addEventListener('change', (event) =>
-  chrome.storage.sync.set(
+  chrome.storage.local.set(
     { titleCheck: event.target.checked }, () =>
     showToast(SAVE_OPTIONS_TEXT)
   )
@@ -93,7 +116,7 @@ logLevelInput.addEventListener('change', (event) => {
   updateLogs(event.target.value);
 });
 clearLogsButton.addEventListener('click', () =>
-  chrome.storage.sync.set({ logs: [] }, () => {
+  chrome.storage.local.set({ logs: [] }, () => {
     logsList.innerHTML = '';
     showToast(LOG_CLEARED_TEXT);
   })

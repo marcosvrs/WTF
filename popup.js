@@ -5,7 +5,7 @@ const contactList = document.getElementById('contactList');
 const settingsButton = document.getElementById('settings');
 
 submitForm.onsubmit = (event) => {
-  chrome.storage.sync.set({ contacts: contactList.value }, () =>
+  chrome.storage.local.set({ contacts: contactList.value }, () =>
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       chrome.tabs.executeScript(
         tabs[0].id,
