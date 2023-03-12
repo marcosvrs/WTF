@@ -1,13 +1,9 @@
 'use strict';
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+const SLEEP_DELAY = 1000;
 
-function eventClickFire(el) {
-    var evt = document.createEvent("MouseEvents");
-    evt.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-    el.dispatchEvent(evt);
+async function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function addLog(level, logMessage, attachment = false, logNumber = null) {
@@ -30,7 +26,7 @@ function isLogin() {
     const landingWindowElement = document.getElementsByClassName(LANDING_WINDOW_CLASS);
     if (0 < landingWindowElement.length) {
         alert('Faça o Login Primeiro!');
-        throw new Error('Login requerido')
+        throw new Error('Entre em sua conta primeiro')
     }
 }
 
@@ -51,7 +47,6 @@ function parseContacts(contacts) {
 }
 
 async function sendAttachment(attachment) {
-    const SLEEP_DELAY = 1500;
     const ATTACHMENT_MENU_BUTTON_CSS_SELECTOR = '[data-testid="clip"]';
     const ATTACHMENT_INPUT_CSS_SELECTOR = '[data-testid="mi-attach-media"] input[type=file]';
 
@@ -59,25 +54,23 @@ async function sendAttachment(attachment) {
     const menuButton = document.querySelector(ATTACHMENT_MENU_BUTTON_CSS_SELECTOR);
 
     if (menuButton === null) {
-        addLog(1, 'Attachment Button Not Found.');
-        return false;
+        return 2;
     }
 
     menuButton.click();
 
 
     await sleep(SLEEP_DELAY);
-    
-    const attachmentInput = document.querySelector('[data-testid="mi-attach-media"] input[type=file]');
-    
+
+    const attachmentInput = document.querySelector(ATTACHMENT_INPUT_CSS_SELECTOR);
+
     if (attachmentInput === null) {
-        addLog(1, 'Attachment Input Not Found.');
-        return false;
+        return 3;
     }
-    
+
     const response = await fetch(attachment.url);
     const data = await response.blob();
-    
+
     const myFile = new File([data], attachment.name, {
         type: attachment.type,
         lastModified: attachment.lastModified,
@@ -86,15 +79,13 @@ async function sendAttachment(attachment) {
     dataTransfer.items.add(myFile);
     attachmentInput.files = dataTransfer.files;
     attachmentInput.dispatchEvent(new Event('change', { 'bubbles': true }));
-    
+
     await sleep(SLEEP_DELAY);
-    
-    addLog(3, 'Attachment added');
-    return true;
+
+    return 0;
 }
 
 async function sendMessage(contact, message, attachment, check, titleCheck) {
-    const SLEEP_DELAY = 500;
     const OVERLAY_BUTTON_CSS_SELECTOR = '.overlay [role="button"]';
     const SEND_BUTTON_CSS_SELECTOR = '[data-testid="send"]';
 
@@ -116,8 +107,8 @@ async function sendMessage(contact, message, attachment, check, titleCheck) {
     let repeat = 0;
     let fail = 1;
     while (repeat <= check) {
-        await sleep(SLEEP_DELAY);
         if (repeat > 0) {
+            await sleep(SLEEP_DELAY);
             addLog(2, `Trying for the ${repeat} time`, attachment !== null, contact);
         }
 
@@ -125,7 +116,7 @@ async function sendMessage(contact, message, attachment, check, titleCheck) {
             const chatTitle = document.querySelector(`#main [title$="${filteredContact.substring(filteredContact.length - 4)}"]`);
 
             if (chatTitle === null) {
-                fail = 1;
+                fail = 5;
                 repeat++;
 
                 continue;
@@ -133,8 +124,9 @@ async function sendMessage(contact, message, attachment, check, titleCheck) {
         }
 
         if (attachment !== null) {
-            if (false === await sendAttachment(attachment)) {
-                fail = 1;
+            const attachmentResult = await sendAttachment(attachment);
+            if (0 >= attachmentResult) {
+                fail = attachmentResult;
                 repeat++;
 
                 continue;
@@ -157,25 +149,35 @@ async function sendMessage(contact, message, attachment, check, titleCheck) {
         break;
     }
 
-    if (fail > 0) {
-        const numberUnavailableModal = document.querySelector(OVERLAY_BUTTON_CSS_SELECTOR);
+    const numberUnavailableModal = document.querySelector(OVERLAY_BUTTON_CSS_SELECTOR);
 
-        if (numberUnavailableModal !== null) {
-            eventClickFire(numberUnavailableModal);
-            throw new Error('Número não encontrado pelo WhatsApp.');
-        } else {
-            throw new Error('Falha ao tentar abrir conversa. Verifique o número ou tente aumentar as tentativas de verificações.');
-        }
+    if (numberUnavailableModal !== null) {
+        numberUnavailableModal.click();
+        fail = 4;
     }
 
-    addLog(3, 'Mensagem enviada', attachment !== null, contact);
+    switch (fail) {
+        case 1:
+            throw new Error('Falha ao tentar abrir conversa. Verifique o número ou tente aumentar as tentativas de verificações.');
+        case 2:
+            throw new Error('Attachment button not found!');
+        case 3:
+            throw new Error('Attachment input element not found!');
+        case 4:
+            throw new Error('Número não encontrado pelo WhatsApp.');
+        case 5:
+            throw new Error('Título do chat não condiz com o número. Tem contatos salvos? Considere desativar a opção nas configurações.');
+        default:
+            addLog(3, 'Mensagem enviada', attachment !== null, contact);
+            break;
+    }
 }
 
 chrome.storage.local.get({ contacts: '', message: 'Enviado por WTF', attachment: null, delay: 1000, check: 5, titleCheck: true }, async function (data) {
     try {
         isLogin();
     } catch (error) {
-        addLog(1, error.message);
+        addLog(1, error.message, data.attachment !== null);
     }
     let contacts = parseContacts(data.contacts);
     let i = 0;
@@ -188,5 +190,5 @@ chrome.storage.local.get({ contacts: '', message: 'Enviado por WTF', attachment:
         }
         await sleep(data.delay);
     }
-    alert(`${i} Mensagens Enviadas!`);
+    alert(`${i} de ${contacts.length} Mensagens Enviadas!`);
 });

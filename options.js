@@ -9,6 +9,7 @@ const LOG_SUCCESS = 3;
 
 const messageTextInput = document.getElementById('message');
 const attachmentInput = document.getElementById('attachment');
+const clearAttachment = document.getElementById('clearAttachment');
 const delayInput = document.getElementById('delay');
 const checkInput = document.getElementById('check');
 const titleCheckInput = document.getElementById('titleCheck');
@@ -31,7 +32,7 @@ function updateLogs(filter = 3) {
         const myFile = new File([blob], data.attachment.name, {
           type: data.attachment.type,
           lastModified: data.attachment.lastModified,
-      });
+        });
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(myFile);
         attachmentInput.files = dataTransfer.files;
@@ -77,6 +78,15 @@ function closeToast() {
   toastContainer.classList.remove('show');
 }
 
+function clearFile() {
+  chrome.storage.local.set(
+    { attachment: null }, () => {
+      attachmentInput.value = null;
+      showToast(SAVE_OPTIONS_TEXT);
+    }
+  );
+}
+
 messageTextInput.addEventListener('change', (event) =>
   chrome.storage.local.set(
     { message: event.target.value }, () =>
@@ -84,16 +94,20 @@ messageTextInput.addEventListener('change', (event) =>
   )
 );
 attachmentInput.addEventListener('change', (event) => {
-  const file = event.target.files[0];
+  const files = event.target.files;
+  if (files.length <= 0) {
+    clearFile();
+  }
+  const file = files[0];
   const reader = new FileReader();
-  reader.onload = (ev) => {
+  reader.onload = (ev) =>
     chrome.storage.local.set(
       { attachment: { name: file.name, type: file.type, url: ev.target.result, lastModified: file.lastModified } }, () =>
       showToast(SAVE_OPTIONS_TEXT)
     );
-  };
   reader.readAsDataURL(file);
 });
+clearAttachment.addEventListener('click', clearFile);
 delayInput.addEventListener('change', (event) =>
   chrome.storage.local.set(
     { delay: event.target.value }, () =>
