@@ -88,7 +88,7 @@ async function sendAttachment(attachment) {
 }
 
 async function sendMessage(contact, message, attachment, check, titleCheck) {
-    const SLEEP_DELAY = 1000;
+    const SLEEP_DELAY = 5000;
     const OVERLAY_BUTTON_CSS_SELECTOR = '.overlay [role="button"]';
     const SEND_BUTTON_CSS_SELECTOR = '[data-testid="send"]';
 
