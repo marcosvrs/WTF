@@ -1,0 +1,48 @@
+{
+    "type": "object",
+    "properties": {
+        "message": {
+            "title": "Message to be sent to the contact",
+            "type": "string"
+        },
+        "attachment": {
+            "title": "Attachment to be sent to the contact",
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "lastModified": {
+                    "type": "number"
+                }
+            }
+        },
+        "logs": {
+            "title": "List of logs",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "level": {
+                        "type": "number"
+                    },
+                    "message": {
+                        "type": "string"
+                    },
+                    "attachment": {
+                        "type": "boolean"
+                    },
+                    "contact": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

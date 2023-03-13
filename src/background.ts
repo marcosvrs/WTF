@@ -1,7 +1,4 @@
-'use strict';
-
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.local.set({ contacts: '' });
   chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {
     chrome.declarativeContent.onPageChanged.addRules([{
       conditions: [new chrome.declarativeContent.PageStateMatcher({
