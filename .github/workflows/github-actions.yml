@@ -24,14 +24,14 @@ jobs:
           fi
 
           # Update manifest.json version
-          VERSION=$(npm pkg get version | tr -d '"')
-          sed -i "s/\"version\": \".*\"/\"version\": \"$VERSION\"/g" public/manifest.json
+          echo "VERSION=$(npm pkg get version | tr -d '"')" >> $GITHUB_ENV
+          sed -i "s/\"version\": \".*\"/\"version\": \"$(npm pkg get version | tr -d '"')\"/g" public/manifest.json
 
       - name: Commit changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git commit -m "Bump version to $VERSION [skip ci]" -a
+          git commit -m "Bump version to ${{ env.VERSION }} [skip ci]" -a
           git push
     
       - name: Install dependencies
@@ -46,8 +46,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: extension.zip
-          tag_name: $VERSION
-          name: Release $VERSION
+          tag_name: ${{ env.VERSION }}
+          name: Release ${{ env.VERSION }}
     
       - name: Publish to Chrome Web Store
         uses: Klemensas/chrome-extension-upload-action@v1
