@@ -17,28 +17,34 @@ jobs:
         run: npm run build
       - name: Zip files
         run: zip -r extension.zip dist/
-      - name: Create release
+      - name: Create Release
+        id: create_release
         uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: v${{ github.run_number }}
-          release_name: Release ${{ github.run_number }}
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
           body: |
             This is an auto-generated release created by GitHub Actions.
           draft: false
           prerelease: false
-      - name: Upload release asset
+      - name: Upload Release Asset
+        id: upload-release-asset 
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
           asset_path: ./extension.zip
           asset_name: extension.zip
           asset_content_type: application/zip
-      # - name: Publish to Chrome Web Store
-      #   uses: einaregilsson/publish-to-chrome-web-store@v3
-      #   with:
-      #     client_id: ${{ secrets.CHROME_CLIENT_ID }}
-      #     client_secret: ${{ secrets.CHROME_CLIENT_SECRET }}
-      #     refresh_token: ${{ secrets.CHROME_REFRESH_TOKEN }}
-      #     extension_id: "EXTENSION_ID"
-      #     zip_path: "./extension.zip"
-      #     publish: true
+      - name: Publish to Chrome Web Store
+        uses: Klemensas/chrome-extension-upload-action@v1
+        with:
+          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          client-id: ${{ secrets.CHROME_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          file-name: './extension.zip'
+          app-id: 'fockmbfncdacmjbmieenodfeblmneaii'
+          publish: true
