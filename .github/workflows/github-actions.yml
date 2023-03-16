@@ -11,6 +11,29 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      
+      - name: Update version number
+        run: |
+          # Determine the version change type based on commit message
+          if [[ "${{ github.event.head_commit.message }}" =~ "#major" ]]; then
+            npm version major --no-git-tag-version
+          elif [[ "${{ github.event.head_commit.message }}" =~ "#minor" ]]; then
+            npm version minor --no-git-tag-version
+          else
+            npm version patch --no-git-tag-version
+          fi
+
+          # Update manifest.json version
+          VERSION=$(npm pkg get version | tr -d '"')
+          sed -i "s/\"version\": \".*\"/\"version\": \"$VERSION\"/g" public/manifest.json
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -m "Bump version to $VERSION [skip ci]" -a
+          git push
+    
       - name: Install dependencies
         run: npm install
       - name: Build
@@ -18,27 +41,14 @@ jobs:
       - name: Zip files
         run: zip -r extension.zip dist/
       - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          tag_name: v${{ github.run_number }}
-          release_name: Release ${{ github.run_number }}
-          body: |
-            This is an auto-generated release created by GitHub Actions.
-          draft: false
-          prerelease: false
-      - name: Upload Release Asset
-        id: upload-release-asset 
-        uses: actions/upload-release-asset@v1
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./extension.zip
-          asset_name: extension.zip
-          asset_content_type: application/zip
+          files: extension.zip
+          tag_name: $VERSION
+          name: Release $VERSION
+    
       - name: Publish to Chrome Web Store
         uses: Klemensas/chrome-extension-upload-action@v1
         with:
