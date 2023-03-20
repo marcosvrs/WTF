@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "WTF",
   "description": "WTF",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "options_ui": {
     "page": "options.html",
     "open_in_tab": false
