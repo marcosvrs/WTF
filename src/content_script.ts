@@ -20,7 +20,7 @@ function addLog({ level, message, attachment = false, contact }: { level: number
       message,
       attachment,
       contact,
-      date: (new Date()).toLocaleString()
+      date: new Date().toLocaleString()
     });
     chrome.storage.local.set({ logs: currentLogs });
   });

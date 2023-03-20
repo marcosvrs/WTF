@@ -17,7 +17,7 @@ export default class MessageButtonsForm extends Component<{}, { buttons: { id: n
                     (prop) => !['text'].includes(prop)
                 );
                 return {
-                    id: Math.floor(Math.random() * 1000),
+                    id: type === 'id' ? button[type] : Math.floor(Math.random() * 1000),
                     type: type,
                     value: button[type] || '',
                     text: button.text
@@ -85,14 +85,17 @@ export default class MessageButtonsForm extends Component<{}, { buttons: { id: n
         this.setState({
             buttons: buttons.map(button => {
                 if (button.id !== id) return button;
+                const type = event.target.value;
                 let value = button.value || '';
-                if (button.type === 'phoneNumber') {
-                    value = value.replace(/\D/g, '')
+                if (type === 'phoneNumber') {
+                    value = value.replace(/\D/g, '');
+                } else if (type === 'id') {
+                    value = `${button.id}`;
                 }
                 return {
                     id: button.id || 0,
-                    type: event.target.value,
-                    value: value,
+                    type,
+                    value,
                     text: button.text || '',
                 };
             })
@@ -107,6 +110,8 @@ export default class MessageButtonsForm extends Component<{}, { buttons: { id: n
                 let value = event.target.value;
                 if (button.type === 'phoneNumber') {
                     value = value.replace(/\D/g, '')
+                } else if (button.type === 'id') {
+                    value = `${button.id}`;
                 }
                 return {
                     id: button.id || 0,
@@ -181,15 +186,14 @@ export default class MessageButtonsForm extends Component<{}, { buttons: { id: n
                                     onDragStart={event => this.handleDrag(event, index)}
                                     onDragOver={event => this.handleDragOver(event, index)}
                                     onDrop={event => this.handleDrop(event, index)}
-                                    className={`${index === draggedIndex ? 'bg-blue-100' : ''
-                                        } ${index === dropIndex ? 'border-dashed border-2' : 'border'}`}
+                                    className={`${index === draggedIndex ? 'bg-blue-100' : ''} ${index === dropIndex ? 'border-dashed border-2' : 'border'}`}
                                 >
                                     <td className="border px-4 py-2 cursor-move text-center">☰</td>
                                     <td className="border px-4 py-2">
                                         <select
                                             className="w-full bg-gray-100 border border-gray-300 p-1 rounded-md focus:ring focus:ring-blue-500 focus:outline-none focus:shadow-outline"
-                                            onChange={event => this.handleTypeChange(event, button.id)}
                                             value={button.type}
+                                            onChange={event => this.handleTypeChange(event, button.id)}
                                         >
                                             <option value="url">URL</option>
                                             <option value="phoneNumber">Número de Telefone</option>
@@ -198,10 +202,11 @@ export default class MessageButtonsForm extends Component<{}, { buttons: { id: n
                                     </td>
                                     <td className="border px-4 py-2">
                                         <input
-                                            className="w-full bg-gray-100 border border-gray-300 p-1 rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:outline-none focus:shadow-outline"
+                                            className={`${button.type === 'id' ? 'bg-white border-0' : 'bg-gray-100 border border-gray-300 shadow-sm'} w-full p-1 rounded-md focus:ring focus:ring-blue-500 focus:outline-none focus:shadow-outline`}
                                             type={button.type === 'phoneNumber' ? 'tel' : button.type === 'url' ? 'url' : 'text'}
                                             value={button.value}
                                             onChange={event => this.handleValueChange(event, button.id)}
+                                            disabled={button.type === 'id'}
                                         />
                                     </td>
                                     <td className="border px-4 py-2">
@@ -231,7 +236,7 @@ export default class MessageButtonsForm extends Component<{}, { buttons: { id: n
                 <ul className="list-disc ml-8">
                     <li><b>URL</b>: Redireciona a um site.</li>
                     <li><b>Número de Telefone</b>: Liga a um número.</li>
-                    <li><b>ID</b>: Envia o conteúdo de volta ao remetente.</li>
+                    <li><b>ID</b>: Envia o texto de volta ao remetente.</li>
                 </ul>
             </div>
         </div >;

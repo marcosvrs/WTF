@@ -1,19 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "WTF",
-  "description": "WTF",
+  "name": "WhatsApp Toolbox Features",
   "version": "3.1.1",
-  "options_ui": {
-    "page": "options.html",
-    "open_in_tab": false
-  },
-  "icons": {
-    "16": "icons/wtf16.png",
-    "32": "icons/wtf32.png",
-    "48": "icons/wtf48.png",
-    "64": "icons/wtf64.png",
-    "128": "icons/wtf128.png"
-  },
   "action": {
     "default_icon": {
       "16": "icons/wtf16.png",
@@ -22,22 +10,33 @@
       "64": "icons/wtf64.png",
       "128": "icons/wtf128.png"
     },
-    "default_title": "WTF",
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_title": "WTF"
   },
+  "description": "Chrome Extension that allows you to send WhatsApp messages in bulk",
+  "icons": {
+    "16": "icons/wtf16.png",
+    "32": "icons/wtf32.png",
+    "48": "icons/wtf48.png",
+    "64": "icons/wtf64.png",
+    "128": "icons/wtf128.png"
+  },
+  "author": "wtf@marcosvr.com",
   "content_scripts": [
     {
+      "js": [
+        "js/content_script.js"
+      ],
       "matches": [
         "https://web.whatsapp.com/*"
       ],
-      "run_at": "document_start",
-      "js": [
-        "js/content_script.js"
-      ]
+      "run_at": "document_start"
     }
   ],
-  "background": {
-    "service_worker": "js/background.js"
+  "homepage_url": "https://github.com/marcosvrs/wtf",
+  "options_ui": {
+    "open_in_tab": false,
+    "page": "options.html"
   },
   "permissions": [
     "activeTab",
@@ -45,20 +44,18 @@
     "scripting",
     "storage"
   ],
-  "host_permissions": [
-    "<all_urls>"
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "js/wa-js.js"
-      ],
-      "matches": [
-        "https://web.whatsapp.com/*"
-      ]
-    }
-  ],
+  "short_name": "WTF",
   "storage": {
     "managed_schema": "schema.json"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "https://web.whatsapp.com/*"
+      ],
+      "resources": [
+        "js/wa-js.js"
+      ]
+    }
+  ]
 }

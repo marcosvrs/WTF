@@ -19,7 +19,7 @@
         "strict": true,
         "target": "es2015"
     },
-    "display": "WTF Chrome Extension",
+    "display": "WhatsApp Toolbox Features",
     "exclude": [
         "node_modules"
     ],

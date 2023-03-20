@@ -3,7 +3,6 @@ import type { Message } from './types/Message';
 
 async function sendMessage({ contact, message = 'Enviado por WTF', attachment = null, buttons = [] }: Message) {
     try {
-        console.log('Ha!');
         contact = contact.replace(/[\D]*/g, '');
         if (!WPP.conn.isAuthenticated()) {
             const errorMsg = 'Conecte-se primeiro!';
@@ -15,7 +14,6 @@ async function sendMessage({ contact, message = 'Enviado por WTF', attachment = 
             ack: 0,
             sendMsgResult: new Promise(resolve => resolve(WPP.whatsapp.enums.SendMsgResult.ERROR_UNKNOWN)),
         };
-        console.log('sendMessage => message', { contact, message, attachment, buttons });
         if (attachment && buttons.length > 0) {
             const response = await fetch(attachment.url.toString());
             const data = await response.blob();
@@ -61,7 +59,6 @@ async function sendMessage({ contact, message = 'Enviado por WTF', attachment = 
                 waitForAck: true
             });
         }
-        console.log('result', result);
         result.sendMsgResult.then(value => {
             let level = 3;
             let message = 'Mensagem enviada com sucesso!';
@@ -80,13 +77,10 @@ async function sendMessage({ contact, message = 'Enviado por WTF', attachment = 
 
 window.addEventListener('sendMessage', async (event: CustomEventInit<Message>) => {
     const { detail } = event;
-    console.log('wa-js => sendMessage', detail);
     if (detail === undefined) return;
-    console.log('of Course!');
     if (WPP.webpack.isReady) {
         return await sendMessage(detail);
     }
-    console.log('not ready yet');
     WPP.webpack.onReady(async () => {
         await sendMessage(detail);
     });

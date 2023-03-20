@@ -1,12 +1,13 @@
-# WTF Chrome Extension
+# WhatsApp Toolbox Features Chrome Extension
 This is an open-source Chrome Extension that allows you to send WhatsApp messages in bulk. It uses the WhatsApp Web interface to send messages, so you need to have WhatsApp Web open in your browser while using this extension.
 
 ## Installation
-You can install the extension from the [Chrome Web Store](https://chrome.google.com/webstore/detail/fockmbfncdacmjbmieenodfeblmneaii). Alternatively, you can download the `extension.zip` file from the [latest release](https://github.com/marcosvrs/wtf/releases) and load it as an [unpacked extension in Chrome](#loading-an-unpacked-extension).
+You can install the extension from the [Chrome Web Store](https://chrome.google.com/webstore/detail/fockmbfncdacmjbmieenodfeblmneaii).
+Alternatively, you can download the `extension.zip` file from the [latest release](https://github.com/marcosvrs/wtf/releases) and load it as an [unpacked extension in Chrome](#loading-an-unpacked-extension).
 
 ## Usage
 1. Open WhatsApp Web in your Chrome browser.
-2. Click on the WTF extension icon in the toolbar.
+2. Click on the WhatsApp Toolbox Features extension icon in the toolbar.
 3. Click on the **Options** button to configure the message and attachment you want to send.
 4. Paste the phone numbers list you want to send.
 4. Click on the **Send** button to start sending the messages.
