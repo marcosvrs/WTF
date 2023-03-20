@@ -1,11 +1,3 @@
-import type * as wajs from '@wppconnect/wa-js';
-
-declare global {
-  interface Window {
-    WPP: typeof wajs;
-  }
-}
-
 function injectScript(scriptName: string) {
   return new Promise(function (resolve) {
     var s = document.createElement('script');
@@ -21,7 +13,7 @@ function injectScript(scriptName: string) {
 }
 
 function addLog({ level, message, attachment = false, contact }: { level: number, message: string, attachment: boolean, contact: string }) {
-  chrome.storage.local.get({ logs: [] }, (data) => {
+  chrome.storage.local.get({ logs: [] }, data => {
     const currentLogs = data.logs;
     currentLogs.push({
       level,
@@ -34,7 +26,7 @@ function addLog({ level, message, attachment = false, contact }: { level: number
   });
 }
 
-window.addEventListener('message', (event) => {
+window.addEventListener('message', event => {
   // We only accept messages from ourselves
   if (event.source !== window) {
     return;
@@ -45,6 +37,10 @@ window.addEventListener('message', (event) => {
   }
 }, false);
 
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'complete') {
   injectScript('js/wa-js.js');
-});
+} else {
+  document.addEventListener('DOMContentLoaded', () => {
+    injectScript('js/wa-js.js');
+  });
+}

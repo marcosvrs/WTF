@@ -1,14 +1,29 @@
 {
+    "$schema": "https://json.schemastore.org/tsconfig",
     "compilerOptions": {
-        "strict": true,
-        "module": "commonjs",
-        "target": "es6",
+        "allowJs": true,
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": "./src",
         "esModuleInterop": true,
-        "sourceMap": false,
-        "rootDir": "src",
-        "outDir": "dist/js",
-        "noEmitOnError": true,
-        "jsx": "react",
-        "typeRoots": [ "node_modules/@types" ]
-    }
+        "forceConsistentCasingInFileNames": true,
+        "isolatedModules": false,
+        "jsx": "react-jsx",
+        "module": "esnext",
+        "moduleResolution": "node",
+        "noEmit": false,
+        "noFallthroughCasesInSwitch": true,
+        "outDir": "./dist/js",
+        "resolveJsonModule": true,
+        "skipDefaultLibCheck": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "target": "es2015"
+    },
+    "display": "WTF Chrome Extension",
+    "exclude": [
+        "node_modules"
+    ],
+    "include": [
+        "./src"
+    ]
 }

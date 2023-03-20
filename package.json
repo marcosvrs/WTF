@@ -4,8 +4,9 @@
   "description": "WTF",
   "main": "index.js",
   "scripts": {
-    "watch": "webpack --config webpack/webpack.dev.js --watch",
-    "build": "webpack --config webpack/webpack.prod.js",
+    "watch": "webpack --config webpack/webpack.dev.js --watch --progress",
+    "dev": "tsc --noEmit && webpack --config webpack/webpack.dev.js",
+    "build": "tsc --noEmit && webpack --config webpack/webpack.prod.js",
     "clean": "rimraf dist",
     "test": "npx jest"
   },
@@ -28,9 +29,11 @@
     "autoprefixer": "^10.4.14",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.3",
+    "cssnano": "^5.1.15",
     "jest": "^29.5.0",
     "postcss-loader": "^7.0.2",
     "rimraf": "^4.4.0",
+    "speed-measure-webpack-plugin": "^1.5.0",
     "style-loader": "^3.3.2",
     "tailwindcss": "^3.2.7",
     "ts-jest": "^29.0.5",

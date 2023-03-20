@@ -1,7 +1,7 @@
-const webpack = require("webpack");
-const path = require("path");
-const CopyPlugin = require("copy-webpack-plugin");
-const srcDir = path.join(__dirname, "..", "src");
+const webpack = require('webpack');
+const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
+const srcDir = path.join(__dirname, '..', 'src');
 
 module.exports = {
     entry: {
@@ -12,22 +12,19 @@ module.exports = {
         'wa-js': path.join(srcDir, 'wa-js.ts'),
     },
     output: {
-        path: path.join(__dirname, "../dist/js"),
-        filename: "[name].js",
+        path: path.join(__dirname, '../dist/js'),
+        filename: '[name].js',
     },
-    // optimization: {
-    //     splitChunks: {
-    //         name: "vendor",
-    //         chunks(chunk) {
-    //             return chunk.name !== 'background' || chunk.name !== 'content_script';
-    //         }
-    //     },
-    // },
     module: {
         rules: [
             {
                 test: /\.tsx?$/,
-                use: "ts-loader",
+                use: {
+                    loader: 'ts-loader',
+                    options: {
+                        transpileOnly: true
+                    }
+                },
                 exclude: /node_modules/,
             },
             {
@@ -44,17 +41,15 @@ module.exports = {
         alias: {
             '@': path.resolve(__dirname, 'src/'),
         },
-        extensions: [".ts", ".tsx"],
+        extensions: ['.ts', '.tsx'],
+    },
+    watchOptions: {
+        ignored: ['/node_modules', '/webpack', '/dist'],
+        poll: true
     },
     plugins: [
-        new webpack.WatchIgnorePlugin({
-            paths: [
-                /\.js$/,
-                /\.d\.[cm]ts$/
-            ]
-        }),
         new CopyPlugin({
-            patterns: [{ from: ".", to: "../", context: "public" }],
+            patterns: [{ from: '.', to: '../', context: 'public' }],
             options: {},
         }),
     ],
