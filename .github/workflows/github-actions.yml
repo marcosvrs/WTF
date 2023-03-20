@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       
       - name: Update version number
         run: |
@@ -35,7 +35,7 @@ jobs:
           git push
     
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       - name: Build
         run: npm run build
       - name: Zip files
@@ -47,15 +47,14 @@ jobs:
         with:
           body: ${{ github.event.head_commit.message }}
           files: extension.zip
-          tag_name: ${{ env.VERSION }}
           name: Release ${{ env.VERSION }}
+          tag_name: ${{ env.VERSION }}
     
       - name: Publish to Chrome Web Store
-        uses: Klemensas/chrome-extension-upload-action@v1
+        uses: mnao305/chrome-extension-upload@v4.0.1
         with:
-          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
           client-id: ${{ secrets.CHROME_CLIENT_ID }}
           client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
-          file-name: './extension.zip'
-          app-id: 'fockmbfncdacmjbmieenodfeblmneaii'
-          publish: true
+          extension-id: 'fockmbfncdacmjbmieenodfeblmneaii'
+          file-path: extension.zip
+          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
