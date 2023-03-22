@@ -23,3 +23,24 @@ Note that this extension is intended for legitimate and ethical use cases only. 
 
 ## Disclaimer
 This extension is not affiliated with or endorsed by WhatsApp or Facebook. The use of this extension is at your own risk. The developers are not responsible for any damages, legal consequences, or other liabilities that may arise from the use of this extension.
+
+## Acknowledgments
+This project uses the following packages:
+- [@wppconnect/wa-js](https://github.com/wppconnect-team/wa-js) (Apache License 2.0)
+- [react](https://github.com/facebook/react) (MIT License)
+- [@types](https://github.com/DefinitelyTyped/DefinitelyTyped) (MIT License)
+- [autoprefixer](https://github.com/postcss/autoprefixer) (MIT License)
+- [copy-webpack-plugin](https://github.com/webpack-contrib/copy-webpack-plugin) (MIT License)
+- [css-loader](https://github.com/webpack-contrib/css-loader) (MIT License)
+- [cssnano](https://github.com/cssnano/cssnano) (MIT License)
+- [jest](https://github.com/facebook/jest) (MIT License)
+- [postcss-loader](https://github.com/webpack-contrib/postcss-loader) (MIT License)
+- [rimraf](https://github.com/isaacs/rimraf) (ISC License)
+- [speed-measure-webpack-plugin](https://github.com/stephencookdev/speed-measure-webpack-plugin) (MIT License)
+- [style-loader](https://github.com/webpack-contrib/style-loader) (MIT License)
+- [tailwindcss](https://github.com/tailwindlabs/tailwindcss) (MIT License)
+- [ts-jest](https://github.com/kulshekhar/ts-jest) (MIT License)
+- [ts-loader](https://github.com/TypeStrong/ts-loader) (MIT License)
+- [typescript](https://github.com/microsoft/TypeScript) (Apache License 2.0)
+- [webpack-cli](https://github.com/webpack/webpack-cli) (MIT License)
+- [webpack-merge](https://github.com/survivejs/webpack-merge) (MIT License)
