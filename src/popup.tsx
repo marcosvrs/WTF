@@ -30,7 +30,7 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
     body.classList.add('dark:bg-gray-900');
 
     this.updateStatus();
-    this.queueStatusListener = window.setInterval(this.updateStatus, 250);
+    this.queueStatusListener = window.setInterval(this.updateStatus, 100);
   }
 
   updateStatus = () => {

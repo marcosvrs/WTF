@@ -38,10 +38,11 @@ export default class AsyncChromeMessageManager {
 
   public addHandler<K extends keyof ChromeMessageContentTypes>(type: K, handler: MessageHandler<K>) {
     try {
-      if (this.source === "webpage") {
-        this.addWebpageMessageHandler(type, handler);
-      } else {
+      if (this.source !== "webpage") {
         this.addExtensionMessageHandler(type, handler);
+      }
+      if (this.source !== "popup") {
+        this.addWebpageMessageHandler(type, handler);
       }
     } catch (error) {
       console.error('WTF.AsyncChromeMessageManager.addHandler', error);
@@ -87,11 +88,11 @@ export default class AsyncChromeMessageManager {
           }
         };
 
-        if (this.source === "webpage") {
+        if (this.source !== "popup") {
           this.sendWebpageMessage(message, listener);
-        } else {
-          chrome.runtime.onMessage.addListener(listener);
-          this.sendExtensionMessage(message);
+        }
+        if (this.source !== "webpage") {
+          this.sendExtensionMessage(message, listener);
         }
       } catch (error) {
         console.error('WTF.AsyncChromeMessageManager.sendMessage', error)
@@ -114,8 +115,11 @@ export default class AsyncChromeMessageManager {
   }
 
   private sendExtensionMessage<K extends keyof ChromeMessageContentTypes>(
-    message: MessageData<K>
+    message: MessageData<K>,
+    listener: (response: MessageDataResponse<K>) => void
   ) {
+    chrome.runtime.onMessage.addListener(listener);
+
     if (this.source === "popup") {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs[0].id) {
