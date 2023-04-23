@@ -17,7 +17,7 @@ export default class MessageForm extends Component<{ className?: string }, { mes
 
     fileRef = createRef<HTMLInputElement>();
 
-    componentDidMount(): void {
+    componentDidMount() {
         chrome.storage.local.get(
             { message: 'Enviado por WTF', attachment: null, delay: 0 },
             data => {
@@ -38,7 +38,7 @@ export default class MessageForm extends Component<{ className?: string }, { mes
             });
     }
 
-    componentDidUpdate(prevProps: Readonly<{ className?: string }>, prevState: Readonly<{ message: string, attachment: Attachment, delay: number }>, snapshot?: any): void {
+    componentDidUpdate(prevProps: Readonly<{ className?: string }>, prevState: Readonly<{ message: string, attachment: Attachment, delay: number }>, snapshot?: any) {
         const { message, attachment, delay } = this.state;
 
         if (prevState.message !== message) {

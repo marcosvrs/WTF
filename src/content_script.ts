@@ -5,7 +5,7 @@ import { ChromeMessageTypes } from './types/ChromeMessageTypes';
 const ContentScriptMessageManager = new AsyncChromeMessageManager('contentScript');
 
 function injectScript(scriptName: string) {
-  return new Promise(function (resolve) {
+  return new Promise(resolve => {
     var s = document.createElement('script');
     s.src = chrome.runtime.getURL(scriptName);
     s.onload = function () {
@@ -33,11 +33,12 @@ async function addLog({ level, message, attachment = false, contact }: Log) {
 }
 
 ContentScriptMessageManager.addHandler(ChromeMessageTypes.ADD_LOG, async (log) => {
-  return new Promise((resolve, reject) =>
-    addLog(log)
-      .then(() => resolve(true))
-      .catch(() => reject(false))
-  );
+  try {
+    await addLog(log);
+    return true;
+  } catch (error) {
+    return false;
+  }
 });
 
 if (document.readyState === 'complete') {

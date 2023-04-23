@@ -3,12 +3,13 @@ import React, { Component, HTMLAttributes, ReactNode } from 'react';
 interface BoxProps extends HTMLAttributes<HTMLDivElement> {
     title?: string;
     headerButtons?: ReactNode;
+    bodyClassName?: string;
     footer?: ReactNode;
 }
 
 export default class Box extends Component<BoxProps, {}> {
     render() {
-        const { children, title, headerButtons, footer, ...boxProps } = this.props;
+        const { children, title, headerButtons, bodyClassName, footer, ...boxProps } = this.props;
         return <div {...boxProps} className={['max-w-xl',
             'mx-auto',
             'flex',
@@ -39,7 +40,8 @@ export default class Box extends Component<BoxProps, {}> {
                 'flex-auto',
                 'flex',
                 'flex-col',
-                'gap-4'
+                'gap-4',
+                ...(this.props.bodyClassName || '').split(' ')
             ].join(' ')}>
                 {children}
             </div>

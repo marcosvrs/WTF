@@ -13,7 +13,7 @@ export default class MessageButtonsForm extends Component<{ className?: string }
         };
     }
 
-    componentDidMount(): void {
+    componentDidMount() {
         chrome.storage.local.get({ buttons: [] }, data => this.setState({
             buttons: data.buttons.map((button: { [key: string]: string }) => {
                 const [type = ''] = Object.keys(button).filter(
@@ -29,7 +29,7 @@ export default class MessageButtonsForm extends Component<{ className?: string }
         }));
     }
 
-    compareArrays = (arr1: { id: number, type: string, value: string, text: string }[], arr2: { id: number, type: string, value: string, text: string }[]): boolean => {
+    compareArrays = (arr1: { id: number, type: string, value: string, text: string }[], arr2: { id: number, type: string, value: string, text: string }[]) => {
         // Check if arrays have different lengths
         if (arr1.length !== arr2.length) {
             return false;
@@ -51,7 +51,7 @@ export default class MessageButtonsForm extends Component<{ className?: string }
         return true;
     }
 
-    componentDidUpdate(prevProps: Readonly<{ className?: string }>, prevState: Readonly<{ buttons: { id: number, type: string, value: string, text: string }[]; }>, snapshot?: any): void {
+    componentDidUpdate(prevProps: Readonly<{ className?: string }>, prevState: Readonly<{ buttons: { id: number, type: string, value: string, text: string }[]; }>, snapshot?: any) {
         const { buttons } = this.state;
         if (!this.compareArrays(prevState.buttons, buttons)) {
             chrome.storage.local.set({
@@ -175,7 +175,7 @@ export default class MessageButtonsForm extends Component<{ className?: string }
                 </ul>
             </>}>
             {buttons.length > 0 &&
-                <table className="max-w-full mx-4 table-auto">
+                <table className="mx-4 table-auto">
                     <thead>
                         <tr className="text-left font-bold">
                             <th className="px-4 py-2"></th>

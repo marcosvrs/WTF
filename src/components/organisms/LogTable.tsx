@@ -50,7 +50,7 @@ export default class LogTable extends Component<{ className?: string }, { logs: 
                     Limpar
                 </Button>
             </div>}>
-            <table className="max-w-full mx-4 table-auto">
+            <table className="mx-4 table-auto">
                 <thead>
                     <tr className="text-left font-bold">
                         <th className="px-4 py-2 text-center">Número</th>

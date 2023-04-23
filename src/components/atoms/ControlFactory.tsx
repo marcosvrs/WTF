@@ -13,7 +13,7 @@ class ControlFactory {
         return class CustomInput extends Component<ControlPropsMap[T], {}> {
             render() {
                 const props = this.props;
-                const classNames = ['max-w-full',
+                const classNames = ['w-full',
                     'flex-auto',
                     'bg-slate-100',
                     'dark:bg-slate-900',

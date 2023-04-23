@@ -3,7 +3,7 @@ import { Message } from "./Message";
 import QueueStatus from "./QueueStatus";
 import { ChromeMessageTypes } from "./ChromeMessageTypes";
 
-export interface ChromeMessageContentTypes {
+export default interface ChromeMessageContentTypes {
   [ChromeMessageTypes.QUEUE_STATUS]: {
     payload: undefined;
     response: QueueStatus;
@@ -14,6 +14,18 @@ export interface ChromeMessageContentTypes {
   };
   [ChromeMessageTypes.ADD_LOG]: {
     payload: Log;
+    response: boolean;
+  };
+  [ChromeMessageTypes.PAUSE_QUEUE]: {
+    payload: undefined;
+    response: boolean;
+  };
+  [ChromeMessageTypes.RESUME_QUEUE]: {
+    payload: undefined;
+    response: boolean;
+  };
+  [ChromeMessageTypes.STOP_QUEUE]: {
+    payload: undefined;
     response: boolean;
   };
 }

@@ -10,11 +10,12 @@ import { ChromeMessageTypes } from './types/ChromeMessageTypes';
 
 const PopupMessageManager = new AsyncChromeMessageManager('popup');
 
-class Popup extends Component<{}, { contacts: string, status?: QueueStatus, confirmed: boolean }> {
+class Popup extends Component<{}, { contacts: string, duplicatedContacts: number, status?: QueueStatus, confirmed: boolean }> {
   constructor(props: {}) {
     super(props);
     this.state = {
       contacts: '',
+      duplicatedContacts: 0,
       status: undefined,
       confirmed: true,
     };
@@ -22,7 +23,7 @@ class Popup extends Component<{}, { contacts: string, status?: QueueStatus, conf
 
   queueStatusListener = 0;
 
-  componentDidMount(): void {
+  componentDidMount() {
     const body = document.querySelector('body');
     if (!body) return;
     body.classList.add('bg-gray-100');
@@ -38,11 +39,11 @@ class Popup extends Component<{}, { contacts: string, status?: QueueStatus, conf
     });
   }
 
-  componentWillUnmount(): void {
+  componentWillUnmount() {
     clearInterval(this.queueStatusListener);
   }
 
-  componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{ contacts: string, status?: QueueStatus, confirmed: boolean }>, snapshot?: any): void {
+  componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{ contacts: string, status?: QueueStatus, confirmed: boolean }>, snapshot?: any) {
     if (!prevState.status?.isProcessing && this.state.status?.isProcessing) {
       this.setState({ confirmed: false });
     }
@@ -54,25 +55,27 @@ class Popup extends Component<{}, { contacts: string, status?: QueueStatus, conf
 
   parseContacts = (prefix: number) => {
     const prefixToString = (prefix === 0 ? '' : prefix).toString();
-    const contactList = this.state.contacts.split(/[\n\t,;]/)
+    const contactList = this.state.contacts.split(/[\n\t,;]/).filter(str => str.trim() !== '');
     const pristinedContactsWithPrefix = contactList.map(s => prefixToString.concat(s.trim().replace(/[\D]*/g, '')));
 
-    return pristinedContactsWithPrefix //.filter((contact: string, index: number) => {
-    //   const result = pristinedContactsWithPrefix.indexOf(contact) === index;
-    //   if (!result) {
-    //     PopupMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, { level: 2, message: 'Número duplicado.', attachment: false, contact });
-    //   }
+    this.setState({ duplicatedContacts: 0 });
 
-    //   return result;
-    // });
+    return pristinedContactsWithPrefix.filter((contact: string, index: number) => {
+      const result = pristinedContactsWithPrefix.indexOf(contact) === index;
+      if (!result) {
+        this.setState(prevState => ({ duplicatedContacts: prevState.duplicatedContacts + 1 }));
+        PopupMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, { level: 2, message: 'Número duplicado.', attachment: false, contact });
+      }
+
+      return result;
+    });
   }
 
   handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-
     chrome.storage.local.get({ message: 'Enviado por WTF', attachment: null, buttons: [], delay: 0, prefix: 55 }, async data => {
       let i = 0;
       for (const contact of this.parseContacts(data.prefix)) {
-        PopupMessageManager.sendMessage(ChromeMessageTypes.SEND_MESSAGE, { contact, message: data.message + i++, attachment: data.attachment, buttons: data.buttons, delay: data.delay });
+        PopupMessageManager.sendMessage(ChromeMessageTypes.SEND_MESSAGE, { contact, message: data.message, attachment: data.attachment, buttons: data.buttons, delay: data.delay });
       }
     });
     event.preventDefault();
@@ -104,9 +107,23 @@ class Popup extends Component<{}, { contacts: string, status?: QueueStatus, conf
         className="w-96 h-96"
         title={this.state.status?.isProcessing ? 'Enviando mensagens...' : ''}
         footer={this.state.status?.isProcessing ?
-          <div className="w-full h-4 bg-gray-300 dark:bg-gray-600 rounded relative">
+          <Button variant="danger" onClick={() => PopupMessageManager.sendMessage(ChromeMessageTypes.STOP_QUEUE, undefined)}>Cancelar</Button>
+          : <Button variant="primary" onClick={() => this.setState({ confirmed: true })}>Ok</Button>}>
+        <div className="grid grid-cols-2 gap-4 p-4">
+          <div>Tempo:</div>
+          <div>{this.formatTime(this.state.status?.elapsedTime || 0)}</div>
+          {this.state.status?.sendingMessage && <div className="col-span-2">Enviando...</div>}
+          {this.state.status?.waiting && <div>Aguardando:</div>}
+          {this.state.status?.waiting && <div>{this.formatTime(this.state.status.waiting)}</div>}
+          <div>Enviadas:</div>
+          <div>{this.state.status?.processedItems}</div>
+          <div>{this.state.status?.isProcessing ? 'Restantes' : 'Não entregues'}:</div>
+          <div>{this.state.status?.remainingItems}</div>
+          <div>Duplicados:</div>
+          <div>{this.state.duplicatedContacts}</div>
+          {this.state.status && <div className="w-full h-4 bg-gray-300 dark:bg-gray-600 rounded relative col-span-2 self-end">
             <div
-              className="progress-bar h-4 rounded"
+              className={`h-4 rounded progress-bar${this.state.status?.isProcessing ? ' progress-bar-animated' : ''}`}
               style={{ width: `${(this.state.status?.processedItems / (this.state.status?.processedItems + this.state.status?.remainingItems)) * 100}%` }}
             ></div>
             <div className="absolute inset-0 flex items-center justify-center">
@@ -114,31 +131,19 @@ class Popup extends Component<{}, { contacts: string, status?: QueueStatus, conf
                 {Math.round((this.state.status?.processedItems / (this.state.status?.processedItems + this.state.status?.remainingItems)) * 100)}%
               </span>
             </div>
-          </div>
-          : <Button variant="primary" onClick={() => this.setState({ confirmed: true })}>Ok</Button>}>
-        <div className="grid grid-cols-2 gap-4 p-4">
-          <div>Tempo:</div>
-          <div>{this.formatTime(this.state.status?.elapsedTime || 0)}</div>
-          {this.state.status?.sendingMessage && <div>Enviando:</div>}
-          {this.state.status?.sendingMessage && <div>{this.formatTime(this.state.status.sendingMessage)}</div>}
-          {this.state.status?.waiting && <div>Aguardando:</div>}
-          {this.state.status?.waiting && <div>{this.formatTime(this.state.status.waiting)}</div>}
-          <div>Enviadas:</div>
-          <div>{this.state.status?.processedItems}</div>
-          <div>Restantes:</div>
-          <div>{this.state.status?.remainingItems}</div>
+          </div>}
         </div>
       </Box>}
       {this.state.confirmed && <form onSubmit={this.handleSubmit}>
-        <Box className="w-96 h-96" footer="Não se esqueça de adicionar o prefixo DDD da região de cada contato.">
+        <Box className="w-96 h-96" bodyClassName="p-4" footer="Não se esqueça de adicionar o prefixo DDD da região de cada contato.">
           <ControlTextArea
-            className="mt-4 mx-4 flex-auto"
+            className="flex-auto"
             value={this.state.contacts}
             onChange={this.handleChange}
             placeholder="Adicione a lista de números para o envio das mensagens, separados por vírgula ou cada número em uma nova linha."
             required
           />
-          <div className="m -4 mx-4 flex justify-between items-center">
+          <div className="flex justify-between items-center">
             <Button variant="primary" type="submit">Enviar</Button>
             <Button
               variant="secondary"

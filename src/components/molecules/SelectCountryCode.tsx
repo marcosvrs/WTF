@@ -71,7 +71,7 @@ export default class SelectCountryCode extends Component<{ options?: CountryCode
         selectedValue: CountryCode | null,
         options: CountryCode[],
         filteredOptions: CountryCode[]
-    }>, snapshot?: any): void {
+    }>, snapshot?: any) {
         if (prevState.selectedValue !== this.state.selectedValue) {
             chrome.storage.local.set({ prefix: this.state.selectedValue?.value || 0 });
         }
