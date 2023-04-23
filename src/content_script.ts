@@ -1,5 +1,11 @@
+import AsyncChromeMessageManager from './utils/AsyncChromeMessageManager';
+import type Log from './types/Log';
+import { ChromeMessageTypes } from './types/ChromeMessageTypes';
+
+const ContentScriptMessageManager = new AsyncChromeMessageManager('contentScript');
+
 function injectScript(scriptName: string) {
-  return new Promise(function (resolve) {
+  return new Promise(resolve => {
     var s = document.createElement('script');
     s.src = chrome.runtime.getURL(scriptName);
     s.onload = function () {
@@ -12,8 +18,8 @@ function injectScript(scriptName: string) {
   });
 }
 
-function addLog({ level, message, attachment = false, contact }: { level: number, message: string, attachment: boolean, contact: string }) {
-  chrome.storage.local.get({ logs: [] }, data => {
+async function addLog({ level, message, attachment = false, contact }: Log) {
+  return chrome.storage.local.get({ logs: [] }, async data => {
     const currentLogs = data.logs;
     currentLogs.push({
       level,
@@ -22,20 +28,18 @@ function addLog({ level, message, attachment = false, contact }: { level: number
       contact,
       date: new Date().toLocaleString()
     });
-    chrome.storage.local.set({ logs: currentLogs });
+    return chrome.storage.local.set({ logs: currentLogs });
   });
 }
 
-window.addEventListener('message', event => {
-  // We only accept messages from ourselves
-  if (event.source !== window) {
-    return;
+ContentScriptMessageManager.addHandler(ChromeMessageTypes.ADD_LOG, async (log) => {
+  try {
+    await addLog(log);
+    return true;
+  } catch (error) {
+    return false;
   }
-
-  if (event.data.type && (event.data.type === 'LOG')) {
-    addLog(event.data);
-  }
-}, false);
+});
 
 if (document.readyState === 'complete') {
   injectScript('js/wa-js.js');

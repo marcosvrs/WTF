@@ -5,5 +5,6 @@ export type Message = {
     contact: string,
     message: string,
     attachment: Attachment,
-    buttons?: MessageButtonsTypes[]
+    buttons: MessageButtonsTypes[],
+    delay?: number
 }
