@@ -1,12 +1,16 @@
 import * as WPP from '@wppconnect/wa-js';
 import type { Message } from './types/Message';
+import asyncQueue from './utils/AsyncEventQueue';
+import AsyncChromeMessageManager from './utils/AsyncChromeMessageManager';
+import { ChromeMessageTypes } from './types/ChromeMessageTypes';
 
-async function sendMessage({ contact, message = 'Enviado por WTF', attachment = null, buttons = [] }: Message) {
+const WebpageMessageManager = new AsyncChromeMessageManager('webpage');
+
+async function sendMessage({ contact, message = 'Enviado por WTF', attachment = null, buttons = [], delay = 0 }: Message) {
     try {
-        contact = contact.replace(/[\D]*/g, '');
         if (!WPP.conn.isAuthenticated()) {
             const errorMsg = 'Conecte-se primeiro!';
-            window.postMessage({ type: 'LOG', level: 1, message: errorMsg, attachment: attachment != null, contact });
+            WebpageMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, { level: 1, message: errorMsg, attachment: attachment != null, contact });
             return alert(errorMsg);
         }
         let result: WPP.chat.SendMessageReturn = {
@@ -66,23 +70,44 @@ async function sendMessage({ contact, message = 'Enviado por WTF', attachment = 
                 level = 1;
                 message = 'Falha ao enviar a mensage: ' + value;
             }
-            window.postMessage({ type: 'LOG', level, message, attachment: attachment != null, contact });
+            WebpageMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, { level, message, attachment: attachment != null, contact });
         });
     } catch (error) {
         if (error instanceof Error) {
-            window.postMessage({ type: 'LOG', level: 1, message: error.message, attachment: attachment != null, contact });
+            WebpageMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, { level: 1, message: error.message, attachment: attachment != null, contact });
         }
     }
 }
 
-window.addEventListener('sendMessage', async (event: CustomEventInit<Message>) => {
-    const { detail } = event;
-    if (detail === undefined) return;
-    if (WPP.webpack.isReady) {
-        return await sendMessage(detail);
-    }
-    WPP.webpack.onReady(async () => {
-        await sendMessage(detail);
+WebpageMessageManager.addHandler(ChromeMessageTypes.SEND_MESSAGE, async (message) => {
+    return new Promise((resolve, reject) => {
+        if (WPP.webpack.isReady) {
+            asyncQueue.add({ eventHandler: sendMessage, detail: message })
+                .then(() => {
+                    resolve(true);
+                })
+                .catch((error) => {
+                    WebpageMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, { level: 1, message: error.message, attachment: message.attachment != null, contact: message.contact });
+                    reject(false);
+                });
+        } else {
+            WPP.webpack.onReady(async () => {
+                asyncQueue.add({ eventHandler: sendMessage, detail: message })
+                    .then(() => {
+                        resolve(true);
+                    })
+                    .catch((error) => {
+                        WebpageMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, { level: 1, message: error.message, attachment: message.attachment != null, contact: message.contact });
+                        reject(false);
+                    });
+            });
+        }
+    });
+});
+
+WebpageMessageManager.addHandler(ChromeMessageTypes.QUEUE_STATUS, async () => {
+    return new Promise((resolve) => {
+        resolve(asyncQueue.getStatus());
     });
 });
 

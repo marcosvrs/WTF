@@ -1,7 +1,10 @@
 import React, { ChangeEvent, Component, DragEvent } from 'react';
+import Button from '../atoms/Button';
+import { ControlInput, ControlSelect } from '../atoms/ControlFactory';
+import Box from '../molecules/Box';
 
-export default class MessageButtonsForm extends Component<{}, { buttons: { id: number, type: string, value: string, text: string }[], draggedIndex: number | null, dropIndex: number | null }>{
-    constructor(props: {}) {
+export default class MessageButtonsForm extends Component<{ className?: string }, { buttons: { id: number, type: string, value: string, text: string }[], draggedIndex: number | null, dropIndex: number | null }>{
+    constructor(props: { className?: string }) {
         super(props);
         this.state = {
             draggedIndex: null,
@@ -48,7 +51,7 @@ export default class MessageButtonsForm extends Component<{}, { buttons: { id: n
         return true;
     }
 
-    componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{ buttons: { id: number, type: string, value: string, text: string }[]; }>, snapshot?: any): void {
+    componentDidUpdate(prevProps: Readonly<{ className?: string }>, prevState: Readonly<{ buttons: { id: number, type: string, value: string, text: string }[]; }>, snapshot?: any): void {
         const { buttons } = this.state;
         if (!this.compareArrays(prevState.buttons, buttons)) {
             chrome.storage.local.set({
@@ -155,90 +158,79 @@ export default class MessageButtonsForm extends Component<{}, { buttons: { id: n
 
     render() {
         const { buttons, draggedIndex, dropIndex } = this.state;
-        return <div className="max-w-xl mx-auto my-10 bg-white shadow-lg rounded-lg overflow-hidden">
-            <div className="px-4 py-2 border-b border-gray-200 flex justify-between items-center">
-                <h1 className="text-lg font-semibold text-gray-800">Botões</h1>
-                {buttons.length < 3 &&
-                    <button
-                        className="px-4 py-2 rounded-md bg-blue-500 text-white border border-white hover:bg-white hover:text-blue-500 hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        onClick={this.handleAddButton}
-                    >
-                        Adicionar
-                    </button>}
-            </div>
-            <div className="px-4 py-2">
-                {buttons.length > 0 &&
-                    <table className="w-full table-auto">
-                        <thead>
-                            <tr className="text-left font-bold">
-                                <th className="px-4 py-2"></th>
-                                <th className="px-4 py-2 text-center">Tipo</th>
-                                <th className="px-4 py-2 text-center">Conteúdo</th>
-                                <th className="px-4 py-2 text-center">Texto</th>
-                                <th className="px-4 py-2 text-center">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {buttons.map((button, index) => (
-                                <tr
-                                    key={button.id}
-                                    draggable
-                                    onDragStart={event => this.handleDrag(event, index)}
-                                    onDragOver={event => this.handleDragOver(event, index)}
-                                    onDrop={event => this.handleDrop(event, index)}
-                                    className={`${index === draggedIndex ? 'bg-blue-100' : ''} ${index === dropIndex ? 'border-dashed border-2' : 'border'}`}
-                                >
-                                    <td className="border px-4 py-2 cursor-move text-center">☰</td>
-                                    <td className="border px-4 py-2">
-                                        <select
-                                            className="w-full bg-gray-100 border border-gray-300 p-1 rounded-md focus:ring focus:ring-blue-500 focus:outline-none focus:shadow-outline"
-                                            value={button.type}
-                                            onChange={event => this.handleTypeChange(event, button.id)}
-                                        >
-                                            <option value="url">URL</option>
-                                            <option value="phoneNumber">Número de Telefone</option>
-                                            <option value="id">ID</option>
-                                        </select>
-                                    </td>
-                                    <td className="border px-4 py-2">
-                                        <input
-                                            className={`${button.type === 'id' ? 'bg-white border-0' : 'bg-gray-100 border border-gray-300 shadow-sm'} w-full p-1 rounded-md focus:ring focus:ring-blue-500 focus:outline-none focus:shadow-outline`}
-                                            type={button.type === 'phoneNumber' ? 'tel' : button.type === 'url' ? 'url' : 'text'}
-                                            value={button.value}
-                                            onChange={event => this.handleValueChange(event, button.id)}
-                                            disabled={button.type === 'id'}
-                                        />
-                                    </td>
-                                    <td className="border px-4 py-2">
-                                        <input
-                                            className="w-full bg-gray-100 border border-gray-300 p-1 rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:outline-none focus:shadow-outline"
-                                            type="text"
-                                            value={button.text}
-                                            onChange={event => this.handleTextChange(event, button.id)}
-                                        />
-                                    </td>
-                                    <td className="border px-4 py-2 text-center">
-                                        <button
-                                            className="text-3xl text-red-500 text-center hover:text-red-600 focus:outline-none"
-                                            onClick={() => this.handleDeleteButton(button.id)}
-                                        >
-                                            ×
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>}
-            </div>
-            <div className="px-4 py-2 border-t border-gray-200">
-                <p className="text-red-600 font-bold mb-1">Importante: O botão do tipo "ID" pode não funcionar em todas as configurações! Teste antes de enviar em massa!</p>
+
+        return <Box
+            className={this.props.className}
+            title="Botões"
+            headerButtons={buttons.length < 3 && <Button variant="light" onClick={this.handleAddButton}>Adicionar</Button>}
+            footer={<>
+                <p className="text-red-600 dark:text-red-400 font-bold mb-1">
+                    Importante: O botão do tipo 'ID' pode não funcionar em todas as configurações! Teste antes de enviar em massa!
+                </p>
                 <p>Você pode criar 3 tipos de botões:</p>
                 <ul className="list-disc ml-8">
                     <li><b>URL</b>: Redireciona a um site.</li>
                     <li><b>Número de Telefone</b>: Liga a um número.</li>
                     <li><b>ID</b>: Envia o texto de volta ao remetente.</li>
                 </ul>
-            </div>
-        </div >;
+            </>}>
+            {buttons.length > 0 &&
+                <table className="max-w-full mx-4 table-auto">
+                    <thead>
+                        <tr className="text-left font-bold">
+                            <th className="px-4 py-2"></th>
+                            <th className="px-4 py-2 text-center">Tipo</th>
+                            <th className="px-4 py-2 text-center">Conteúdo</th>
+                            <th className="px-4 py-2 text-center">Texto</th>
+                            <th className="px-4 py-2 text-center"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {buttons.map((button, index) => (
+                            <tr
+                                key={button.id}
+                                draggable
+                                onDragStart={event => this.handleDrag(event, index)}
+                                onDragOver={event => this.handleDragOver(event, index)}
+                                onDrop={event => this.handleDrop(event, index)}
+                                className={`${index === draggedIndex ? 'bg-blue-100 dark:bg-blue-900' : ''} ${index === dropIndex ? 'border-dashed border-2' : 'border'}`}
+                            >
+                                <td className="border px-4 py-2 cursor-move text-center">☰</td>
+                                <td className="border px-4 py-2">
+                                    <ControlSelect value={button.type} onChange={event => this.handleTypeChange(event, button.id)}>
+                                        <option value="url">URL</option>
+                                        <option value="phoneNumber">Número de Telefone</option>
+                                        <option value="id">ID</option>
+                                    </ControlSelect>
+                                </td>
+                                <td className="border px-4 py-2">
+                                    <ControlInput
+                                        className={button.type === 'id' ? 'bg-transparent border-0' : ''}
+                                        type={button.type === 'phoneNumber' ? 'tel' : button.type === 'url' ? 'url' : 'text'}
+                                        value={button.value}
+                                        onChange={event => this.handleValueChange(event, button.id)}
+                                        disabled={button.type === 'id'}
+                                    />
+                                </td>
+                                <td className="border px-4 py-2">
+                                    <ControlInput
+                                        type="text"
+                                        value={button.text}
+                                        onChange={event => this.handleTextChange(event, button.id)}
+                                    />
+                                </td>
+                                <td className="border text-center align-middle">
+                                    <Button
+                                        className="text-3xl text-red-500 hover:text-red-600 dark:hover:text-red-400 p-0 ring-0"
+                                        onClick={() => this.handleDeleteButton(button.id)}
+                                    >
+                                        ×
+                                    </Button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>}
+        </Box>;
     }
 }

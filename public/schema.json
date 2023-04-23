@@ -5,6 +5,14 @@
             "title": "Message to be sent to the contact",
             "type": "string"
         },
+        "delay": {
+            "title": "Sets the delay between the messages sent",
+            "type": "integer"
+        },
+        "prefix": {
+            "title": "Prefix to be added to the contact number",
+            "type": "integer"
+        },
         "attachment": {
             "title": "Attachment to be sent to the contact",
             "type": "object",

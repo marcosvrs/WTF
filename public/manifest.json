@@ -33,6 +33,9 @@
       "run_at": "document_start"
     }
   ],
+  "externally_connectable": {
+    "matches": ["https://web.whatsapp.com/*"]
+  },
   "homepage_url": "https://github.com/marcosvrs/wtf",
   "options_ui": {
     "open_in_tab": false,
