@@ -44,8 +44,6 @@
   },
   "permissions": [
     "activeTab",
-    "declarativeContent",
-    "scripting",
     "storage"
   ],
   "short_name": "WTF",
