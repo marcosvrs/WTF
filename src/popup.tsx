@@ -21,6 +21,23 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
     };
   }
 
+  duplicatedNumberPopup = chrome.i18n.getMessage('duplicatedNumberPopup');
+  sendingMessagePopup = chrome.i18n.getMessage('sendingMessagePopup');
+  messageTimePopup = chrome.i18n.getMessage('messageTimePopup');
+  sendingPopup = chrome.i18n.getMessage('sendingPopup');
+  waitingPopup = chrome.i18n.getMessage('waitingPopup');
+  messagesSentPopup = chrome.i18n.getMessage('messagesSentPopup');
+  duplicatedContactsPopup = chrome.i18n.getMessage('duplicatedContactsPopup');
+  messagesLeftPopup = chrome.i18n.getMessage('messagesLeftPopup');
+  messagesNotSentPopup = chrome.i18n.getMessage('messagesNotSentPopup');
+  prefixFooterNotePopup = chrome.i18n.getMessage('prefixFooterNotePopup');
+  messagePlaceholderPopup = chrome.i18n.getMessage('messagePlaceholderPopup');
+  cancelButtonLabel = chrome.i18n.getMessage('cancelButtonLabel');
+  okButtonLabel = chrome.i18n.getMessage('okButtonLabel');
+  optionsButtonLabel = chrome.i18n.getMessage('optionsButtonLabel');
+  sendButtonLabel = chrome.i18n.getMessage('sendButtonLabel');
+  defaultMessage = chrome.i18n.getMessage('defaultMessage');
+
   queueStatusListener = 0;
 
   componentDidMount() {
@@ -64,7 +81,7 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
       const result = pristinedContactsWithPrefix.indexOf(contact) === index;
       if (!result) {
         this.setState(prevState => ({ duplicatedContacts: prevState.duplicatedContacts + 1 }));
-        PopupMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, { level: 2, message: 'Número duplicado.', attachment: false, contact });
+        PopupMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, { level: 2, message: this.duplicatedNumberPopup, attachment: false, contact });
       }
 
       return result;
@@ -72,7 +89,8 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
   }
 
   handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    chrome.storage.local.get({ message: 'Enviado por WTF', attachment: null, buttons: [], delay: 0, prefix: 55 }, async data => {
+    const language = chrome.i18n.getUILanguage();
+    chrome.storage.local.get({ message: this.defaultMessage, attachment: null, buttons: [], delay: 0, prefix: language === 'pt_BR' ? 55 : 0 }, async data => {
       let i = 0;
       for (const contact of this.parseContacts(data.prefix)) {
         PopupMessageManager.sendMessage(ChromeMessageTypes.SEND_MESSAGE, { contact, message: data.message, attachment: data.attachment, buttons: data.buttons, delay: data.delay });
@@ -105,21 +123,21 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
     return <>
       {!this.state.confirmed && <Box
         className="w-96 h-96"
-        title={this.state.status?.isProcessing ? 'Enviando mensagens...' : ''}
+        title={this.state.status?.isProcessing ? this.sendingMessagePopup : ''}
         footer={this.state.status?.isProcessing ?
-          <Button variant="danger" onClick={() => PopupMessageManager.sendMessage(ChromeMessageTypes.STOP_QUEUE, undefined)}>Cancelar</Button>
-          : <Button variant="primary" onClick={() => this.setState({ confirmed: true })}>Ok</Button>}>
+          <Button variant="danger" onClick={() => PopupMessageManager.sendMessage(ChromeMessageTypes.STOP_QUEUE, undefined)}>{this.cancelButtonLabel}</Button>
+          : <Button variant="primary" onClick={() => this.setState({ confirmed: true })}>{this.okButtonLabel}</Button>}>
         <div className="grid grid-cols-2 gap-4 p-4">
-          <div>Tempo:</div>
+          <div>{this.messageTimePopup}</div>
           <div>{this.formatTime(this.state.status?.elapsedTime || 0)}</div>
-          {this.state.status?.sendingMessage && <div className="col-span-2">Enviando...</div>}
-          {this.state.status?.waiting && <div>Aguardando:</div>}
+          {this.state.status?.sendingMessage && <div className="col-span-2">{this.sendingPopup}</div>}
+          {this.state.status?.waiting && <div>{this.waitingPopup}</div>}
           {this.state.status?.waiting && <div>{this.formatTime(this.state.status.waiting)}</div>}
-          <div>Enviadas:</div>
+          <div>{this.messagesSentPopup}</div>
           <div>{this.state.status?.processedItems}</div>
-          <div>{this.state.status?.isProcessing ? 'Restantes' : 'Não entregues'}:</div>
+          <div>{this.state.status?.isProcessing ? this.messagesLeftPopup : this.messagesNotSentPopup}</div>
           <div>{this.state.status?.remainingItems}</div>
-          <div>Duplicados:</div>
+          <div>{this.duplicatedContactsPopup}</div>
           <div>{this.state.duplicatedContacts}</div>
           {this.state.status && <div className="w-full h-4 bg-gray-300 dark:bg-gray-600 rounded relative col-span-2 self-end">
             <div
@@ -135,22 +153,22 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
         </div>
       </Box>}
       {this.state.confirmed && <form onSubmit={this.handleSubmit}>
-        <Box className="w-96 h-96" bodyClassName="p-4" footer="Não se esqueça de adicionar o prefixo DDD da região de cada contato.">
+        <Box className="w-96 h-96" bodyClassName="p-4" footer={this.prefixFooterNotePopup}>
           <ControlTextArea
             className="flex-auto"
             value={this.state.contacts}
             onChange={this.handleChange}
-            placeholder="Adicione a lista de números para o envio das mensagens, separados por vírgula ou cada número em uma nova linha."
+            placeholder={this.messagePlaceholderPopup}
             required
           />
           <div className="flex justify-between items-center">
-            <Button variant="primary" type="submit">Enviar</Button>
+            <Button variant="primary" type="submit">{this.sendButtonLabel}</Button>
             <Button
               variant="secondary"
               type="button"
               onClick={this.handleOptions}
             >
-              Opções
+              {this.optionsButtonLabel}
             </Button>
           </div>
         </Box>

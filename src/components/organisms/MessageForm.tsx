@@ -8,18 +8,27 @@ import SelectCountryCode from '../molecules/SelectCountryCode';
 export default class MessageForm extends Component<{ className?: string }, { message: string, attachment: Attachment, delay: number }>{
     constructor(props: { className?: string }) {
         super(props);
+        this.defaultMessage = chrome.i18n.getMessage('messageLabel');
         this.state = {
-            message: 'Enviado por WTF',
+            message: this.defaultMessage,
             attachment: null,
             delay: 0
         };
     }
 
     fileRef = createRef<HTMLInputElement>();
+    defaultMessage: string;
+    titleMessageForm = chrome.i18n.getMessage('titleMessageForm');
+    attachmentLabelMessageForm = chrome.i18n.getMessage('attachmentLabelMessageForm');
+    cleanButtonLabel = chrome.i18n.getMessage('cleanButtonLabel');
+    footerLabelMessageForm = chrome.i18n.getMessage('footerLabelMessageForm');
+    footerSuggestionMessageForm = chrome.i18n.getMessage('footerSuggestionMessageForm');
+    delayLabelMessageForm = chrome.i18n.getMessage('delayLabelMessageForm');
+    countryCodePrefixMessageForm = chrome.i18n.getMessage('countryCodePrefixMessageForm');
 
     componentDidMount() {
         chrome.storage.local.get(
-            { message: 'Enviado por WTF', attachment: null, delay: 0 },
+            { message: this.defaultMessage, attachment: null, delay: 0 },
             data => {
                 this.setState({ message: data.message, attachment: data.attachment, delay: data.delay });
                 if (data.attachment != null && this.fileRef.current !== null) {
@@ -101,10 +110,10 @@ export default class MessageForm extends Component<{ className?: string }, { mes
 
         return <Box
             className={this.props.className}
-            title="Elaboração da mensagem"
+            title={this.titleMessageForm}
             footer={<>
-                <p className="mb-1">Se desejar enviar apenas o anexo, mantenha o campo de mensagem vazio.</p>
-                <p>Sugestão: Envie primeiro uma mensagem para o seu próprio número para visualizar a sua mensagem antes de envia-la em massa.</p>
+                <p className="mb-1">{this.footerLabelMessageForm}</p>
+                <p>{this.footerSuggestionMessageForm}</p>
             </>}>
             <div className="mt-4 mx-4 flex flex-row gap-4">
                 <div className="flex flex-col basis-1/2">
@@ -128,7 +137,7 @@ export default class MessageForm extends Component<{ className?: string }, { mes
                         {attachment?.name ? attachment.name : <>
                             <p className="mb-2 text-2xl">🖼</p>
                             <p className="text-sm text-slate-800 dark:text-slate-200">
-                                Selecione um anexo (Opcional)
+                                {this.attachmentLabelMessageForm}
                             </p>
                         </>}
                     </label>
@@ -144,13 +153,11 @@ export default class MessageForm extends Component<{ className?: string }, { mes
                         <Button
                             variant="danger"
                             onClick={this.handleFileClear}
-                        >
-                            Limpar
-                        </Button>}
+                        >{this.cleanButtonLabel}</Button>}
                 </div>
             </div>
             <div className="mx-4 flex items-center">
-                <label htmlFor="delay">Intervalo entre mensagens (<span className="font-mono">{this.state.delay.toFixed(1)}s</span>):</label>
+                <label htmlFor="delay">{this.delayLabelMessageForm} (<span className="font-mono">{this.state.delay.toFixed(1)}s</span>):</label>
                 <input
                     type="range"
                     id="delay"
@@ -185,7 +192,7 @@ export default class MessageForm extends Component<{ className?: string }, { mes
                 />
             </div>
             <div className="mb-4 mx-4 flex flex-col">
-            <label className="mb-2">Selecione um prefixo para adicionar automaticamente ao número dos contatos:</label>
+            <label className="mb-2">{this.countryCodePrefixMessageForm}</label>
             <SelectCountryCode />
             </div>
         </Box>;

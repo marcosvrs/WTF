@@ -11,6 +11,14 @@ export default class LogTable extends Component<{ className?: string }, { logs: 
         };
     }
 
+    logTableTitle = chrome.i18n.getMessage('logTableTitle');
+    numberLogTableTitle = chrome.i18n.getMessage('numberLogTableTitle');
+    messageLogTableTitle = chrome.i18n.getMessage('messageLogTableTitle');
+    attachmentLogTableTitle = chrome.i18n.getMessage('attachmentLogTableTitle');
+    datetimeLogTableTitle = chrome.i18n.getMessage('datetimeLogTableTitle');
+    updateButtonLabel = chrome.i18n.getMessage('updateButtonLabel');
+    cleanButtonLabel = chrome.i18n.getMessage('cleanButtonLabel');
+
     componentDidMount() {
         chrome.storage.local.get({ logs: [] }, data => this.setState({ logs: data.logs }));
     }
@@ -35,28 +43,24 @@ export default class LogTable extends Component<{ className?: string }, { logs: 
 
         return <Box
             className={this.props.className}
-            title="Logs"
+            title={this.logTableTitle}
             headerButtons={<div className="flex justify-end gap-4">
                 <Button
                     variant="primary"
                     onClick={this.handleUpdate}
-                >
-                    Atualizar
-                </Button>
+                >{this.updateButtonLabel}</Button>
                 <Button
                     variant="secondary"
                     onClick={this.handleClear}
-                >
-                    Limpar
-                </Button>
+                >{this.cleanButtonLabel}</Button>
             </div>}>
             <table className="mx-4 table-auto">
                 <thead>
                     <tr className="text-left font-bold">
-                        <th className="px-4 py-2 text-center">Número</th>
-                        <th className="px-4 py-2 text-center">Mensagem</th>
-                        <th className="px-4 py-2 text-center">Anexo</th>
-                        <th className="px-4 py-2 text-center">Data/Hora</th>
+                        <th className="px-4 py-2 text-center">{this.numberLogTableTitle}</th>
+                        <th className="px-4 py-2 text-center">{this.messageLogTableTitle}</th>
+                        <th className="px-4 py-2 text-center">{this.attachmentLogTableTitle}</th>
+                        <th className="px-4 py-2 text-center">{this.datetimeLogTableTitle}</th>
                     </tr>
                 </thead>
                 <tbody>

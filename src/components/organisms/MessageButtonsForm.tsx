@@ -13,6 +13,20 @@ export default class MessageButtonsForm extends Component<{ className?: string }
         };
     }
 
+    messageButtonsFormTitle = chrome.i18n.getMessage('messageButtonsFormTitle');
+    addButtonLabel = chrome.i18n.getMessage('addButtonLabel');
+    importantNoteMessageButtonsForm = chrome.i18n.getMessage('importantNoteMessageButtonsForm');
+    listTitleNoteMessageButtonsForm = chrome.i18n.getMessage('listTitleNoteMessageButtonsForm');
+    firstListItemNoteMessageButtonsForm = chrome.i18n.getMessage('firstListItemNoteMessageButtonsForm', ['<strong>', '</strong>']);
+    secondListItemNoteMessageButtonsForm = chrome.i18n.getMessage('secondListItemNoteMessageButtonsForm', ['<strong>', '</strong>']);
+    thirdListItemNoteMessageButtonsForm = chrome.i18n.getMessage('thirdListItemNoteMessageButtonsForm', ['<strong>', '</strong>']);
+    typeLabelMessageButtonsForm = chrome.i18n.getMessage('typeLabelMessageButtonsForm');
+    valueLabelMessageButtonsForm = chrome.i18n.getMessage('valueLabelMessageButtonsForm');
+    textLabelMessageButtonsForm = chrome.i18n.getMessage('textLabelMessageButtonsForm');
+    urlTypeMessageButtonsForm = chrome.i18n.getMessage('urlTypeMessageButtonsForm');
+    phoneNumberTypeMessageButtonsForm = chrome.i18n.getMessage('phoneNumberTypeMessageButtonsForm');
+    idTypeMessageButtonsForm = chrome.i18n.getMessage('idTypeMessageButtonsForm');
+
     componentDidMount() {
         chrome.storage.local.get({ buttons: [] }, data => this.setState({
             buttons: data.buttons.map((button: { [key: string]: string }) => {
@@ -161,17 +175,15 @@ export default class MessageButtonsForm extends Component<{ className?: string }
 
         return <Box
             className={this.props.className}
-            title="Botões"
-            headerButtons={buttons.length < 3 && <Button variant="light" onClick={this.handleAddButton}>Adicionar</Button>}
+            title={this.messageButtonsFormTitle}
+            headerButtons={buttons.length < 3 && <Button variant="light" onClick={this.handleAddButton}>{this.addButtonLabel}</Button>}
             footer={<>
-                <p className="text-red-600 dark:text-red-400 font-bold mb-1">
-                    Importante: O botão do tipo 'ID' pode não funcionar em todas as configurações! Teste antes de enviar em massa!
-                </p>
-                <p>Você pode criar 3 tipos de botões:</p>
+                <p className="text-red-600 dark:text-red-400 font-bold mb-1">{this.importantNoteMessageButtonsForm}</p>
+                <p>{this.listTitleNoteMessageButtonsForm}</p>
                 <ul className="list-disc ml-8">
-                    <li><b>URL</b>: Redireciona a um site.</li>
-                    <li><b>Número de Telefone</b>: Liga a um número.</li>
-                    <li><b>ID</b>: Envia o texto de volta ao remetente.</li>
+                    <li dangerouslySetInnerHTML={{ __html: this.firstListItemNoteMessageButtonsForm }} />
+                    <li dangerouslySetInnerHTML={{ __html: this.secondListItemNoteMessageButtonsForm }} />
+                    <li dangerouslySetInnerHTML={{ __html: this.thirdListItemNoteMessageButtonsForm }} />
                 </ul>
             </>}>
             {buttons.length > 0 &&
@@ -179,9 +191,9 @@ export default class MessageButtonsForm extends Component<{ className?: string }
                     <thead>
                         <tr className="text-left font-bold">
                             <th className="px-4 py-2"></th>
-                            <th className="px-4 py-2 text-center">Tipo</th>
-                            <th className="px-4 py-2 text-center">Conteúdo</th>
-                            <th className="px-4 py-2 text-center">Texto</th>
+                            <th className="px-4 py-2 text-center">{this.typeLabelMessageButtonsForm}</th>
+                            <th className="px-4 py-2 text-center">{this.valueLabelMessageButtonsForm}</th>
+                            <th className="px-4 py-2 text-center">{this.textLabelMessageButtonsForm}</th>
                             <th className="px-4 py-2 text-center"></th>
                         </tr>
                     </thead>
@@ -198,9 +210,9 @@ export default class MessageButtonsForm extends Component<{ className?: string }
                                 <td className="border px-4 py-2 cursor-move text-center">☰</td>
                                 <td className="border px-4 py-2">
                                     <ControlSelect value={button.type} onChange={event => this.handleTypeChange(event, button.id)}>
-                                        <option value="url">URL</option>
-                                        <option value="phoneNumber">Número de Telefone</option>
-                                        <option value="id">ID</option>
+                                        <option value="url">{this.urlTypeMessageButtonsForm}</option>
+                                        <option value="phoneNumber">{this.phoneNumberTypeMessageButtonsForm}</option>
+                                        <option value="id">{this.idTypeMessageButtonsForm}</option>
                                     </ControlSelect>
                                 </td>
                                 <td className="border px-4 py-2">

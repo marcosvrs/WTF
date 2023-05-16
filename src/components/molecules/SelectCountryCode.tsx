@@ -1,34 +1,42 @@
 import { ControlInput } from '../atoms/ControlFactory';
 import React, { ChangeEvent, Component, createRef } from 'react';
 
-const countryCodes = require('../../countryCodes.pt-BR.json');
-
 interface CountryCode {
     value: number;
     label: string;
+}
+const language = chrome.i18n.getUILanguage().substring(0, 2);
+let countryCodes: CountryCode[] = [];
+try {
+    countryCodes = require(`../../countryCodes.${language}.json`);
+} catch (e) {
+    console.log(e);
+    countryCodes = require('../../countryCodes.en.json');
 }
 
 export default class SelectCountryCode extends Component<{ options?: CountryCode[] }, {
     isOpen: boolean,
     searchValue: string,
-    selectedValue: CountryCode | null,
+    selectedValue: CountryCode | undefined,
     options: CountryCode[],
     filteredOptions: CountryCode[]
 }> {
     constructor(props: { options: CountryCode[] }) {
         super(props);
-        const defaultOptions = [{ value: 0, label: 'Sem Prefixo' }, ...countryCodes];
+        this.defaultLabelSelectCountryCode = chrome.i18n.getMessage('defaultLabelSelectCountryCode');
+        const defaultOptions = [{ value: 0, label: this.defaultLabelSelectCountryCode }, ...countryCodes];
         const { options = defaultOptions } = props;
         this.state = {
             isOpen: false,
             searchValue: '',
-            selectedValue: options.find(option => option.value === 55),
+            selectedValue: chrome.i18n.getUILanguage() === 'pt_BR' ? options.find(option => option.value === 55) : options.find(option => option.value === 0),
             options,
             filteredOptions: options,
         };
     }
 
     wrapperRef = createRef<HTMLDivElement>();
+    defaultLabelSelectCountryCode: string;
 
     toggleOpen = () => {
         this.setState(prevState => ({
@@ -59,16 +67,16 @@ export default class SelectCountryCode extends Component<{ options?: CountryCode
     componentDidMount() {
         document.addEventListener('mousedown', this.handleClickOutside);
         chrome.storage.local.get(
-            { prefix: 55 },
+            { prefix: chrome.i18n.getUILanguage() === 'pt_BR' ? 55 : 0 },
             data => {
-                this.setState({ selectedValue: this.state.options.find(option => option.value === data.prefix) ?? null });
+                this.setState({ selectedValue: this.state.options.find(option => option.value === data.prefix) });
             });
     }
 
     componentDidUpdate(prevProps: Readonly<{ options: CountryCode[] }>, prevState: Readonly<{
         isOpen: boolean,
         searchValue: string,
-        selectedValue: CountryCode | null,
+        selectedValue: CountryCode | undefined,
         options: CountryCode[],
         filteredOptions: CountryCode[]
     }>, snapshot?: any) {
