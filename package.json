@@ -1,6 +1,6 @@
 {
   "name": "wtf",
-  "version": "3.2.4",
+  "version": "3.2.5",
   "description": "WhatsApp Toolbox Features Chrome Extension that allows you to send WhatsApp messages in bulk ",
   "main": "index.js",
   "scripts": {
