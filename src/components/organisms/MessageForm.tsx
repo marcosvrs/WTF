@@ -8,7 +8,7 @@ import SelectCountryCode from '../molecules/SelectCountryCode';
 export default class MessageForm extends Component<{ className?: string }, { message: string, attachment: Attachment, delay: number }>{
     constructor(props: { className?: string }) {
         super(props);
-        this.defaultMessage = chrome.i18n.getMessage('messageLabel');
+        this.defaultMessage = chrome.i18n.getMessage('defaultMessage');
         this.state = {
             message: this.defaultMessage,
             attachment: null,
