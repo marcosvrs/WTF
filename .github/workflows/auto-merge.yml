@@ -1,4 +1,4 @@
-name: Auto Approve Dependabot PRs
+name: automerge
 
 on:
   pull_request:
@@ -6,12 +6,12 @@ on:
       - opened
 
 jobs:
-  dependabot-automation:
+  automerge:
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' }}
     steps:
-      - name: Approve & enable auto merge for Dependabot PR
-        run: gh pr review --approve "$PR_NUMBER"
+      - id: automerge
+        name: automerge
+        uses: "pascalgn/automerge-action@v0.15.6"
         env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          MERGE_FILTER_AUTHOR: dependabot[bot]
