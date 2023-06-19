@@ -35,7 +35,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git commit -m "Bump version to ${{ env.VERSION }} [skip ci]" -a
-          git push
+          git push --force-with-lease
 
       - name: Get npm cache directory
         id: npm-cache-dir
