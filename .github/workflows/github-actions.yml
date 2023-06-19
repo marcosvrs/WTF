@@ -1,12 +1,15 @@
 name: Build and Release
 
 on:
-  push:
-    branches:
-      - master
+  check_suite:
+    types: [completed]
 
 jobs:
   build_and_release:
+    if: >-
+      github.event.check_suite.conclusion == 'success'
+      && github.event.check_suite.app.id == 349325
+      && github.event.check_suite.head_branch == 'master'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
