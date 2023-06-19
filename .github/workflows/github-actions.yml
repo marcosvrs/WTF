@@ -11,6 +11,8 @@ jobs:
       && github.event.check_suite.app.id == 349325
       && github.event.check_suite.head_branch == 'master'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -32,8 +34,8 @@ jobs:
 
       - name: Commit changes
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git commit -m "Bump version to ${{ env.VERSION }} [skip ci]" -a
           git push --force-with-lease
 
