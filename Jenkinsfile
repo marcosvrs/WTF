@@ -13,17 +13,19 @@ pipeline {
     stages {
         stage('Check Commit Message') {
             when {
-                changeRequest()
+                beforeAgent true
+                allOf {
+                    changelog '\\[skip ci\\]'
+                    not { triggeredBy cause: "UserIdCause" }
+                    not { triggeredBy 'TimerTrigger' }
+                }
             }
 
             steps {
                 script {
-                    def commitMessage = sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
-                    if (commitMessage.contains('[skip ci]')) {
-                        currentBuild.result = 'NOT_BUILT'
-                        echo 'Skipping CI due to [skip ci] in commit message.'
-                        return
-                    }
+                    currentBuild.result = 'NOT_BUILT'
+                    echo 'Skipping CI due to [skip ci] in commit message.'
+                    return
                 }
             }
         }
