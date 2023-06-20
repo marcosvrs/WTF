@@ -37,7 +37,6 @@ pipeline {
         stage('Clean junk') {
             steps {
                 sh 'npm run clean'
-                sh "rm -rf ${WORKSPACE}/wa-js-test-chromium/SingletonLock"
             }
         }
 
@@ -66,8 +65,17 @@ pipeline {
         }
 
         always {
-            sh 'npm run clean'
-            sh "rm -rf ${WORKSPACE}/wa-js-test-chromium/SingletonLock"
+            publishHTML (
+                target : [
+                    reportName: 'Playwright Report',
+                    reportDir: 'playwright-report',
+                    reportFiles: 'index.html',
+                    keepAll: false,
+                    alwaysLinkToLastBuild: true,
+                    allowMissing: false,
+                    includes: 'data/*.png'
+                ]
+            )
         }
     }
 }

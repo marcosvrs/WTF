@@ -44,7 +44,7 @@ const assertImage = async (page: Page, message: string, screenshot: string, test
     await expect(image).toHaveScreenshot(screenshot);
 };
 
-const convertFileToAttachment = async (page: Page, filePath: string): Promise<Message['attachment']> => {
+const convertFileToAttachment = async (filePath: string): Promise<Message['attachment']> => {
     const mimeTypes = {
         '.mp3': 'audio/mpeg',
         '.mp4': 'video/mp4',
@@ -188,7 +188,7 @@ test.describe("Send Messages via WPP", () => {
         const parent = await sendMessage(page, {
             contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
             message,
-            attachment: await convertFileToAttachment(page, '../public/icons/wtf128.png'),
+            attachment: await convertFileToAttachment('../public/icons/wtf128.png'),
             buttons: []
         });
         await parent.click();
@@ -201,7 +201,7 @@ test.describe("Send Messages via WPP", () => {
         const parent = await sendMessage(page, {
             contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
             message,
-            attachment: await convertFileToAttachment(page, 'wa-js.test.ts-snapshots/sample.pdf'),
+            attachment: await convertFileToAttachment('wa-js.test.ts-snapshots/sample.pdf'),
             buttons: []
         });
         await parent.click();
@@ -214,7 +214,7 @@ test.describe("Send Messages via WPP", () => {
         const parent = await sendMessage(page, {
             contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
             message,
-            attachment: await convertFileToAttachment(page, 'wa-js.test.ts-snapshots/demo.mp3'),
+            attachment: await convertFileToAttachment('wa-js.test.ts-snapshots/demo.mp3'),
             buttons: []
         });
         await parent.click();
@@ -226,7 +226,7 @@ test.describe("Send Messages via WPP", () => {
         const parent = await sendMessage(page, {
             contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
             message,
-            attachment: await convertFileToAttachment(page, 'wa-js.test.ts-snapshots/sample.mp4'),
+            attachment: await convertFileToAttachment('wa-js.test.ts-snapshots/sample.mp4'),
             buttons: []
         });
         await parent.click();
@@ -250,7 +250,7 @@ test.describe("Send Messages via WPP", () => {
         const parent = await sendMessage(page, {
             contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
             message,
-            attachment: await convertFileToAttachment(page, '../public/icons/wtf128.png'),
+            attachment: await convertFileToAttachment('../public/icons/wtf128.png'),
             buttons
         });
         await parent.click();
