@@ -15,3 +15,7 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           MERGE_FILTER_AUTHOR: dependabot[bot]
+          MERGE_LABELS: dependencies
+          MERGE_METHOD: rebase
+          MERGE_FORKS: false
+          MERGE_DELETE_BRANCH: true

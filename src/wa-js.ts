@@ -42,14 +42,12 @@ async function sendWPPMessage({ contact, message, attachment, buttons }: Message
             {
                 type: 'auto-detect',
                 caption: message,
-                createChat: true,
-                waitForAck: true
+                createChat: true
             }
         );
     } else {
         return await WPP.chat.sendTextMessage(contact, message, {
-            createChat: true,
-            waitForAck: true
+            createChat: true
         });
     }
 }

@@ -7,3 +7,4 @@ tmp/
 /playwright/.cache/
 /wa-js-test-chromium/
 *.png
+.DS_Store
