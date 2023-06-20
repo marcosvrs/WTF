@@ -26,7 +26,7 @@ export default defineConfig({
   ],
   expect: {
     toHaveScreenshot: {
-      maxDiffPixelRatio: 0.1,
+      maxDiffPixels: 10,
     }
   },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */

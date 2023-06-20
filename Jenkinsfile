@@ -14,16 +14,13 @@ pipeline {
         stage('Check Commit Message') {
             when {
                 beforeAgent true
-                allOf {
-                    changelog '\\[skip ci\\]'
-                    not { triggeredBy cause: "UserIdCause" }
-                    not { triggeredBy 'TimerTrigger' }
-                }
+                changelog '\\[skip ci\\]'
             }
 
             steps {
                 script {
                     currentBuild.result = 'NOT_BUILT'
+                    env.shouldBuild = false
                     echo 'Skipping CI due to [skip ci] in commit message.'
                     return
                 }
@@ -31,24 +28,52 @@ pipeline {
         }
 
         stage('Install dependencies') {
+            when {
+                beforeAgent true
+                expression{
+                    return env.shouldBuild != "false"
+                }
+            }
+
             steps {
                 sh 'npm ci'
             }
         }
 
         stage('Clean junk') {
+            when {
+                beforeAgent true
+                expression{
+                    return env.shouldBuild != "false"
+                }
+            }
+
             steps {
                 sh 'npm run clean'
             }
         }
 
         stage('Build') {
+            when {
+                beforeAgent true
+                expression{
+                    return env.shouldBuild != "false"
+                }
+            }
+
             steps {
                 sh 'npm run build --if-present'
             }
         }
 
         stage('Run Playwright tests') {
+            when {
+                beforeAgent true
+                expression{
+                    return env.shouldBuild != "false"
+                }
+            }
+
             steps {
                 sh 'npx playwright test'
             }
