@@ -48,7 +48,7 @@ pipeline {
 
         stage('Run Playwright tests') {
             steps {
-                sh 'npx playwright test'
+                sh 'npx playwright test --update-snapshots'
             }
         }
     }
