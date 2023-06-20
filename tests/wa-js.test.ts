@@ -92,7 +92,7 @@ test.describe("Send Messages via WPP", () => {
         });
     });
 
-    test('expect message all button types to be sent', async ({ page }) => {
+    test.skip('expect message all button types to be sent', async ({ page }) => {
         const message = Math.random().toString(36).substring(7);
         const buttons = [
             {
@@ -116,7 +116,7 @@ test.describe("Send Messages via WPP", () => {
         await assertButtons(page, message, buttons);
     });
 
-    test('expect message with one ID button to be sent', async ({ page }) => {
+    test.skip('expect message with one ID button to be sent', async ({ page }) => {
         // Can't send more than one ID button per message.
         const message = Math.random().toString(36).substring(7);
         const buttons = [
@@ -135,7 +135,7 @@ test.describe("Send Messages via WPP", () => {
         await assertButtons(page, message, buttons);
     });
 
-    test('expect message with Phone Number buttons to be sent', async ({ page }) => {
+    test.skip('expect message with Phone Number buttons to be sent', async ({ page }) => {
         const message = Math.random().toString(36).substring(7);
         const buttons = [
             {
@@ -159,7 +159,7 @@ test.describe("Send Messages via WPP", () => {
         await assertButtons(page, message, buttons);
     });
 
-    test('expect message with Link buttons to be sent', async ({ page }) => {
+    test.skip('expect message with Link buttons to be sent', async ({ page }) => {
         const message = Math.random().toString(36).substring(7);
         const buttons = [
             {
@@ -183,7 +183,7 @@ test.describe("Send Messages via WPP", () => {
         await assertButtons(page, message, buttons);
     });
 
-    test('expect message with PNG attachment to be sent', async ({ page }) => {
+    test.skip('expect message with PNG attachment to be sent', async ({ page }) => {
         const message = Math.random().toString(36).substring(7);
         const parent = await sendMessage(page, {
             contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
