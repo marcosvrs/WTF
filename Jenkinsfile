@@ -48,7 +48,7 @@ pipeline {
 
         stage('Run Playwright tests') {
             steps {
-                sh 'npx playwright test --update-snapshots'
+                sh 'npx playwright test'
             }
         }
     }
@@ -72,8 +72,8 @@ pipeline {
                     reportFiles: 'index.html',
                     keepAll: false,
                     alwaysLinkToLastBuild: true,
-                    allowMissing: false,
-                    includes: 'data/*.png'
+                    allowMissing: true,
+                    includes: '**/*'
                 ]
             )
         }
