@@ -19,7 +19,7 @@ pipeline {
 
             steps {
                 script {
-                    currentBuild.setResult(hudson.model.Result.NOT_BUILT)
+                    currentBuild.result = hudson.model.Result.NOT_BUILT
                     env.shouldBuild = false
                     echo 'Skipping CI due to [skip ci] in commit message.'
                     return
