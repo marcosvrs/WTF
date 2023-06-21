@@ -11,28 +11,10 @@ pipeline {
     }
 
     stages {
-        stage('Check Commit Message') {
-            when {
-                beforeAgent true
-                changelog '\\[skip ci\\]'
-            }
-
-            steps {
-                script {
-                    currentBuild.result = hudson.model.Result.NOT_BUILT
-                    env.shouldBuild = false
-                    echo 'Skipping CI due to [skip ci] in commit message.'
-                    return
-                }
-            }
-        }
-
         stage('Install dependencies') {
             when {
                 beforeAgent true
-                expression{
-                    return env.shouldBuild != "false"
-                }
+                not { changelog '\\[skip ci\\]' }
             }
 
             steps {
@@ -43,9 +25,7 @@ pipeline {
         stage('Clean junk') {
             when {
                 beforeAgent true
-                expression{
-                    return env.shouldBuild != "false"
-                }
+                not { changelog '\\[skip ci\\]' }
             }
 
             steps {
@@ -56,9 +36,7 @@ pipeline {
         stage('Build') {
             when {
                 beforeAgent true
-                expression{
-                    return env.shouldBuild != "false"
-                }
+                not { changelog '\\[skip ci\\]' }
             }
 
             steps {
@@ -69,9 +47,7 @@ pipeline {
         stage('Run Playwright tests') {
             when {
                 beforeAgent true
-                expression{
-                    return env.shouldBuild != "false"
-                }
+                not { changelog '\\[skip ci\\]' }
             }
 
             steps {
