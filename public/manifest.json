@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "__MSG_appName__",
-  "version": "3.2.10",
+  "version": "3.2.11",
   "action": {
     "default_icon": {
       "16": "icons/wtf16.png",
