@@ -68,8 +68,11 @@ const convertFileToAttachment = async (filePath: string): Promise<Message['attac
     };
 };
 
-test.describe("Send Messages via WPP", () => {
-    test.beforeEach(async ({ page }, testInfo) => {
+test.describe.serial("Send Messages via WPP", () => {
+    let page: Page;
+    
+    test.beforeAll(async ({ browser }, testInfo) => {
+        page = await browser.newPage();
         await page.goto('https://web.whatsapp.com/', { waitUntil: 'networkidle' });
         let timeout = testInfo.timeout;
         const qrCodeContainer = page.getByTestId('qrcode');
@@ -85,7 +88,11 @@ test.describe("Send Messages via WPP", () => {
         await page.getByTestId('intro-title').waitFor();
     });
 
-    test('expect message to be sent', async ({ page }) => {
+    test.afterAll(async () => {
+        await page.close();
+    });
+
+    test('expect message to be sent', async () => {
         await sendMessage(page, {
             contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
             message: Math.random().toString(36).substring(7),
@@ -94,7 +101,7 @@ test.describe("Send Messages via WPP", () => {
         });
     });
 
-    test.skip('expect message all button types to be sent', async ({ page }) => {
+    test('expect message all button types to be sent', async () => {
         const message = Math.random().toString(36).substring(7);
         const buttons = [
             {
@@ -118,7 +125,7 @@ test.describe("Send Messages via WPP", () => {
         await assertButtons(page, message, buttons);
     });
 
-    test.skip('expect message with one ID button to be sent', async ({ page }) => {
+    test('expect message with one ID button to be sent', async () => {
         // Can't send more than one ID button per message.
         const message = Math.random().toString(36).substring(7);
         const buttons = [
@@ -137,7 +144,7 @@ test.describe("Send Messages via WPP", () => {
         await assertButtons(page, message, buttons);
     });
 
-    test.skip('expect message with Phone Number buttons to be sent', async ({ page }) => {
+    test('expect message with Phone Number buttons to be sent', async () => {
         const message = Math.random().toString(36).substring(7);
         const buttons = [
             {
@@ -161,7 +168,7 @@ test.describe("Send Messages via WPP", () => {
         await assertButtons(page, message, buttons);
     });
 
-    test.skip('expect message with Link buttons to be sent', async ({ page }) => {
+    test('expect message with Link buttons to be sent', async () => {
         const message = Math.random().toString(36).substring(7);
         const buttons = [
             {
@@ -185,7 +192,7 @@ test.describe("Send Messages via WPP", () => {
         await assertButtons(page, message, buttons);
     });
 
-    test.skip('expect message with PNG attachment to be sent', async ({ page }) => {
+    test('expect message with PNG attachment to be sent', async () => {
         const message = Math.random().toString(36).substring(7);
         const parent = await sendMessage(page, {
             contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
@@ -198,7 +205,7 @@ test.describe("Send Messages via WPP", () => {
     });
 
     // Doesn't work at the moment on Desktop
-    test.skip('expect message with PDF attachment to be sent', async ({ page }) => {
+    test.skip('expect message with PDF attachment to be sent', async () => {
         const message = Math.random().toString(36).substring(7);
         const parent = await sendMessage(page, {
             contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
@@ -211,7 +218,7 @@ test.describe("Send Messages via WPP", () => {
     });
 
     // Doesn't work at the moment on Desktop
-    test.skip('expect message with MP3 attachment to be sent', async ({ page }) => {
+    test.skip('expect message with MP3 attachment to be sent', async () => {
         const message = Math.random().toString(36).substring(7);
         const parent = await sendMessage(page, {
             contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
@@ -223,7 +230,7 @@ test.describe("Send Messages via WPP", () => {
         await assertImage(page, message, 'demo.mp3');
     });
 
-    test('expect message with MP4 attachment to be sent', async ({ page }) => {
+    test('expect message with MP4 attachment to be sent', async () => {
         const message = Math.random().toString(36).substring(7);
         const parent = await sendMessage(page, {
             contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
@@ -236,7 +243,7 @@ test.describe("Send Messages via WPP", () => {
         await expect(container).toHaveText('0:30');
     });
 
-    test('expect message with PNG attachment and all button types to be sent', async ({ page }) => {
+    test('expect message with PNG attachment and all button types to be sent', async () => {
         test.setTimeout(2147483647);
         const message = Math.random().toString(36).substring(7);
         const buttons = [
