@@ -28,7 +28,7 @@ export const test = base.extend<{
             ],
         });
         await use(context);
-        await context.close();
+        // await context.close();
     },
     extensionId: async ({ context }, use) => {
         let [background] = context.serviceWorkers();

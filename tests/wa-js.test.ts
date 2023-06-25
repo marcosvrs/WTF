@@ -70,9 +70,9 @@ const convertFileToAttachment = async (filePath: string): Promise<Message['attac
 
 test.describe.serial("Send Messages via WPP", () => {
     let page: Page;
-    
-    test.beforeAll(async ({ browser }, testInfo) => {
-        page = await browser.newPage();
+
+    test.beforeAll(async ({ context }, testInfo) => {
+        page = await context.newPage();
         await page.goto('https://web.whatsapp.com/', { waitUntil: 'networkidle' });
         let timeout = testInfo.timeout;
         const qrCodeContainer = page.getByTestId('qrcode');
@@ -88,8 +88,8 @@ test.describe.serial("Send Messages via WPP", () => {
         await page.getByTestId('intro-title').waitFor();
     });
 
-    test.afterAll(async () => {
-        await page.close();
+    test.afterAll(async ({ context }) => {
+        await context.close();
     });
 
     test('expect message to be sent', async () => {
