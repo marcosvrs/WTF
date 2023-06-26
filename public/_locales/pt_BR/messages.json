@@ -173,8 +173,12 @@
         "message": "Não se esqueça de adicionar o prefixo DDD da região de cada contato.",
         "description": "Log do popup de nota de rodapé de prefixo"
     },
-    "messagePlaceholderPopup": {
+    "contactsPlaceholderPopup": {
         "message": "Adicione a lista de números para o envio das mensagens, separados por vírgula ou cada número em uma nova linha.",
+        "description": "Placeholder do campo de contatos do popup"
+    },
+    "messagePlaceholderPopup": {
+        "message": "Escreva sua mensagem.",
         "description": "Placeholder do campo de mensagem do popup"
     },
     "defaultMessage": {
