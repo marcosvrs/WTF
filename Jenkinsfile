@@ -14,7 +14,7 @@ pipeline {
         stage('Install dependencies') {
             when {
                 beforeAgent true
-                not { changelog '\\[skip ci\\]' }
+                not { changelog 'skip ci' }
             }
 
             steps {
@@ -25,18 +25,18 @@ pipeline {
         stage('Clean junk') {
             when {
                 beforeAgent true
-                not { changelog '\\[skip ci\\]' }
+                not { changelog 'skip ci' }
             }
 
             steps {
-                sh 'npm run clean'
+                sh 'npm run clean --if-present'
             }
         }
 
         stage('Build') {
             when {
                 beforeAgent true
-                not { changelog '\\[skip ci\\]' }
+                not { changelog 'skip ci' }
             }
 
             steps {
@@ -47,7 +47,7 @@ pipeline {
         stage('Run Playwright tests') {
             when {
                 beforeAgent true
-                not { changelog '\\[skip ci\\]' }
+                not { changelog 'skip ci' }
             }
 
             steps {
