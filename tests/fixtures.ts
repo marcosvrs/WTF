@@ -1,13 +1,13 @@
 import { test as base, chromium } from '@playwright/test';
-import os from 'os';
-import path from 'path';
+import { tmpdir } from 'os';
+import { join } from 'path';
 
 export const test = base.extend({
     context: async ({ browserName }, use) => {
-        const pathToExtension = path.join(__dirname, '../dist');
-        let userDataDir = path.join(os.tmpdir(), `wa-js-test-${browserName}`);
+        const pathToExtension = join(__dirname, '../dist');
+        let userDataDir = join(tmpdir(), `wa-js-test-${browserName}`);
         if (process.env.WORKSPACE) {
-            userDataDir = path.join(process.env.WORKSPACE, `wa-js-test-${browserName}`);
+            userDataDir = join(process.env.WORKSPACE, `wa-js-test-${browserName}`);
         }
         const browserArgs = [
             `--disable-extensions-except=${pathToExtension}`,

@@ -12,3 +12,5 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    allow:
+      - dependency-name: "@wppconnect/wa-js"

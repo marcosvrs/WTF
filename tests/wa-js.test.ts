@@ -1,9 +1,9 @@
-import { test, expect } from './fixtures';
 import type { Page } from '@playwright/test';
-import type { Message } from '../src/types/Message';
 import { promises as fs } from 'fs';
 import path from 'path';
 import qrcode from 'qrcode-terminal';
+import type { Message } from '../src/types/Message';
+import { expect, test } from './fixtures';
 
 const sendMessage = async (page: Page, payload: Message) => {
     await page.evaluate(([payload]) => {
@@ -71,18 +71,19 @@ const convertFileToAttachment = async (filePath: string): Promise<Message['attac
 test.describe.serial("Send Messages via WPP", () => {
     test('expect', async ({ page }, testInfo) => {
         await page.goto('https://web.whatsapp.com/', { waitUntil: 'networkidle' });
-        let timeout = testInfo.timeout;
+        const defaultTimeout = testInfo.timeout;
+        test.setTimeout(300000); // 5min
+
         const qrCodeContainer = page.getByTestId('qrcode');
-        try {
-            await qrCodeContainer.waitFor({ timeout: 5000 });
-            timeout = 300000; // 5min
-            qrCodeContainer.screenshot({ path: 'qrcode.png' });
+        qrCodeContainer.waitFor().then(async () => {
             qrcode.generate(await qrCodeContainer.getAttribute('data-ref'), { small: true });
-        } catch (e) {
-            console.log('QR Code Error: ', e.name || e.message || e || 'Unknown error');
-        }
-        testInfo.setTimeout(timeout);
+        }).catch((e) => {
+            console.log('QR Code Error: ', e.message || e.name || e || 'Unknown error');
+        });
+
         await page.getByTestId('intro-title').waitFor();
+
+        test.setTimeout(defaultTimeout); // back to default
 
         await test.step('message to be sent', async () => {
             await sendMessage(page, {
