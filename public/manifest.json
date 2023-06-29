@@ -8,7 +8,10 @@
       "32": "icons/wtf32.png",
       "48": "icons/wtf48.png",
       "64": "icons/wtf64.png",
-      "128": "icons/wtf128.png"
+      "128": "icons/wtf128.png",
+      "256": "icons/wtf256.png",
+      "512": "icons/wtf512.png",
+      "1024": "icons/wtf1024.png"
     },
     "default_popup": "popup.html",
     "default_title": "WTF"
@@ -20,7 +23,10 @@
     "32": "icons/wtf32.png",
     "48": "icons/wtf48.png",
     "64": "icons/wtf64.png",
-    "128": "icons/wtf128.png"
+    "128": "icons/wtf128.png",
+    "256": "icons/wtf256.png",
+    "512": "icons/wtf512.png",
+    "1024": "icons/wtf1024.png"
   },
   "author": "wtf@marcosvr.com",
   "content_scripts": [

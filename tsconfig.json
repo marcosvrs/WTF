@@ -19,7 +19,7 @@
         "strict": true,
         "target": "es2015"
     },
-    "display": "WhatsApp Toolbox Features",
+    "display": "WTF",
     "exclude": [
         "node_modules"
     ],

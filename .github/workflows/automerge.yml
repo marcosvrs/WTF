@@ -1,4 +1,4 @@
-name: automerge
+name: Automatically merge dependabot pull requests
 
 on:
   pull_request:

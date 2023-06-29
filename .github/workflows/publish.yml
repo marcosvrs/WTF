@@ -1,8 +1,11 @@
-name: Build and Release
+name: Publish to Chrome Web Store
 
 on:
   check_suite:
     types: [completed]
+
+permissions:
+  contents: write
 
 jobs:
   build_and_release:
@@ -11,8 +14,6 @@ jobs:
       && github.event.check_suite.app.id == 349325
       && github.event.check_suite.head_branch == 'master'
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -20,9 +21,9 @@ jobs:
       - name: Update version number
         run: |
           # Determine the version change type based on commit message
-          if [[ "${{ github.event.head_commit.message }}" =~ "#major" ]]; then
+          if [[ "${{ github.event.check_suite.head_commit.message }}" =~ "#major" ]]; then
             npm version major --no-git-tag-version
-          elif [[ "${{ github.event.head_commit.message }}" =~ "#minor" ]]; then
+          elif [[ "${{ github.event.check_suite.head_commit.message }}" =~ "#minor" ]]; then
             npm version minor --no-git-tag-version
           else
             npm version patch --no-git-tag-version
@@ -68,7 +69,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          body: ${{ github.event.head_commit.message }}
+          body: ${{ github.event.check_suite.head_commit.message }}
           files: extension.zip
           name: Release ${{ env.VERSION }}
           tag_name: ${{ env.VERSION }}
@@ -78,6 +79,6 @@ jobs:
         with:
           client-id: ${{ secrets.CHROME_CLIENT_ID }}
           client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
-          extension-id: 'fockmbfncdacmjbmieenodfeblmneaii'
+          extension-id: 'kcdlihaidnmkenhlnofkjfoachidbnif'
           file-path: extension.zip
           refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}

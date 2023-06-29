@@ -1,10 +1,10 @@
 {
     "appName": {
-        "message": "WTF - WhatsApp Toolbox Features",
+        "message": "WTF",
         "description": "Extension name"
     },
     "appDesc": {
-        "message": "Chrome Extension that allows you to send WhatsApp messages in bulk",
+        "message": "Chrome Extension that allows you to send messages in bulk via WhatsApp™ Web",
         "description": "Extension description"
     },
     "logTableTitle": {

@@ -1,10 +1,10 @@
 {
     "appName": {
-        "message": "WTF - WhatsApp Toolbox Features",
+        "message": "WTF",
         "description": "Nome da extensão"
     },
     "appDesc": {
-        "message": "Extensão do Chrome que permite enviar mensagens do WhatsApp em massa.",
+        "message": "Extensão do Chrome que permite enviar mensagens em massa via WhatsApp™ Web",
         "description": "Descrição da extensão"
     },
     "logTableTitle": {

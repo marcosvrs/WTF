@@ -1,7 +1,7 @@
 {
   "name": "wtf",
   "version": "3.2.13",
-  "description": "WhatsApp Toolbox Features Chrome Extension that allows you to send WhatsApp messages in bulk",
+  "description": "WTF Chrome Extension that allows you to send messages in bulk via WhatsApp™ Web",
   "main": "index.js",
   "scripts": {
     "watch": "webpack --config webpack/webpack.dev.js --watch --progress",
