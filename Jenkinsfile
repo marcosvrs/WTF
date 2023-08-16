@@ -29,7 +29,7 @@ pipeline {
             }
 
             steps {
-                sh 'npm run clean --if-present'
+                sh 'npm run clean'
             }
         }
 
@@ -40,7 +40,7 @@ pipeline {
             }
 
             steps {
-                sh 'npm run build --if-present'
+                sh 'npm run build'
             }
         }
 
