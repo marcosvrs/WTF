@@ -2,6 +2,7 @@ import * as WPP from '@wppconnect/wa-js';
 import type { Message } from './types/Message';
 import asyncQueue from './utils/AsyncEventQueue';
 import AsyncChromeMessageManager from './utils/AsyncChromeMessageManager';
+import storageManager, { AsyncStorageManager } from './utils/AsyncStorageManager';
 import { ChromeMessageTypes } from './types/ChromeMessageTypes';
 
 const WebpageMessageManager = new AsyncChromeMessageManager('webpage');
@@ -52,12 +53,13 @@ async function sendWPPMessage({ contact, message, attachment, buttons }: Message
     }
 }
 
-async function sendMessage({ contact, message, attachment = null, buttons = [] }: Message) {
+async function sendMessage({ contact, hash }: { contact: string, hash: number }) {
     if (!WPP.conn.isAuthenticated()) {
         const errorMsg = 'Conecte-se primeiro!';
         alert(errorMsg);
         throw new Error(errorMsg);
     }
+    const { message, attachment, buttons } = await storageManager.retrieveMessage(hash);
     const result = await sendWPPMessage({ contact, message, attachment, buttons });
     return result.sendMsgResult.then(value => {
         if (value !== WPP.whatsapp.enums.SendMsgResult.OK) {
@@ -70,7 +72,9 @@ async function sendMessage({ contact, message, attachment = null, buttons = [] }
 
 async function addToQueue(message: Message) {
     try {
-        await asyncQueue.add({ eventHandler: sendMessage, detail: message });
+        const messageHash = AsyncStorageManager.calculateMessageHash(message);
+        await storageManager.storeMessage(message, messageHash);
+        await asyncQueue.add({ eventHandler: sendMessage, detail: { contact: message.contact, hash: messageHash, delay: message.delay } });
         return true;
     } catch (error) {
         if (error instanceof Error) {
