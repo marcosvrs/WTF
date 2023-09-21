@@ -9,7 +9,7 @@ export class AsyncStorageManager {
     async retrieveMessage(hash: number) {
         if (!this.database) this.database = await this.initializeDatabase();
 
-        return new Promise<Pick<Message, 'message' | 'attachment' | 'buttons'>>((resolve, reject) => {
+        return new Promise<{ hash: string; message: Pick<Message, 'message' | 'attachment' | 'buttons'> }>((resolve, reject) => {
             const transaction = this.database!.transaction([MESSAGE_STORE_NAME], 'readonly');
             const messageStore = transaction.objectStore(MESSAGE_STORE_NAME);
             const request = messageStore.get(hash);

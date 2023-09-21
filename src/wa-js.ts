@@ -7,7 +7,7 @@ import { ChromeMessageTypes } from './types/ChromeMessageTypes';
 
 const WebpageMessageManager = new AsyncChromeMessageManager('webpage');
 
-async function sendWPPMessage({ contact, message, attachment, buttons }: Message) {
+async function sendWPPMessage({ contact, message, attachment, buttons = [] }: Message) {
     if (attachment && buttons.length > 0) {
         const response = await fetch(attachment.url.toString());
         const data = await response.blob();
@@ -59,13 +59,14 @@ async function sendMessage({ contact, hash }: { contact: string, hash: number })
         alert(errorMsg);
         throw new Error(errorMsg);
     }
-    const { message, attachment, buttons } = await storageManager.retrieveMessage(hash);
-    const result = await sendWPPMessage({ contact, message, attachment, buttons });
+    const { message } = await storageManager.retrieveMessage(hash);
+    const result = await sendWPPMessage({ contact, ...message });
     return result.sendMsgResult.then(value => {
-        if (value !== WPP.whatsapp.enums.SendMsgResult.OK) {
+        const result = (value as any).messageSendResult ?? value;
+        if (result !== WPP.whatsapp.enums.SendMsgResult.OK) {
             throw new Error('Falha ao enviar a mensagem: ' + value);
         } else {
-            WebpageMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, { level: 3, message: 'Mensagem enviada com sucesso!', attachment: attachment != null, contact: contact });
+            WebpageMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, { level: 3, message: 'Mensagem enviada com sucesso!', attachment: message.attachment != null, contact: contact });
         }
     });
 }
