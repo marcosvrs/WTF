@@ -120,4 +120,6 @@ WebpageMessageManager.addHandler(ChromeMessageTypes.QUEUE_STATUS, async () => {
     return await asyncQueue.getStatus();
 });
 
+storageManager.clearDatabase();
+
 WPP.webpack.injectLoader();

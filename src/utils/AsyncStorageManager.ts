@@ -53,11 +53,24 @@ export class AsyncStorageManager {
             openRequest.onerror = () => reject(openRequest.error);
             openRequest.onsuccess = () => resolve(openRequest.result);
             openRequest.onupgradeneeded = (event) => {
-                const db = (event.target as IDBOpenDBRequest).result;
-                if (!db.objectStoreNames.contains(MESSAGE_STORE_NAME)) {
-                    db.createObjectStore(MESSAGE_STORE_NAME, { keyPath: "hash" });
+                const database = (event.target as IDBOpenDBRequest).result;
+                if (!database.objectStoreNames.contains(MESSAGE_STORE_NAME)) {
+                    database.createObjectStore(MESSAGE_STORE_NAME, { keyPath: "hash" });
                 }
             };
+        });
+    }
+
+    async clearDatabase() {
+        if (!this.database) this.database = await this.initializeDatabase();
+
+        return new Promise<void>((resolve, reject) => {
+            const transaction = this.database!.transaction([MESSAGE_STORE_NAME], 'readwrite');
+            const messageStore = transaction.objectStore(MESSAGE_STORE_NAME);
+            const clearRequest = messageStore.clear();
+
+            clearRequest.onerror = () => reject(clearRequest.error);
+            clearRequest.onsuccess = () => resolve();
         });
     }
 
