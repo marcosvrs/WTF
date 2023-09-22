@@ -2,11 +2,12 @@ import * as WPP from '@wppconnect/wa-js';
 import type { Message } from './types/Message';
 import asyncQueue from './utils/AsyncEventQueue';
 import AsyncChromeMessageManager from './utils/AsyncChromeMessageManager';
+import storageManager, { AsyncStorageManager } from './utils/AsyncStorageManager';
 import { ChromeMessageTypes } from './types/ChromeMessageTypes';
 
 const WebpageMessageManager = new AsyncChromeMessageManager('webpage');
 
-async function sendWPPMessage({ contact, message, attachment, buttons }: Message) {
+async function sendWPPMessage({ contact, message, attachment, buttons = [] }: Message) {
     if (attachment && buttons.length > 0) {
         const response = await fetch(attachment.url.toString());
         const data = await response.blob();
@@ -52,25 +53,29 @@ async function sendWPPMessage({ contact, message, attachment, buttons }: Message
     }
 }
 
-async function sendMessage({ contact, message, attachment = null, buttons = [] }: Message) {
+async function sendMessage({ contact, hash }: { contact: string, hash: number }) {
     if (!WPP.conn.isAuthenticated()) {
         const errorMsg = 'Conecte-se primeiro!';
         alert(errorMsg);
         throw new Error(errorMsg);
     }
-    const result = await sendWPPMessage({ contact, message, attachment, buttons });
+    const { message } = await storageManager.retrieveMessage(hash);
+    const result = await sendWPPMessage({ contact, ...message });
     return result.sendMsgResult.then(value => {
-        if (value !== WPP.whatsapp.enums.SendMsgResult.OK) {
+        const result = (value as any).messageSendResult ?? value;
+        if (result !== WPP.whatsapp.enums.SendMsgResult.OK) {
             throw new Error('Falha ao enviar a mensagem: ' + value);
         } else {
-            WebpageMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, { level: 3, message: 'Mensagem enviada com sucesso!', attachment: attachment != null, contact: contact });
+            WebpageMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, { level: 3, message: 'Mensagem enviada com sucesso!', attachment: message.attachment != null, contact: contact });
         }
     });
 }
 
 async function addToQueue(message: Message) {
     try {
-        await asyncQueue.add({ eventHandler: sendMessage, detail: message });
+        const messageHash = AsyncStorageManager.calculateMessageHash(message);
+        await storageManager.storeMessage(message, messageHash);
+        await asyncQueue.add({ eventHandler: sendMessage, detail: { contact: message.contact, hash: messageHash, delay: message.delay } });
         return true;
     } catch (error) {
         if (error instanceof Error) {
@@ -114,5 +119,7 @@ WebpageMessageManager.addHandler(ChromeMessageTypes.SEND_MESSAGE, async (message
 WebpageMessageManager.addHandler(ChromeMessageTypes.QUEUE_STATUS, async () => {
     return await asyncQueue.getStatus();
 });
+
+storageManager.clearDatabase();
 
 WPP.webpack.injectLoader();
