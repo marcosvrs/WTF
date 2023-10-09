@@ -2,7 +2,7 @@
 This is an open-source Chrome Extension that allows you to send messages in bulk via WhatsApp™ Web. You need to have WhatsApp™ Web open in your browser while using this extension.
 
 ## Installation
-You can install the extension from the [Chrome Web Store](https://chrome.google.com/webstore/detail/fockmbfncdacmjbmieenodfeblmneaii).
+You can install the extension from the [Chrome Web Store](https://chrome.google.com/webstore/detail/wtf/kcdlihaidnmkenhlnofkjfoachidbnif).
 Alternatively, you can download the `extension.zip` file from the [latest release](https://github.com/marcosvrs/wtf/releases) and load it as an [unpacked extension in Chrome](#loading-an-unpacked-extension).
 
 ## Usage
