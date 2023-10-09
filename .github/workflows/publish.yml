@@ -18,9 +18,9 @@ jobs:
       - name: Update version number
         run: |
           # Determine the version change type based on commit message
-          if [[ "${{ github.event.check_suite.head_commit.message }}" =~ "#major" ]]; then
+          if [[ "${{ github.event.head_commit.message }}" =~ "#major" ]]; then
             npm version major --no-git-tag-version
-          elif [[ "${{ github.event.check_suite.head_commit.message }}" =~ "#minor" ]]; then
+          elif [[ "${{ github.event.head_commit.message }}" =~ "#minor" ]]; then
             npm version minor --no-git-tag-version
           else
             npm version patch --no-git-tag-version
@@ -66,7 +66,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          body: ${{ github.event.check_suite.head_commit.message }}
+          body: ${{ github.event.head_commit.message }}
           files: extension.zip
           name: Release ${{ env.VERSION }}
           tag_name: ${{ env.VERSION }}
