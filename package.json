@@ -1,6 +1,6 @@
 {
   "name": "wtf",
-  "version": "3.3.2",
+  "version": "3.4.0",
   "description": "WTF Chrome Extension that allows you to send messages in bulk via WhatsApp™ Web",
   "main": "index.js",
   "scripts": {
