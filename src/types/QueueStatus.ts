@@ -5,7 +5,6 @@ export default interface QueueStatus {
     remainingItems: number;
     elapsedTime: number;
     sendingMessage: number | false;
-    waiting: number | false;
     items: {
         detail: any;
         elapsedTime: number;

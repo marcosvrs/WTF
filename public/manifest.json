@@ -62,7 +62,8 @@
         "https://web.whatsapp.com/*"
       ],
       "resources": [
-        "js/wa-js.js"
+        "js/wa-js.js",
+        "js/wppconnect.js"
       ]
     }
   ]

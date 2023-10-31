@@ -208,5 +208,9 @@
     "optionsButtonLabel": {
         "message": "Opções",
         "description": "Label do botão de opções"
+    },
+    "CSVFileButtonLabel": {
+        "message": "Arquivo CSV",
+        "description": "Label do botão de arquivo CSV"
     }
 }

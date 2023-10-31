@@ -23,16 +23,24 @@ export default class AsyncChromeMessageManager {
   }
 
   private forwardMessagesFromWebpageToPopup() {
-    window.addEventListener("message", (event) => {
-      if (event.source === window && event.origin === window.location.origin) {
+    const listen = (event: MessageEvent) => {
+      if (event.source === window && event.origin === window.location.origin && chrome.runtime && typeof chrome.runtime.sendMessage === 'function') {
         chrome.runtime.sendMessage(event.data);
       }
+    };
+    window.addEventListener("message", listen);
+    window.addEventListener("unload", () => {
+      window.removeEventListener("message", listen);
     });
   }
 
   private forwardResponsesFromPopupToWebpage() {
-    chrome.runtime.onMessage.addListener((message) => {
+    const listen = (message: any, _sender: chrome.runtime.MessageSender, _sendResponse: (response?: any) => void) => {
       window.postMessage(message, window.location.origin);
+    };
+    chrome.runtime.onMessage.addListener(listen);
+    window.addEventListener("unload", () => {
+      chrome.runtime.onMessage.removeListener(listen);
     });
   }
 
@@ -45,7 +53,7 @@ export default class AsyncChromeMessageManager {
         this.addWebpageMessageHandler(type, handler);
       }
     } catch (error) {
-      console.error('WTF.AsyncChromeMessageManager.addHandler', error);
+      console.error("WTF.AsyncChromeMessageManager.addHandler", error);
     }
   }
 
@@ -62,8 +70,8 @@ export default class AsyncChromeMessageManager {
   }
 
   private addExtensionMessageHandler<K extends keyof ChromeMessageContentTypes>(type: K, handler: MessageHandler<K>) {
-    chrome.runtime.onMessage.addListener((message) => {
-      if (message.type === type) {
+    chrome.runtime.onMessage.addListener((message: any, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) => {
+      if (message.type === type && chrome.runtime && typeof chrome.runtime.sendMessage === 'function') {
         handler(message.payload).then((response) => {
           chrome.runtime.sendMessage({ type: `${type}_RESPONSE`, payload: response });
         }).catch((error) => {
@@ -116,7 +124,7 @@ export default class AsyncChromeMessageManager {
 
   private sendExtensionMessage<K extends keyof ChromeMessageContentTypes>(
     message: MessageData<K>,
-    listener: (response: MessageDataResponse<K>) => void
+    listener: (message: MessageDataResponse<K>, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) => void
   ) {
     chrome.runtime.onMessage.addListener(listener);
 
@@ -126,7 +134,7 @@ export default class AsyncChromeMessageManager {
           chrome.tabs.sendMessage(tabs[0].id, message);
         }
       });
-    } else if (this.source === "contentScript") {
+    } else if (this.source === "contentScript" && chrome.runtime && typeof chrome.runtime.sendMessage === 'function') {
       chrome.runtime.sendMessage(message);
     }
   }

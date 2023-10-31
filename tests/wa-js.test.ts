@@ -24,7 +24,7 @@ const sendMessage = async (page: Page, payload: Message) => {
     await expect(lastMessage).toHaveText(payload.message);
 
     return parent;
-};
+}
 
 const assertButtons = async (page: Page, message: string, buttons: Message['buttons']) => {
     const messageParent = page.locator(`div[data-testid^="conv-msg-true_${process.env.TEST_CONTACT?.replace(/\D/g, '')}@"]`).filter({ hasText: message });
@@ -36,7 +36,7 @@ const assertButtons = async (page: Page, message: string, buttons: Message['butt
             await expect(span).toBeVisible();
         }
     }));
-};
+}
 
 const assertImage = async (page: Page, message: string, screenshot: string, testId = 'media-url-provider') => {
     const messageParent = page.locator(`div[data-testid^="conv-msg-true_${process.env.TEST_CONTACT?.replace(/\D/g, '')}@"]`).filter({ hasText: message });
@@ -44,7 +44,7 @@ const assertImage = async (page: Page, message: string, screenshot: string, test
     await expect(image).toBeVisible();
     // await expect(image).toHaveScreenshot(screenshot);
     return image;
-};
+}
 
 const convertFileToAttachment = async (filePath: string): Promise<Message['attachment']> => {
     const mimeTypes = {
@@ -66,7 +66,7 @@ const convertFileToAttachment = async (filePath: string): Promise<Message['attac
         lastModified: Date.now(),
         url: `data:${mimeTypes[ext]};base64,${base64Data}`
     };
-};
+}
 
 test.describe.serial("Send Messages via WPP", () => {
     test('expect', async ({ page }, testInfo) => {

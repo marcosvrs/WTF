@@ -2,6 +2,7 @@ import Log from "./Log";
 import { Message } from "./Message";
 import QueueStatus from "./QueueStatus";
 import { ChromeMessageTypes } from "./ChromeMessageTypes";
+import { Poll } from "./Poll";
 
 export default interface ChromeMessageContentTypes {
   [ChromeMessageTypes.QUEUE_STATUS]: {
@@ -26,6 +27,10 @@ export default interface ChromeMessageContentTypes {
   };
   [ChromeMessageTypes.STOP_QUEUE]: {
     payload: undefined;
+    response: boolean;
+  };
+  [ChromeMessageTypes.SEND_POLL]: {
+    payload: Poll;
     response: boolean;
   };
 }

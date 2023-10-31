@@ -5,13 +5,13 @@ import { ControlTextArea } from '../atoms/ControlFactory';
 import Box from '../molecules/Box';
 import SelectCountryCode from '../molecules/SelectCountryCode';
 
-export default class MessageForm extends Component<{ className?: string }, { message: string, attachment: Attachment, delay: number }>{
+export default class MessageForm extends Component<{ className?: string }, { message: string, attachment?: Attachment, delay: number }>{
     constructor(props: { className?: string }) {
         super(props);
         this.defaultMessage = chrome.i18n.getMessage('defaultMessage');
         this.state = {
             message: this.defaultMessage,
-            attachment: null,
+            attachment: undefined,
             delay: 0
         };
     }
@@ -28,10 +28,10 @@ export default class MessageForm extends Component<{ className?: string }, { mes
 
     componentDidMount() {
         chrome.storage.local.get(
-            { message: this.defaultMessage, attachment: null, delay: 0 },
+            { message: this.defaultMessage, attachment: undefined, delay: 0 },
             data => {
                 this.setState({ message: data.message, attachment: data.attachment, delay: data.delay });
-                if (data.attachment != null && this.fileRef.current !== null) {
+                if (data.attachment && this.fileRef.current !== null) {
                     fetch(data.attachment.url).then(response => response.blob()).then(blob => {
                         const myFile = new File([blob], data.attachment.name, {
                             type: data.attachment.type,
@@ -47,7 +47,7 @@ export default class MessageForm extends Component<{ className?: string }, { mes
             });
     }
 
-    componentDidUpdate(prevProps: Readonly<{ className?: string }>, prevState: Readonly<{ message: string, attachment: Attachment, delay: number }>, snapshot?: any) {
+    componentDidUpdate(prevProps: Readonly<{ className?: string }>, prevState: Readonly<{ message: string, attachment?: Attachment, delay: number }>, snapshot?: any) {
         const { message, attachment, delay } = this.state;
 
         if (prevState.message !== message) {
@@ -59,8 +59,8 @@ export default class MessageForm extends Component<{ className?: string }, { mes
         }
 
         if (prevState.attachment?.url !== attachment?.url) {
-            if (attachment == null) {
-                chrome.storage.local.set({ attachment });
+            if (!attachment) {
+                chrome.storage.local.set({ attachment: undefined });
             } else {
                 chrome.storage.local.set({
                     attachment: {
@@ -95,14 +95,14 @@ export default class MessageForm extends Component<{ className?: string }, { mes
             };
             reader.readAsDataURL(file);
         } else {
-            this.setState({ attachment: null });
+            this.setState({ attachment: undefined });
         }
     }
 
     handleFileClear = (event: MouseEvent<HTMLButtonElement>) => {
         if (this.fileRef.current == null) return;
         this.fileRef.current.files = new DataTransfer().files;
-        this.setState({ attachment: null });
+        this.setState({ attachment: undefined });
     }
 
     render() {
@@ -149,7 +149,7 @@ export default class MessageForm extends Component<{ className?: string }, { mes
                         ref={this.fileRef}
                         onChange={this.handleFileChange}
                     />
-                    {attachment != null &&
+                    {attachment &&
                         <Button
                             variant="danger"
                             onClick={this.handleFileClear}

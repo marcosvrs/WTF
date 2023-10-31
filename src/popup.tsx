@@ -1,183 +1,245 @@
-import React, { ChangeEvent, Component, FormEvent, MouseEvent } from 'react';
-import { createRoot } from 'react-dom/client';
-import './index.css';
-import Button from './components/atoms/Button';
-import { ControlTextArea } from './components/atoms/ControlFactory';
-import Box from './components/molecules/Box';
-import QueueStatus from './types/QueueStatus';
-import AsyncChromeMessageManager from './utils/AsyncChromeMessageManager';
 import { ChromeMessageTypes } from './types/ChromeMessageTypes';
+import { ControlTextArea } from './components/atoms/ControlFactory';
+import { createRoot } from 'react-dom/client';
+import AsyncChromeMessageManager from './utils/AsyncChromeMessageManager';
+import Box from './components/molecules/Box';
+import Button from './components/atoms/Button';
+import CsvForm from './components/organisms/CsvForm';
+import ParseCSVMessages from './utils/ParseCSVMessages';
+import ProgressBox from './components/organisms/ProgressBox';
+import React, { type ChangeEvent, Component, type FormEvent, type MouseEvent } from 'react';
+import type ChromeStorage from './types/ChromeStorage';
+import type QueueStatus from './types/QueueStatus';
+import './index.css';
 
 const PopupMessageManager = new AsyncChromeMessageManager('popup');
 
-class Popup extends Component<{}, { contacts: string, duplicatedContacts: number, status?: QueueStatus, confirmed: boolean }> {
-  constructor(props: {}) {
-    super(props);
-    this.state = {
-      contacts: '',
-      duplicatedContacts: 0,
-      status: undefined,
-      confirmed: true,
-    };
-  }
+class Popup extends Component<{},
+	{
+		contacts: string;
+		duplicatedContacts: number;
+		status?: QueueStatus;
+		confirmed: boolean;
+		showCsvForm: boolean;
+		parsedCSVMessages?: ParseCSVMessages;
+		csvHeaderMatch: Record<string, string | undefined>;
+		files: File[];
+	}> {
+	duplicatedNumberPopup = chrome.i18n.getMessage('duplicatedNumberPopup');
+	prefixFooterNotePopup = chrome.i18n.getMessage('prefixFooterNotePopup');
+	messagePlaceholderPopup = chrome.i18n.getMessage('messagePlaceholderPopup');
+	CSVFileButtonLabel = chrome.i18n.getMessage('CSVFileButtonLabel');
+	optionsButtonLabel = chrome.i18n.getMessage('optionsButtonLabel');
+	sendButtonLabel = chrome.i18n.getMessage('sendButtonLabel');
+	defaultMessage = chrome.i18n.getMessage('defaultMessage');
 
-  duplicatedNumberPopup = chrome.i18n.getMessage('duplicatedNumberPopup');
-  sendingMessagePopup = chrome.i18n.getMessage('sendingMessagePopup');
-  messageTimePopup = chrome.i18n.getMessage('messageTimePopup');
-  sendingPopup = chrome.i18n.getMessage('sendingPopup');
-  waitingPopup = chrome.i18n.getMessage('waitingPopup');
-  messagesSentPopup = chrome.i18n.getMessage('messagesSentPopup');
-  duplicatedContactsPopup = chrome.i18n.getMessage('duplicatedContactsPopup');
-  messagesLeftPopup = chrome.i18n.getMessage('messagesLeftPopup');
-  messagesNotSentPopup = chrome.i18n.getMessage('messagesNotSentPopup');
-  prefixFooterNotePopup = chrome.i18n.getMessage('prefixFooterNotePopup');
-  messagePlaceholderPopup = chrome.i18n.getMessage('messagePlaceholderPopup');
-  cancelButtonLabel = chrome.i18n.getMessage('cancelButtonLabel');
-  okButtonLabel = chrome.i18n.getMessage('okButtonLabel');
-  optionsButtonLabel = chrome.i18n.getMessage('optionsButtonLabel');
-  sendButtonLabel = chrome.i18n.getMessage('sendButtonLabel');
-  defaultMessage = chrome.i18n.getMessage('defaultMessage');
+	queueStatusListener = 0;
+	fileInput: HTMLInputElement | undefined = undefined;
+	folderInput: HTMLInputElement | undefined = undefined;
 
-  queueStatusListener = 0;
+	constructor(props: Readonly<{}>) {
+		super(props);
+		this.state = {
+			contacts: '',
+			duplicatedContacts: 0,
+			status: undefined,
+			confirmed: true,
+			showCsvForm: false,
+			parsedCSVMessages: undefined,
+			csvHeaderMatch: { contact: '', message: '', attachment: '', button1: '', button2: '', button3: '' },
+			files: []
+		};
+	}
 
-  componentDidMount() {
-    const body = document.querySelector('body');
-    if (!body) return;
-    body.classList.add('bg-gray-100');
-    body.classList.add('dark:bg-gray-900');
+	override async componentDidMount() {
+		const body = document.querySelector('body');
+		if (!body) {
+			return;
+		}
 
-    this.updateStatus();
-    this.queueStatusListener = window.setInterval(this.updateStatus, 100);
-  }
+		body.classList.add('bg-gray-100');
+		body.classList.add('dark:bg-gray-900');
 
-  updateStatus = () => {
-    PopupMessageManager.sendMessage(ChromeMessageTypes.QUEUE_STATUS, undefined).then((status) => {
-      this.setState({ status });
-    });
-  }
+		await this.updateStatus();
+		this.queueStatusListener = window.setInterval(this.updateStatus, 100);
+	}
 
-  componentWillUnmount() {
-    clearInterval(this.queueStatusListener);
-  }
+	override componentWillUnmount() {
+		clearInterval(this.queueStatusListener);
+	}
 
-  componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{ contacts: string, status?: QueueStatus, confirmed: boolean }>, snapshot?: any) {
-    if (!prevState.status?.isProcessing && this.state.status?.isProcessing) {
-      this.setState({ confirmed: false });
-    }
-  }
+	override componentDidUpdate(_previousProps: Readonly<{}>, previousState: Readonly<{ contacts: string; status?: QueueStatus; confirmed: boolean }>, _snapshot?: any) {
+		if (!previousState.status?.isProcessing && this.state.status?.isProcessing) {
+			this.setState({ confirmed: false });
+		}
+	}
 
-  handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    this.setState({ contacts: event.target.value.replace(/[^\d\n\t,;]*/g, '') });
-  }
+	updateStatus = async () => {
+		await PopupMessageManager.sendMessage(ChromeMessageTypes.QUEUE_STATUS, undefined).then(status => {
+			this.setState({ status });
+		});
+	}
 
-  parseContacts = (prefix: number) => {
-    const prefixToString = (prefix === 0 ? '' : prefix).toString();
-    const contactList = this.state.contacts.split(/[\n\t,;]/).filter(str => str.trim() !== '');
-    const pristinedContactsWithPrefix = contactList.map(s => prefixToString.concat(s.trim().replace(/[\D]*/g, '')));
+	handleChange = ({ currentTarget: { value } }: ChangeEvent<HTMLTextAreaElement>) => {
+		this.setState({ contacts: value.replace(/[^\d\n\t,;]*/g, '') });
+	}
 
-    this.setState({ duplicatedContacts: 0 });
+	addPrefixToContact = (contact: string, prefix: number) => {
+		const prefixToString = (prefix === 0 ? '' : prefix).toString();
+		return prefixToString.concat(contact.trim().replace(/\D*/g, ''));
+	}
 
-    return pristinedContactsWithPrefix.filter((contact: string, index: number) => {
-      const result = pristinedContactsWithPrefix.indexOf(contact) === index;
-      if (!result) {
-        this.setState(prevState => ({ duplicatedContacts: prevState.duplicatedContacts + 1 }));
-        PopupMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, { level: 2, message: this.duplicatedNumberPopup, attachment: false, contact });
-      }
+	parseContacts = (prefix: number) => {
+		const contactList = this.state.contacts.split(/[\n\t,;]/).filter(string_ => string_.trim() !== '');
+		const pristinedContactsWithPrefix = contactList.map(contact => this.addPrefixToContact(contact, prefix));
 
-      return result;
-    });
-  }
+		this.setState({ duplicatedContacts: 0 });
 
-  handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    const language = chrome.i18n.getUILanguage();
-    chrome.storage.local.get({ message: this.defaultMessage, attachment: null, buttons: [], delay: 0, prefix: language === 'pt_BR' ? 55 : 0 }, async data => {
-      let i = 0;
-      for (const contact of this.parseContacts(data.prefix)) {
-        PopupMessageManager.sendMessage(ChromeMessageTypes.SEND_MESSAGE, { contact, message: data.message, attachment: data.attachment, buttons: data.buttons, delay: data.delay });
-      }
-    });
-    event.preventDefault();
-  }
+		return pristinedContactsWithPrefix.filter(async (contact: string, index: number) => {
+			const result = pristinedContactsWithPrefix.indexOf(contact) === index;
+			if (!result) {
+				this.setState(previousState => ({ duplicatedContacts: previousState.duplicatedContacts + 1 }));
+				await PopupMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, { level: 2, message: this.duplicatedNumberPopup, attachment: false, contact });
+			}
 
-  handleOptions = (event: MouseEvent<HTMLButtonElement>) => {
-    if (chrome.runtime.openOptionsPage) {
-      chrome.runtime.openOptionsPage();
-    } else {
-      window.open(chrome.runtime.getURL('options.html'));
-    }
-  }
+			return result;
+		});
+	}
 
-  formatTime = (milliseconds: number) => {
-    const hours = Math.floor(milliseconds / 3600000);
-    const minutes = Math.floor((milliseconds % 3600000) / 60000);
-    const seconds = Math.floor((milliseconds % 60000) / 1000);
-    const decimal = (milliseconds % 1000).toString().substr(0, 2); // Gets the first 2 decimal places
+	submitCSVMessages = async () => {
+		const language = chrome.i18n.getUILanguage();
+		chrome.storage.local.get({ delay: 0, prefix: language === 'pt_BR' ? 55 : 0 },
+			async ({ delay, prefix }: ChromeStorage) => {
+				delay = (delay ?? 0) * 1000;
+				const parsedMessages = await this.state.parsedCSVMessages?.parseMessages(this.state.csvHeaderMatch, Number(prefix), delay ?? 0, this.state.files ?? []);
+				if (!parsedMessages || parsedMessages.length <= 0) throw new Error('No messages to send');
 
-    const hoursString = hours > 0 ? `${hours}h ` : '';
-    const minutesString = minutes > 0 ? `${minutes}m ` : '';
-    const secondsString = seconds > 0 || !hoursString && !minutesString ? `${seconds}.${decimal}s` : `0.${decimal}s`; 
+				const sendMessages = [];
+				for (const message of parsedMessages) {
+					sendMessages.push(PopupMessageManager.sendMessage(ChromeMessageTypes.SEND_MESSAGE, message));
+				}
 
-    return `${hoursString}${minutesString}${secondsString}`;
-  };
+				return Promise.all(sendMessages);
+			});
+	}
 
+	submitMessages = async () => {
+		const language = chrome.i18n.getUILanguage();
+		chrome.storage.local.get({ message: this.defaultMessage, attachment: undefined, buttons: undefined, delay: 0, prefix: language === 'pt_BR' ? 55 : 0 },
+			async ({ message = this.defaultMessage, delay, prefix, attachment, buttons = undefined }: ChromeStorage) => {
+				const sendMessages = [];
+				delay = (delay ?? 0) * 1000;
+				for (const contact of this.parseContacts(Number(prefix))) {
+					sendMessages.push(PopupMessageManager.sendMessage(ChromeMessageTypes.SEND_MESSAGE, {
+						contact,
+						message,
+						attachment,
+						options: {
+							buttons,
+							delay
+						}
+					}));
+				}
 
-  render() {
-    return <>
-      {!this.state.confirmed && <Box
-        className="w-96 h-96"
-        title={this.state.status?.isProcessing ? this.sendingMessagePopup : ''}
-        footer={this.state.status?.isProcessing ?
-          <Button variant="danger" onClick={() => PopupMessageManager.sendMessage(ChromeMessageTypes.STOP_QUEUE, undefined)}>{this.cancelButtonLabel}</Button>
-          : <Button variant="primary" onClick={() => this.setState({ confirmed: true })}>{this.okButtonLabel}</Button>}>
-        <div className="grid grid-cols-2 gap-4 p-4">
-          <div>{this.messageTimePopup}</div>
-          <div>{this.formatTime(this.state.status?.elapsedTime || 0)}</div>
-          {this.state.status?.sendingMessage && <div className="col-span-2">{this.sendingPopup}</div>}
-          {this.state.status?.waiting && <div>{this.waitingPopup}</div>}
-          {this.state.status?.waiting && <div>{this.formatTime(this.state.status.waiting)}</div>}
-          <div>{this.messagesSentPopup}</div>
-          <div>{this.state.status?.processedItems}</div>
-          <div>{this.state.status?.isProcessing ? this.messagesLeftPopup : this.messagesNotSentPopup}</div>
-          <div>{this.state.status?.remainingItems}</div>
-          <div>{this.duplicatedContactsPopup}</div>
-          <div>{this.state.duplicatedContacts}</div>
-          {this.state.status && <div className="w-full h-4 bg-gray-300 dark:bg-gray-600 rounded relative col-span-2 self-end">
-            <div
-              className={`h-4 rounded progress-bar${this.state.status?.isProcessing ? ' progress-bar-animated' : ''}`}
-              style={{ width: `${(this.state.status?.processedItems / (this.state.status?.processedItems + this.state.status?.remainingItems)) * 100}%` }}
-            ></div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-xs font-semibold">
-                {Math.round((this.state.status?.processedItems / (this.state.status?.processedItems + this.state.status?.remainingItems)) * 100)}%
-              </span>
-            </div>
-          </div>}
-        </div>
-      </Box>}
-      {this.state.confirmed && <form onSubmit={this.handleSubmit}>
-        <Box className="w-96 h-96" bodyClassName="p-4" footer={this.prefixFooterNotePopup}>
-          <ControlTextArea
-            className="flex-auto"
-            value={this.state.contacts}
-            onChange={this.handleChange}
-            placeholder={this.messagePlaceholderPopup}
-            required
-          />
-          <div className="flex justify-between items-center">
-            <Button variant="primary" type="submit">{this.sendButtonLabel}</Button>
-            <Button
-              variant="secondary"
-              type="button"
-              onClick={this.handleOptions}
-            >
-              {this.optionsButtonLabel}
-            </Button>
-          </div>
-        </Box>
-      </form>}
-    </>;
-  }
+				return Promise.all(sendMessages);
+			});
+	}
+
+	handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		if (this.state.showCsvForm) {
+			return await this.submitCSVMessages();
+		}
+
+		return await this.submitMessages();
+	}
+
+	handleOptions = (_event: MouseEvent<HTMLButtonElement>) => {
+		if (chrome.runtime.openOptionsPage) {
+			chrome.runtime.openOptionsPage();
+		} else {
+			window.open(chrome.runtime.getURL('options.html'));
+		}
+	}
+
+	handleCSV = async ({ currentTarget: { files } }: ChangeEvent<HTMLInputElement>) => {
+		const file = files?.[0];
+		const parseCSV = new ParseCSVMessages();
+		await parseCSV.parseCSV(file);
+		if (parseCSV.data.length > 0) {
+			this.setState({ parsedCSVMessages: parseCSV })
+		}
+	}
+
+	handleFiles = ({ currentTarget: { files } }: ChangeEvent<HTMLInputElement>) => {
+		this.setState({ files: Array.from(files ?? []) });
+	}
+
+	override render() {
+		return <>
+			{!this.state.confirmed ? <ProgressBox
+				status={this.state.status}
+				duplicatedContacts={this.state.duplicatedContacts}
+				onCancel={() => PopupMessageManager.sendMessage(ChromeMessageTypes.STOP_QUEUE, undefined)}
+				onConfirm={() => this.setState({ confirmed: true })}
+			/> : <form onSubmit={this.handleSubmit}>
+				<Box className='w-96 h-96' bodyClassName='p-4' footer={this.prefixFooterNotePopup}>
+					{this.state.showCsvForm ? ((this.state.parsedCSVMessages?.data ?? []).length > 0 ?
+						<CsvForm csvHeader={this.state.parsedCSVMessages?.header ?? []} onMatchChange={csvHeaderMatch => this.setState({ csvHeaderMatch })} /> :
+						<>
+							<input
+								type='file'
+								accept='.csv'
+								style={{ display: 'none' }}
+								ref={input => {
+									this.fileInput = input ?? undefined;
+								}}
+								onChange={this.handleCSV}
+							/>
+							<Button variant='light' type='button' onClick={() => this.fileInput?.click()}>
+								{this.CSVFileButtonLabel}
+							</Button>
+						</>) : <ControlTextArea
+						className='flex-auto'
+						value={this.state.contacts}
+						onChange={this.handleChange}
+						placeholder={this.messagePlaceholderPopup}
+						required
+					/>}
+					<div className='flex justify-between items-center'>
+						<Button variant='primary' type='submit'>{this.sendButtonLabel}</Button>
+						{this.state.csvHeaderMatch.attachment &&
+							<>
+								<input
+									type='file'
+									style={{ display: 'none' }}
+									ref={input => {
+										this.folderInput = input ?? undefined;
+									}}
+									onChange={this.handleFiles}
+									multiple
+								/>
+								<Button
+									variant='light'
+									type="button"
+									onClick={() => this.folderInput?.click()}
+								>
+									Folder
+								</Button>
+							</>}
+						<Button
+							variant='secondary'
+							type='button'
+							onClick={this.handleOptions}
+						>
+							{this.optionsButtonLabel}
+						</Button>
+					</div>
+				</Box>
+			</form>}
+		</>;
+	}
 }
 
-createRoot(document.getElementById('root')!)
-  .render(<Popup />);
+createRoot(document.querySelector('#root')!)
+	.render(<Popup />);

@@ -43,7 +43,7 @@ export default class SelectCountryCode extends Component<{ options?: CountryCode
             ...prevState,
             isOpen: !prevState.isOpen
         }));
-    };
+    }
 
     handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
         const searchValue = e.target.value.toLowerCase();
@@ -52,17 +52,17 @@ export default class SelectCountryCode extends Component<{ options?: CountryCode
         );
 
         this.setState({ searchValue, filteredOptions });
-    };
+    }
 
     handleSelect = (selectedValue: CountryCode) => {
         this.setState({ selectedValue, isOpen: false, searchValue: '', filteredOptions: this.state.options });
-    };
+    }
 
     handleClickOutside = (e: MouseEvent) => {
         if (e.target instanceof Node && !this.wrapperRef.current?.contains(e.target)) {
             this.setState({ isOpen: false });
         }
-    };
+    }
 
     componentDidMount() {
         document.addEventListener('mousedown', this.handleClickOutside);
