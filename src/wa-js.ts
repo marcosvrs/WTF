@@ -8,6 +8,7 @@ import { ChromeMessageTypes } from './types/ChromeMessageTypes';
 const WebpageMessageManager = new AsyncChromeMessageManager('webpage');
 
 async function sendWPPMessage({ contact, message, attachment, buttons = [] }: Message) {
+
     if (attachment && buttons.length > 0) {
         const response = await fetch(attachment.url.toString());
         const data = await response.blob();
@@ -60,6 +61,15 @@ async function sendMessage({ contact, hash }: { contact: string, hash: number })
         throw new Error(errorMsg);
     }
     const { message } = await storageManager.retrieveMessage(hash);
+
+    const resultAux = await WPP.contact.queryExists(contact);
+    if (resultAux && resultAux.wid) {
+        contact = resultAux.wid.user;
+    } else {
+        WebpageMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, { level: 1, message: "Contato não encontrado", attachment: message.attachment != null, contact: contact });
+        return;
+    }
+
     const result = await sendWPPMessage({ contact, ...message });
     return result.sendMsgResult.then(value => {
         const result = (value as any).messageSendResult ?? value;
@@ -75,6 +85,12 @@ async function addToQueue(message: Message) {
     try {
         const messageHash = AsyncStorageManager.calculateMessageHash(message);
         await storageManager.storeMessage(message, messageHash);
+
+        let min = message.delay as number;
+        let max = min * 2;
+        let aux = Math.floor(Math.random() * (max - min)) + min;
+        message.delay = aux;
+
         await asyncQueue.add({ eventHandler: sendMessage, detail: { contact: message.contact, hash: messageHash, delay: message.delay } });
         return true;
     } catch (error) {

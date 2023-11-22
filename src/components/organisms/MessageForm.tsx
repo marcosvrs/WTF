@@ -163,7 +163,7 @@ export default class MessageForm extends Component<{ className?: string }, { mes
                     id="delay"
                     name="delay"
                     min="0"
-                    max="10"
+                    max="20"
                     step="0.1"
                     value={this.state.delay}
                     onChange={(e) => this.setState({ delay: +e.target.value })}
