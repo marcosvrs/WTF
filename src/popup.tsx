@@ -88,7 +88,7 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
     });
   }
 
-  handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  /*handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     const language = chrome.i18n.getUILanguage();
     chrome.storage.local.get({ message: this.defaultMessage, attachment: null, buttons: [], delay: 0, prefix: language === 'pt_BR' ? 55 : 0 }, async data => {
       let i = 0;
@@ -98,6 +98,40 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
     });
     event.preventDefault();
   }
+*/
+  handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const language = chrome.i18n.getUILanguage();
+    const data = await new Promise<{ message: string, attachment: any, buttons: any[], delay: number, prefix: number }>(resolve => {
+      chrome.storage.local.get({ message: this.defaultMessage, attachment: null, buttons: [], delay: 0, prefix: language === 'pt_BR' ? 55 : 0 }, data => {
+        // Make sure the response has all expected properties
+        const result: { message: string, attachment: any, buttons: any[], delay: number, prefix: number } = {
+          message: data.message || this.defaultMessage,
+          attachment: data.attachment || null,
+          buttons: data.buttons || [],
+          delay: data.delay || 0,
+          prefix: data.prefix || (language === 'pt_BR' ? 55 : 0),
+        };
+
+        resolve(result);
+      });
+    });
+
+    const contacts = this.parseContacts(data.prefix);
+    const promises = contacts.map(contact => {
+      return PopupMessageManager.sendMessage(ChromeMessageTypes.SEND_MESSAGE, {
+        contact,
+        message: data.message,
+        attachment: data.attachment,
+        buttons: data.buttons,
+        delay: data.delay
+      });
+    });
+
+    // Wait for all messages to complete before proceeding
+    await Promise.all(promises);
+  };
 
   handleOptions = (event: MouseEvent<HTMLButtonElement>) => {
     if (chrome.runtime.openOptionsPage) {
@@ -111,11 +145,11 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
     const hours = Math.floor(milliseconds / 3600000);
     const minutes = Math.floor((milliseconds % 3600000) / 60000);
     const seconds = Math.floor((milliseconds % 60000) / 1000);
-    const decimal = (milliseconds % 1000).toString().substr(0, 2); // Gets the first 2 decimal places
-
+    const decimal = (milliseconds % 1000).toString().substring(0, 2); // Gets the first 2 decimal places
+    
     const hoursString = hours > 0 ? `${hours}h ` : '';
     const minutesString = minutes > 0 ? `${minutes}m ` : '';
-    const secondsString = seconds > 0 || !hoursString && !minutesString ? `${seconds}.${decimal}s` : `0.${decimal}s`; 
+    const secondsString = seconds > 0 || !hoursString && !minutesString ? `${seconds}.${decimal}s` : `0.${decimal}s`;
 
     return `${hoursString}${minutesString}${secondsString}`;
   };

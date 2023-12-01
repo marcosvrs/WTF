@@ -85,12 +85,6 @@ async function addToQueue(message: Message) {
     try {
         const messageHash = AsyncStorageManager.calculateMessageHash(message);
         await storageManager.storeMessage(message, messageHash);
-
-        let min = message.delay as number;
-        let max = min * 2;
-        let aux = Math.floor(Math.random() * (max - min)) + min;
-        message.delay = aux;
-
         await asyncQueue.add({ eventHandler: sendMessage, detail: { contact: message.contact, hash: messageHash, delay: message.delay } });
         return true;
     } catch (error) {

@@ -1,4 +1,10 @@
 import type QueueStatus from '../types/QueueStatus';
+import * as WPP from '@wppconnect/wa-js';
+
+//Constants for delay to avoid blocking
+const MIN_DELAY = 6; // Minimum value if it does not exist
+const MAX_DELAY = 12; //Maximum value if it does not exist
+const DELAY_MULTIPLIER = 2; // Multiplier for delay
 
 interface QueueItem<T = any> {
     eventHandler: (detail: T) => Promise<void>;
@@ -49,6 +55,16 @@ class AsyncEventQueue {
                 const item = this.queue.shift();
                 if (item === undefined) continue;
                 this.processedItems++;
+
+                const resultAux = await WPP.contact.queryExists(item.detail.contact);
+                if (!(resultAux && resultAux.wid)) {
+                    // Number does not exist, defines the delay between MAX_DELAY and MIN_DELAY
+                    item.detail.delay = Math.floor(Math.random() * (MAX_DELAY - MIN_DELAY)) + MIN_DELAY;
+                } else {
+                    // Number exists, defines the random delay
+                    item.detail.delay = Math.floor(Math.random() * ((DELAY_MULTIPLIER * item.detail.delay) - item.detail.delay)) + item.detail.delay;
+                }
+
                 const startTime = Date.now();
                 this.sendingMessage = Date.now();
                 await item.eventHandler(item.detail);

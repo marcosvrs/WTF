@@ -41,10 +41,11 @@ ContentScriptMessageManager.addHandler(ChromeMessageTypes.ADD_LOG, async (log) =
   }
 });
 
+
 if (document.readyState === 'complete') {
   injectScript('js/wa-js.js');
 } else {
-  document.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener('load', () => {
     injectScript('js/wa-js.js');
   });
 }
