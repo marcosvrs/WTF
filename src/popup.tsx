@@ -27,6 +27,8 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
   sendingPopup = chrome.i18n.getMessage('sendingPopup');
   waitingPopup = chrome.i18n.getMessage('waitingPopup');
   messagesSentPopup = chrome.i18n.getMessage('messagesSentPopup');
+  messagesFailedPopup = chrome.i18n.getMessage('messagesFailedPopup');
+  messagesSuccessfulPopup = chrome.i18n.getMessage('messagesSuccessfulPopup');
   duplicatedContactsPopup = chrome.i18n.getMessage('duplicatedContactsPopup');
   messagesLeftPopup = chrome.i18n.getMessage('messagesLeftPopup');
   messagesNotSentPopup = chrome.i18n.getMessage('messagesNotSentPopup');
@@ -146,7 +148,7 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
     const minutes = Math.floor((milliseconds % 3600000) / 60000);
     const seconds = Math.floor((milliseconds % 60000) / 1000);
     const decimal = (milliseconds % 1000).toString().substring(0, 2); // Gets the first 2 decimal places
-    
+
     const hoursString = hours > 0 ? `${hours}h ` : '';
     const minutesString = minutes > 0 ? `${minutes}m ` : '';
     const secondsString = seconds > 0 || !hoursString && !minutesString ? `${seconds}.${decimal}s` : `0.${decimal}s`;
@@ -158,7 +160,7 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
   render() {
     return <>
       {!this.state.confirmed && <Box
-        className="w-96 h-96"
+        className="w-96 h-[26rem]"
         title={this.state.status?.isProcessing ? this.sendingMessagePopup : ''}
         footer={this.state.status?.isProcessing ?
           <Button variant="danger" onClick={() => PopupMessageManager.sendMessage(ChromeMessageTypes.STOP_QUEUE, undefined)}>{this.cancelButtonLabel}</Button>
@@ -171,6 +173,10 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
           {this.state.status?.waiting && <div>{this.formatTime(this.state.status.waiting)}</div>}
           <div>{this.messagesSentPopup}</div>
           <div>{this.state.status?.processedItems}</div>
+          <div>{this.messagesSuccessfulPopup}</div>
+          <div>{this.state.status?.successfulItems}</div>
+          <div>{this.messagesFailedPopup}</div>
+          <div>{this.state.status?.failedItems}</div>
           <div>{this.state.status?.isProcessing ? this.messagesLeftPopup : this.messagesNotSentPopup}</div>
           <div>{this.state.status?.remainingItems}</div>
           <div>{this.duplicatedContactsPopup}</div>

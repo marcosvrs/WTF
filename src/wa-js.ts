@@ -70,6 +70,20 @@ async function sendMessage({ contact, hash }: { contact: string, hash: number })
         return;
     }
 
+    //const ProfileName = await WPP.contact.get(contact);
+    // const notifyName = ProfileName?.notifyName || '';
+
+    //Get user model
+    const GetContact = await WPP.contact.get(contact);
+    let notifyName = '';
+
+    if (GetContact) {
+        //Get Profile name submitted from user
+        notifyName = WPP.whatsapp.functions.getNotifyName(GetContact) || '';
+    }
+    // Replace from message in placeholder (%s)
+    message.message = replacePlaceholder(message.message, notifyName);
+    
     const result = await sendWPPMessage({ contact, ...message });
     return result.sendMsgResult.then(value => {
         const result = (value as any).messageSendResult ?? value;
@@ -133,3 +147,25 @@ WebpageMessageManager.addHandler(ChromeMessageTypes.QUEUE_STATUS, async () => {
 storageManager.clearDatabase();
 
 WPP.webpack.injectLoader();
+
+function replacePlaceholder(message: string, replacement: string): string {
+
+    const nameParts = replacement.split(' ');
+    replacement = nameParts[0];
+
+    // Check if the message contains at least one "%s" placeholder
+    if (message.indexOf('%s') === -1) {
+        // If no placeholder is found, no replacement is needed
+        message = message;
+    }
+    // Check if replacement is an empty string
+    if (replacement === '') {
+        message = message.replace(' %s', '');
+    }
+    else {
+        message = message.replace('%s', replacement.trim());
+    }
+
+    return message;
+
+}

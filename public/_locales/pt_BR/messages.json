@@ -157,6 +157,14 @@
         "message": "Enviadas:",
         "description": "Log do popup de mensagens enviadas"
     },
+    "messagesFailedPopup": {
+        "message": "Falha:",
+        "description": "Log do popup de mensagens falhadas"
+    },
+    "messagesSuccessfulPopup": {
+        "message": "Sucesso:",
+        "description": "Log do popup de mensagens com sucesso"
+    },
     "messagesLeftPopup": {
         "message": "Restantes:",
         "description": "Log do popup de mensagens restantes"

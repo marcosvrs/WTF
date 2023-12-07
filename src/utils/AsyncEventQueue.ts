@@ -2,8 +2,8 @@ import type QueueStatus from '../types/QueueStatus';
 import * as WPP from '@wppconnect/wa-js';
 
 //Constants for delay to avoid blocking
-const MIN_DELAY = 6; // Minimum value if it does not exist
-const MAX_DELAY = 12; //Maximum value if it does not exist
+const MIN_DELAY = 8; // Minimum value if it does not exist
+const MINUTES_TO_PAUSE = 210; // Seconds of waiting for every 80 messages sent
 const DELAY_MULTIPLIER = 2; // Multiplier for delay
 
 interface QueueItem<T = any> {
@@ -17,6 +17,8 @@ class AsyncEventQueue {
     private startTime: number = 0;
     private endTime: number = 0;
     private processedItems: number = 0;
+    private failedItems: number = 0;
+    private successfulItems: number = 0;
     private remainingItems: number = 0;
     private items: { detail: any; startTime: number; elapsedTime: number }[] = [];
     private sendingMessage: number | false = false;
@@ -37,6 +39,8 @@ class AsyncEventQueue {
             this.isProcessing = true;
             this.startTime = Date.now();
             this.processedItems = 0;
+            this.failedItems = 0;
+            this.successfulItems = 0;
             this.items = [];
 
             while (this.queue.length > 0) {
@@ -59,10 +63,17 @@ class AsyncEventQueue {
                 const resultAux = await WPP.contact.queryExists(item.detail.contact);
                 if (!(resultAux && resultAux.wid)) {
                     // Number does not exist, defines the delay between MAX_DELAY and MIN_DELAY
-                    item.detail.delay = Math.floor(Math.random() * (MAX_DELAY - MIN_DELAY)) + MIN_DELAY;
+                    item.detail.delay = Math.floor(Math.random() * ((DELAY_MULTIPLIER * MIN_DELAY) - MIN_DELAY)) + MIN_DELAY;
+                    this.failedItems++;
                 } else {
                     // Number exists, defines the random delay
                     item.detail.delay = Math.floor(Math.random() * ((DELAY_MULTIPLIER * item.detail.delay) - item.detail.delay)) + item.detail.delay;
+                    this.successfulItems++;
+                }
+                // Check if you have reached 80 messages sent
+                if (this.processedItems % 40 === 0) {
+                    // Pause processing for MINUTES_TO_PAUSE
+                    item.detail.delay = MINUTES_TO_PAUSE;
                 }
 
                 const startTime = Date.now();
@@ -125,6 +136,8 @@ class AsyncEventQueue {
             sendingMessage: this.sendingMessage === false ? this.sendingMessage : Date.now() - this.sendingMessage,
             waiting: this.waiting === false ? this.waiting : Date.now() - this.waiting,
             processedItems: this.processedItems,
+            failedItems: this.failedItems,
+            successfulItems: this.successfulItems,
             remainingItems: this.aborted ? this.remainingItems : this.queue.length,
             totalItems: this.processedItems + this.queue.length,
         };

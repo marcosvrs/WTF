@@ -157,6 +157,14 @@
         "message": "Sent:",
         "description": "Sent messages popup log"
     },
+    "messagesFailedPopup": {
+        "message": "Failed:",
+        "description": "Failed messages popup log"
+    },
+    "messagesSuccessfulPopup": {
+        "message": "Successful:",
+        "description": "Successful messages popup log"
+    },
     "messagesLeftPopup": {
         "message": "Remaining:",
         "description": "Remaining messages popup log"
