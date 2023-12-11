@@ -1,9 +1,9 @@
-import { test, expect } from './fixtures';
 import type { Page } from '@playwright/test';
-import type { Message } from '../src/types/Message';
 import { promises as fs } from 'fs';
 import path from 'path';
 import qrcode from 'qrcode-terminal';
+import type { Message } from '../src/types/Message';
+import { expect, test } from './fixtures';
 
 const sendMessage = async (page: Page, payload: Message) => {
     await page.evaluate(([payload]) => {
@@ -69,203 +69,170 @@ const convertFileToAttachment = async (filePath: string): Promise<Message['attac
 };
 
 test.describe.serial("Send Messages via WPP", () => {
-    let page: Page;
-
-    test.beforeAll(async ({ context }, testInfo) => {
-        page = await context.newPage();
+    test('expect', async ({ page }, testInfo) => {
         await page.goto('https://web.whatsapp.com/', { waitUntil: 'networkidle' });
-        let timeout = testInfo.timeout;
+        const defaultTimeout = testInfo.timeout;
+        test.setTimeout(300000); // 5min
+
         const qrCodeContainer = page.getByTestId('qrcode');
-        try {
-            await qrCodeContainer.waitFor({ timeout: 5000 });
-            timeout = 300000; // 5min
-            qrCodeContainer.screenshot({ path: 'qrcode.png' });
+        qrCodeContainer.waitFor().then(async () => {
             qrcode.generate(await qrCodeContainer.getAttribute('data-ref'), { small: true });
-        } catch (e) {
-            console.log('QR Code Error: ', e.name || e.message || e || 'Unknown error');
-        }
-        testInfo.setTimeout(timeout);
+        }).catch((e) => {
+            console.log('QR Code Error: ', e.message || e.name || e || 'Unknown error');
+        });
+
         await page.getByTestId('intro-title').waitFor();
-    });
 
-    test.afterAll(async ({ context }) => {
-        await context.close();
-    });
+        test.setTimeout(defaultTimeout); // back to default
 
-    test('expect message to be sent', async () => {
-        await sendMessage(page, {
-            contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
-            message: Math.random().toString(36).substring(7),
-            attachment: null,
-            buttons: []
+        await test.step('message to be sent', async () => {
+            await sendMessage(page, {
+                contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
+                message: Math.random().toString(36).substring(7),
+                attachment: null,
+                buttons: []
+            });
         });
-    });
 
-    test('expect message all button types to be sent', async () => {
-        const message = Math.random().toString(36).substring(7);
-        const buttons = [
-            {
-                id: 'id',
-                text: Math.random().toString(36).substring(7)
-            }, {
-                phoneNumber: '9999999999999',
-                text: Math.random().toString(36).substring(7)
-            }, {
-                url: 'https://google.com',
-                text: Math.random().toString(36).substring(7)
-            }
-        ];
-        const parent = await sendMessage(page, {
-            contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
-            message,
-            attachment: null,
-            buttons
+        await test.step('message all button types to be sent', async () => {
+            const message = Math.random().toString(36).substring(7);
+            const buttons = [
+                {
+                    id: 'id',
+                    text: Math.random().toString(36).substring(7)
+                }, {
+                    phoneNumber: '9999999999999',
+                    text: Math.random().toString(36).substring(7)
+                }, {
+                    url: 'https://google.com',
+                    text: Math.random().toString(36).substring(7)
+                }
+            ];
+            const parent = await sendMessage(page, {
+                contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
+                message,
+                attachment: null,
+                buttons
+            });
+            await parent.click();
+            await assertButtons(page, message, buttons);
         });
-        await parent.click();
-        await assertButtons(page, message, buttons);
-    });
 
-    test('expect message with one ID button to be sent', async () => {
-        // Can't send more than one ID button per message.
-        const message = Math.random().toString(36).substring(7);
-        const buttons = [
-            {
-                id: 'id',
-                text: Math.random().toString(36).substring(7)
-            }
-        ];
-        const parent = await sendMessage(page, {
-            contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
-            message,
-            attachment: null,
-            buttons
+        await test.step('message with one ID button to be sent', async () => {
+            // Can't send more than one ID button per message.
+            const message = Math.random().toString(36).substring(7);
+            const buttons = [
+                {
+                    id: 'id',
+                    text: Math.random().toString(36).substring(7)
+                }
+            ];
+            const parent = await sendMessage(page, {
+                contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
+                message,
+                attachment: null,
+                buttons
+            });
+            await parent.click();
+            await assertButtons(page, message, buttons);
         });
-        await parent.click();
-        await assertButtons(page, message, buttons);
-    });
 
-    test('expect message with Phone Number buttons to be sent', async () => {
-        const message = Math.random().toString(36).substring(7);
-        const buttons = [
-            {
-                phoneNumber: '9999999999999',
-                text: Math.random().toString(36).substring(7)
-            }, {
-                phoneNumber: '9999999999999',
-                text: Math.random().toString(36).substring(7)
-            }, {
-                phoneNumber: '9999999999999',
-                text: Math.random().toString(36).substring(7)
-            }
-        ];
-        const parent = await sendMessage(page, {
-            contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
-            message,
-            attachment: null,
-            buttons
+        await test.step('message with Phone Number buttons to be sent', async () => {
+            const message = Math.random().toString(36).substring(7);
+            const buttons = [
+                {
+                    phoneNumber: '9999999999999',
+                    text: Math.random().toString(36).substring(7)
+                }, {
+                    phoneNumber: '9999999999999',
+                    text: Math.random().toString(36).substring(7)
+                }, {
+                    phoneNumber: '9999999999999',
+                    text: Math.random().toString(36).substring(7)
+                }
+            ];
+            const parent = await sendMessage(page, {
+                contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
+                message,
+                attachment: null,
+                buttons
+            });
+            await parent.click();
+            await assertButtons(page, message, buttons);
         });
-        await parent.click();
-        await assertButtons(page, message, buttons);
-    });
 
-    test('expect message with Link buttons to be sent', async () => {
-        const message = Math.random().toString(36).substring(7);
-        const buttons = [
-            {
-                url: 'https://google.com',
-                text: Math.random().toString(36).substring(7)
-            }, {
-                url: 'https://google.com',
-                text: Math.random().toString(36).substring(7)
-            }, {
-                url: 'https://google.com',
-                text: Math.random().toString(36).substring(7)
-            }
-        ];
-        const parent = await sendMessage(page, {
-            contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
-            message,
-            attachment: null,
-            buttons
+        await test.step('message with Link buttons to be sent', async () => {
+            const message = Math.random().toString(36).substring(7);
+            const buttons = [
+                {
+                    url: 'https://google.com',
+                    text: Math.random().toString(36).substring(7)
+                }, {
+                    url: 'https://google.com',
+                    text: Math.random().toString(36).substring(7)
+                }, {
+                    url: 'https://google.com',
+                    text: Math.random().toString(36).substring(7)
+                }
+            ];
+            const parent = await sendMessage(page, {
+                contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
+                message,
+                attachment: null,
+                buttons
+            });
+            await parent.click();
+            await assertButtons(page, message, buttons);
         });
-        await parent.click();
-        await assertButtons(page, message, buttons);
-    });
 
-    test('expect message with PNG attachment to be sent', async () => {
-        const message = Math.random().toString(36).substring(7);
-        const parent = await sendMessage(page, {
-            contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
-            message,
-            attachment: await convertFileToAttachment('../public/icons/wtf128.png'),
-            buttons: []
+        await test.step('message with PNG attachment to be sent', async () => {
+            const message = Math.random().toString(36).substring(7);
+            const parent = await sendMessage(page, {
+                contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
+                message,
+                attachment: await convertFileToAttachment('../public/icons/wtf128.png'),
+                buttons: []
+            });
+            await parent.click();
+            await assertImage(page, message, 'wtf128.png');
         });
-        await parent.click();
-        await assertImage(page, message, 'wtf128.png');
-    });
 
-    // Doesn't work at the moment on Desktop
-    test.skip('expect message with PDF attachment to be sent', async () => {
-        const message = Math.random().toString(36).substring(7);
-        const parent = await sendMessage(page, {
-            contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
-            message,
-            attachment: await convertFileToAttachment('wa-js.test.ts-snapshots/sample.pdf'),
-            buttons: []
+        await test.step('message with MP4 attachment to be sent', async () => {
+            const message = Math.random().toString(36).substring(7);
+            const parent = await sendMessage(page, {
+                contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
+                message,
+                attachment: await convertFileToAttachment('wa-js.test.ts-snapshots/sample.mp4'),
+                buttons: []
+            });
+            await parent.click();
+            const container = await assertImage(page, message, 'sample.mp4.png', 'video-content');
+            await expect(container).toHaveText('0:30');
         });
-        await parent.click();
-        await assertImage(page, message, 'sample.pdf');
-    });
 
-    // Doesn't work at the moment on Desktop
-    test.skip('expect message with MP3 attachment to be sent', async () => {
-        const message = Math.random().toString(36).substring(7);
-        const parent = await sendMessage(page, {
-            contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
-            message,
-            attachment: await convertFileToAttachment('wa-js.test.ts-snapshots/demo.mp3'),
-            buttons: []
+        await test.step('message with PNG attachment and all button types to be sent', async () => {
+            const message = Math.random().toString(36).substring(7);
+            const buttons = [
+                {
+                    id: 'id',
+                    text: Math.random().toString(36).substring(7)
+                }, {
+                    phoneNumber: '9999999999999',
+                    text: Math.random().toString(36).substring(7)
+                }, {
+                    url: 'https://google.com',
+                    text: Math.random().toString(36).substring(7)
+                }
+            ];
+            const parent = await sendMessage(page, {
+                contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
+                message,
+                attachment: await convertFileToAttachment('../public/icons/wtf128.png'),
+                buttons
+            });
+            await parent.click();
+            await assertButtons(page, message, buttons);
+            await assertImage(page, message, 'wtf128-with-buttons.png');
         });
-        await parent.click();
-        await assertImage(page, message, 'demo.mp3');
-    });
-
-    test('expect message with MP4 attachment to be sent', async () => {
-        const message = Math.random().toString(36).substring(7);
-        const parent = await sendMessage(page, {
-            contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
-            message,
-            attachment: await convertFileToAttachment('wa-js.test.ts-snapshots/sample.mp4'),
-            buttons: []
-        });
-        await parent.click();
-        const container = await assertImage(page, message, 'sample.mp4.png', 'video-content');
-        await expect(container).toHaveText('0:30');
-    });
-
-    test('expect message with PNG attachment and all button types to be sent', async () => {
-        test.setTimeout(2147483647);
-        const message = Math.random().toString(36).substring(7);
-        const buttons = [
-            {
-                id: 'id',
-                text: Math.random().toString(36).substring(7)
-            }, {
-                phoneNumber: '9999999999999',
-                text: Math.random().toString(36).substring(7)
-            }, {
-                url: 'https://google.com',
-                text: Math.random().toString(36).substring(7)
-            }
-        ];
-        const parent = await sendMessage(page, {
-            contact: process.env.TEST_CONTACT?.replace(/\D/g, '') || '',
-            message,
-            attachment: await convertFileToAttachment('../public/icons/wtf128.png'),
-            buttons
-        });
-        await parent.click();
-        await assertButtons(page, message, buttons);
-        await assertImage(page, message, 'wtf128-with-buttons.png');
     });
 });

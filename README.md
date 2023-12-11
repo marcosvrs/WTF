@@ -1,13 +1,13 @@
-# WhatsApp Toolbox Features Chrome Extension
-This is an open-source Chrome Extension that allows you to send WhatsApp messages in bulk. It uses the WhatsApp Web interface to send messages, so you need to have WhatsApp Web open in your browser while using this extension.
+# WTF Chrome Extension
+This is an open-source Chrome Extension that allows you to send messages in bulk via WhatsApp™ Web. You need to have WhatsApp™ Web open in your browser while using this extension.
 
 ## Installation
-You can install the extension from the [Chrome Web Store](https://chrome.google.com/webstore/detail/fockmbfncdacmjbmieenodfeblmneaii).
+You can install the extension from the [Chrome Web Store](https://chrome.google.com/webstore/detail/wtf/kcdlihaidnmkenhlnofkjfoachidbnif).
 Alternatively, you can download the `extension.zip` file from the [latest release](https://github.com/marcosvrs/wtf/releases) and load it as an [unpacked extension in Chrome](#loading-an-unpacked-extension).
 
 ## Usage
-1. Open WhatsApp Web in your Chrome browser.
-2. Click on the WhatsApp Toolbox Features extension icon in the toolbar.
+1. Open WhatsApp™ Web in your Chrome browser.
+2. Click on the WTF extension icon in the toolbar.
 3. Click on the **Options** button to configure the message and attachment you want to send.
 4. Paste the phone numbers list you want to send.
 4. Click on the **Send** button to start sending the messages.
@@ -22,7 +22,7 @@ Note that this extension is intended for legitimate and ethical use cases only. 
 3. Click the **Load unpacked** button and select the extension directory.
 
 ## Disclaimer
-This extension is not affiliated with or endorsed by WhatsApp or Facebook. The use of this extension is at your own risk. The developers are not responsible for any damages, legal consequences, or other liabilities that may arise from the use of this extension.
+This extension is not affiliated with or endorsed by WhatsApp™ or Facebook™. The use of this extension is at your own risk. The developers are not responsible for any damages, legal consequences, or other liabilities that may arise from the use of this extension.
 
 ## Acknowledgments
 This project uses the following packages:
@@ -30,9 +30,6 @@ This project uses the following packages:
 - [react](https://github.com/facebook/react) (MIT License)
 - [react-dom](https://github.com/facebook/react) (MIT License)
 - [@types](https://github.com/DefinitelyTyped/DefinitelyTyped) (MIT License)
-- [@types/chrome](https://github.com/DefinitelyTyped/DefinitelyTyped) (MIT License)
-- [@types/react](https://github.com/DefinitelyTyped/DefinitelyTyped) (MIT License)
-- [@types/react-dom](https://github.com/DefinitelyTyped/DefinitelyTyped) (MIT License)
 - [autoprefixer](https://github.com/postcss/autoprefixer) (MIT License)
 - [copy-webpack-plugin](https://github.com/webpack-contrib/copy-webpack-plugin) (MIT License)
 - [css-loader](https://github.com/webpack-contrib/css-loader) (MIT License)

@@ -1,21 +1,19 @@
-name: Build and Release
+name: Publish to Chrome Web Store
 
 on:
-  check_suite:
-    types: [completed]
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
 
 jobs:
   build_and_release:
-    if: >-
-      github.event.check_suite.conclusion == 'success'
-      && github.event.check_suite.app.id == 349325
-      && github.event.check_suite.head_branch == 'master'
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       
       - name: Update version number
         run: |
@@ -78,6 +76,6 @@ jobs:
         with:
           client-id: ${{ secrets.CHROME_CLIENT_ID }}
           client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
-          extension-id: 'fockmbfncdacmjbmieenodfeblmneaii'
+          extension-id: 'kcdlihaidnmkenhlnofkjfoachidbnif'
           file-path: extension.zip
           refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}

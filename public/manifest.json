@@ -1,14 +1,17 @@
 {
   "manifest_version": 3,
   "name": "__MSG_appName__",
-  "version": "3.2.11",
+  "version": "3.4.1",
   "action": {
     "default_icon": {
       "16": "icons/wtf16.png",
       "32": "icons/wtf32.png",
       "48": "icons/wtf48.png",
       "64": "icons/wtf64.png",
-      "128": "icons/wtf128.png"
+      "128": "icons/wtf128.png",
+      "256": "icons/wtf256.png",
+      "512": "icons/wtf512.png",
+      "1024": "icons/wtf1024.png"
     },
     "default_popup": "popup.html",
     "default_title": "WTF"
@@ -20,7 +23,10 @@
     "32": "icons/wtf32.png",
     "48": "icons/wtf48.png",
     "64": "icons/wtf64.png",
-    "128": "icons/wtf128.png"
+    "128": "icons/wtf128.png",
+    "256": "icons/wtf256.png",
+    "512": "icons/wtf512.png",
+    "1024": "icons/wtf1024.png"
   },
   "author": "wtf@marcosvr.com",
   "content_scripts": [
@@ -56,7 +62,8 @@
         "https://web.whatsapp.com/*"
       ],
       "resources": [
-        "js/wa-js.js"
+        "js/wa-js.js",
+        "js/wppconnect.js"
       ]
     }
   ]

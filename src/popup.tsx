@@ -121,12 +121,14 @@ class Popup extends Component<{}, { contacts: string, message: string, duplicate
   formatTime = (milliseconds: number) => {
     const hours = Math.floor(milliseconds / 3600000);
     const minutes = Math.floor((milliseconds % 3600000) / 60000);
-    const seconds = (milliseconds / 1000).toFixed(2);
+    const seconds = Math.floor((milliseconds % 60000) / 1000);
+    const decimal = (milliseconds % 1000).toString().substr(0, 2); // Gets the first 2 decimal places
 
     const hoursString = hours > 0 ? `${hours}h ` : '';
     const minutesString = minutes > 0 ? `${minutes}m ` : '';
+    const secondsString = seconds > 0 || !hoursString && !minutesString ? `${seconds}.${decimal}s` : `0.${decimal}s`; 
 
-    return `${hoursString}${minutesString}${seconds}s`;
+    return `${hoursString}${minutesString}${secondsString}`;
   };
 
 

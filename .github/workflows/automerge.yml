@@ -1,9 +1,13 @@
-name: automerge
+name: Automatically merge dependabot pull requests
 
 on:
   pull_request:
     types:
       - opened
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   automerge:
