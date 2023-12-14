@@ -1,5 +1,6 @@
 export default interface QueueStatus {
     isProcessing: boolean;
+    paused: boolean;
     totalItems: number;
     processedItems: number;
     failedItems: number;

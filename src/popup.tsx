@@ -39,6 +39,9 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
   optionsButtonLabel = chrome.i18n.getMessage('optionsButtonLabel');
   sendButtonLabel = chrome.i18n.getMessage('sendButtonLabel');
   defaultMessage = chrome.i18n.getMessage('defaultMessage');
+  pauseButtonLabel = chrome.i18n.getMessage('pauseButtonLabel');
+  resumeButtonLabel = chrome.i18n.getMessage('resumeButtonLabel');
+  pausedLabelPopup = chrome.i18n.getMessage('pausedLabelPopup');
 
   queueStatusListener = 0;
 
@@ -90,24 +93,31 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
     });
   }
 
-  /*handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    const language = chrome.i18n.getUILanguage();
-    chrome.storage.local.get({ message: this.defaultMessage, attachment: null, buttons: [], delay: 0, prefix: language === 'pt_BR' ? 55 : 0 }, async data => {
-      let i = 0;
-      for (const contact of this.parseContacts(data.prefix)) {
-        PopupMessageManager.sendMessage(ChromeMessageTypes.SEND_MESSAGE, { contact, message: data.message, attachment: data.attachment, buttons: data.buttons, delay: data.delay });
-      }
-    });
-    event.preventDefault();
-  }
+  /*
+
+  handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const language = chrome.i18n.getUILanguage();
+  chrome.storage.local.get({ message: this.defaultMessage, attachment: null, buttons: [], delay: 0, prefix: language === 'pt_BR' ? 55 : 0 }, async data => {
+    let i = 0;
+    for (const contact of this.parseContacts(data.prefix)) {
+      PopupMessageManager.sendMessage(ChromeMessageTypes.SEND_MESSAGE, { contact, message: data.message, attachment: data.attachment, buttons: data.buttons, delay: data.delay });
+    }
+  });
+  event.preventDefault();
+}
 */
+
+
   handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    // Prevent the default form submission
     event.preventDefault();
 
+    // Get the user's language
     const language = chrome.i18n.getUILanguage();
+
+    // Retrieve data from local storage using a Promise
     const data = await new Promise<{ message: string, attachment: any, buttons: any[], delay: number, prefix: number }>(resolve => {
       chrome.storage.local.get({ message: this.defaultMessage, attachment: null, buttons: [], delay: 0, prefix: language === 'pt_BR' ? 55 : 0 }, data => {
-        // Make sure the response has all expected properties
         const result: { message: string, attachment: any, buttons: any[], delay: number, prefix: number } = {
           message: data.message || this.defaultMessage,
           attachment: data.attachment || null,
@@ -120,6 +130,69 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
       });
     });
 
+    // Parse the contacts based on the specified prefix
+    const contacts = this.parseContacts(data.prefix);
+
+    // Define the desired batch size
+    const batchSize = 100;
+
+    // Create a function to split the array into batches
+    const createBatches = (array: any[], size: number) => {
+      const batches = [];
+      let i = 0;
+
+      while (i < array.length) {
+        // Check if there are fewer contacts left than the default batch size
+        const remaining = array.length - i;
+        const currentBatchSize = remaining < size ? remaining : size;
+
+        batches.push(array.slice(i, i + currentBatchSize));
+        i += currentBatchSize;
+      }
+
+      return batches;
+    };
+
+    // Divide the contacts into batches
+    const contactBatches = createBatches(contacts, batchSize);
+
+    // Use map to send messages for each batch in parallel
+    const promises = contactBatches.map(batch => {
+      return Promise.all(batch.map(contact => {
+        return PopupMessageManager.sendMessage(ChromeMessageTypes.SEND_MESSAGE, {
+          contact,
+          message: data.message,
+          attachment: data.attachment,
+          buttons: data.buttons,
+          delay: data.delay
+        });
+      }));
+    });
+
+    // Wait for the completion of all batches
+    await Promise.all(promises);
+  };
+
+
+
+  /*
+  
+  handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const language = chrome.i18n.getUILanguage();
+    const data = await new Promise<{ message: string, attachment: any, buttons: any[], delay: number, prefix: number }>(resolve => {
+      chrome.storage.local.get({ message: this.defaultMessage, attachment: null, buttons: [], delay: 0, prefix: language === 'pt_BR' ? 55 : 0 }, data => {
+        // Make sure the response has all expected properties
+        const result: { message: string, attachment: any, buttons: any[], delay: number, prefix: number } = {
+          message: data.message || this.defaultMessage,
+          attachment: data.attachment || null,
+          buttons: data.buttons || [],
+          delay: data.delay || 0,
+          prefix: data.prefix || (language === 'pt_BR' ? 55 : 0),
+        };
+        resolve(result);
+      });
+    });
     const contacts = this.parseContacts(data.prefix);
     const promises = contacts.map(contact => {
       return PopupMessageManager.sendMessage(ChromeMessageTypes.SEND_MESSAGE, {
@@ -130,10 +203,10 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
         delay: data.delay
       });
     });
-
     // Wait for all messages to complete before proceeding
     await Promise.all(promises);
   };
+  */
 
   handleOptions = (event: MouseEvent<HTMLButtonElement>) => {
     if (chrome.runtime.openOptionsPage) {
@@ -162,15 +235,40 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
       {!this.state.confirmed && <Box
         className="w-96 h-[26rem]"
         title={this.state.status?.isProcessing ? this.sendingMessagePopup : ''}
-        footer={this.state.status?.isProcessing ?
-          <Button variant="danger" onClick={() => PopupMessageManager.sendMessage(ChromeMessageTypes.STOP_QUEUE, undefined)}>{this.cancelButtonLabel}</Button>
-          : <Button variant="primary" onClick={() => this.setState({ confirmed: true })}>{this.okButtonLabel}</Button>}>
+        footer={
+          this.state.status?.isProcessing ? (
+            <>
+              <Button variant="primary" onClick={() => PopupMessageManager.sendMessage(ChromeMessageTypes.STOP_QUEUE, undefined)}>
+                {this.cancelButtonLabel}
+              </Button>
+              <Button
+                variant={this.state.status?.paused ? "primary" : "danger"}
+                style={{ float: "right" }}
+                onClick={() =>
+                  PopupMessageManager.sendMessage(
+                    this.state.status?.paused
+                      ? ChromeMessageTypes.RESUME_QUEUE
+                      : ChromeMessageTypes.PAUSE_QUEUE,
+                    undefined
+                  )
+                }
+              >
+                {this.state.status?.paused ? this.resumeButtonLabel : this.pauseButtonLabel}
+              </Button>
+            </>
+          ) : (
+            <Button variant="primary" onClick={() => this.setState({ confirmed: true })}>
+              {this.okButtonLabel}
+            </Button>
+          )
+        }>
+
         <div className="grid grid-cols-2 gap-4 p-4">
           <div>{this.messageTimePopup}</div>
           <div>{this.formatTime(this.state.status?.elapsedTime || 0)}</div>
           {this.state.status?.sendingMessage && <div className="col-span-2">{this.sendingPopup}</div>}
           {this.state.status?.waiting && <div>{this.waitingPopup}</div>}
-          {this.state.status?.waiting && <div>{this.formatTime(this.state.status.waiting)}</div>}
+          {this.state.status?.waiting && <div>{this.state.status?.paused ? this.pausedLabelPopup : this.formatTime(this.state.status.waiting)}</div>}
           <div>{this.messagesSentPopup}</div>
           <div>{this.state.status?.processedItems}</div>
           <div>{this.messagesSuccessfulPopup}</div>

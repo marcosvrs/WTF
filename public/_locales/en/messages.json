@@ -216,5 +216,17 @@
     "optionsButtonLabel": {
         "message": "Options",
         "description": "Label of the options button"
+    },
+    "pauseButtonLabel": {
+        "message": "Pause",
+        "description": "Label of the Cancel button"
+    },
+    "resumeButtonLabel": {
+        "message": "Resume",
+        "description": "Label of the Resume button"
+    },
+    "pausedLabelPopup": {
+        "message": "Paused",
+        "description": "Label of the Paused popup"
     }
 }

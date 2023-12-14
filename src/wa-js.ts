@@ -70,6 +70,7 @@ async function sendMessage({ contact, hash }: { contact: string, hash: number })
         return;
     }
 
+    /*
     //const ProfileName = await WPP.contact.get(contact);
     // const notifyName = ProfileName?.notifyName || '';
 
@@ -83,7 +84,7 @@ async function sendMessage({ contact, hash }: { contact: string, hash: number })
     }
     // Replace from message in placeholder (%s)
     message.message = replacePlaceholder(message.message, notifyName);
-    
+    */
     const result = await sendWPPMessage({ contact, ...message });
     return result.sendMsgResult.then(value => {
         const result = (value as any).messageSendResult ?? value;
@@ -167,5 +168,4 @@ function replacePlaceholder(message: string, replacement: string): string {
     }
 
     return message;
-
 }

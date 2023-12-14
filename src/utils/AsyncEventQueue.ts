@@ -3,8 +3,9 @@ import * as WPP from '@wppconnect/wa-js';
 
 //Constants for delay to avoid blocking
 const MIN_DELAY = 8; // Minimum value if it does not exist
-const MINUTES_TO_PAUSE = 210; // Seconds of waiting for every 80 messages sent
 const DELAY_MULTIPLIER = 2; // Multiplier for delay
+const COFFEE_BREAK = 40; // Check if you have reached the number of messages for the "coffee break"
+const MINUTES_TO_PAUSE = 210; // Seconds of waiting for every messages sent defined by COFFEE_BREAK
 
 interface QueueItem<T = any> {
     eventHandler: (detail: T) => Promise<void>;
@@ -70,8 +71,8 @@ class AsyncEventQueue {
                     item.detail.delay = Math.floor(Math.random() * ((DELAY_MULTIPLIER * item.detail.delay) - item.detail.delay)) + item.detail.delay;
                     this.successfulItems++;
                 }
-                // Check if you have reached 80 messages sent
-                if (this.processedItems % 40 === 0) {
+                // CCheck if you have reached the number of messages for the coffee interval sent messages
+                if (this.processedItems % COFFEE_BREAK === 0) {
                     // Pause processing for MINUTES_TO_PAUSE
                     item.detail.delay = MINUTES_TO_PAUSE;
                 }
@@ -111,6 +112,7 @@ class AsyncEventQueue {
 
     public pause() {
         this.paused = true;
+        this.endTime = Date.now();
     }
 
     public resume() {
@@ -118,6 +120,7 @@ class AsyncEventQueue {
             this.paused = false;
             this.pausePromiseResolve();
             this.pausePromiseResolve = null;
+            this.startTime = Date.now() - (this.endTime - this.startTime);
         }
     }
 
@@ -130,8 +133,9 @@ class AsyncEventQueue {
 
     public getStatus(): QueueStatus {
         return {
-            elapsedTime: this.isProcessing ? Date.now() - this.startTime : this.endTime - this.startTime,
+            elapsedTime: this.isProcessing ? (this.paused ? this.endTime - this.startTime : Date.now() - this.startTime) : this.endTime - this.startTime,
             isProcessing: this.isProcessing,
+            paused: this.paused,
             items: this.items,
             sendingMessage: this.sendingMessage === false ? this.sendingMessage : Date.now() - this.sendingMessage,
             waiting: this.waiting === false ? this.waiting : Date.now() - this.waiting,
