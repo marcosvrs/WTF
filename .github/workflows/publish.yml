@@ -72,7 +72,7 @@ jobs:
           tag_name: ${{ env.VERSION }}
     
       - name: Publish to Chrome Web Store
-        uses: mnao305/chrome-extension-upload@v4.0.1
+        uses: mnao305/chrome-extension-upload@v5.0.0
         with:
           client-id: ${{ secrets.CHROME_CLIENT_ID }}
           client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
