@@ -16,7 +16,7 @@
     "url": "git+https://github.com/marcosvrs/wtf.git"
   },
   "dependencies": {
-    "@wppconnect/wa-js": "^3.0.0",
+    "@wppconnect/wa-js": "^3.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
