@@ -1,18 +1,20 @@
 import ChromeMessageContentTypes from "types/ChromeMessageContentTypes";
 
 type MessageData<K extends keyof ChromeMessageContentTypes> = {
+  source: 'WTF';
   type: K;
   payload: ChromeMessageContentTypes[K]["payload"];
 };
 
 type MessageDataResponse<K extends keyof ChromeMessageContentTypes> = {
+  source: 'WTF';
   type: `${K}_RESPONSE`;
   payload: ChromeMessageContentTypes[K]["response"];
 };
 
 type MessageHandler<K extends keyof ChromeMessageContentTypes> = (
   payload: ChromeMessageContentTypes[K]["payload"]
-) => Promise<ChromeMessageContentTypes[K]["response"]>;
+) => ChromeMessageContentTypes[K]["response"] | Promise<ChromeMessageContentTypes[K]["response"]>;
 
 export default class AsyncChromeMessageManager {
   constructor(private source: "popup" | "contentScript" | "webpage") {
@@ -24,15 +26,18 @@ export default class AsyncChromeMessageManager {
 
   private forwardMessagesFromWebpageToPopup() {
     window.addEventListener("message", (event) => {
-      if (event.source === window && event.origin === window.location.origin) {
-        chrome.runtime.sendMessage(event.data);
+      if (event.source === window && event.origin === window.location.origin && event.data.source === 'WTF') {
+        void chrome.runtime.sendMessage(event.data).catch((error) => {
+          console.error('WTF.AsyncChromeMessageManager.forwardMessagesFromWebpageToPopup', error, event);
+          return;
+        });
       }
     });
   }
 
   private forwardResponsesFromPopupToWebpage() {
     chrome.runtime.onMessage.addListener((message) => {
-      window.postMessage(message, window.location.origin);
+      if (message.source === 'WTF') window.postMessage(message, window.location.origin);
     });
   }
 
@@ -50,25 +55,27 @@ export default class AsyncChromeMessageManager {
   }
 
   private addWebpageMessageHandler<K extends keyof ChromeMessageContentTypes>(type: K, handler: MessageHandler<K>) {
-    window.addEventListener("message", (event) => {
-      if (event.source === window && event.origin === window.location.origin && event.data.type === type) {
-        handler(event.data.payload).then((response) => {
-          window.postMessage({ type: `${type}_RESPONSE`, payload: response }, window.location.origin);
-        }).catch((error) => {
+    window.addEventListener("message", async (event) => {
+      if (event.source === window && event.origin === window.location.origin && event.data.type === type && event.data.source === 'WTF') {
+        try {
+          const response = await handler(event.data.payload)
+          window.postMessage({ source: 'WTF', type: `${type}_RESPONSE`, payload: response }, window.location.origin);
+        } catch (error) {
           console.error(`WTF.AsyncChromeMessageManager.addWebpageMessageHandler ${type}_RESPONSE`, error);
-        });
+        }
       }
     });
   }
 
   private addExtensionMessageHandler<K extends keyof ChromeMessageContentTypes>(type: K, handler: MessageHandler<K>) {
-    chrome.runtime.onMessage.addListener((message) => {
-      if (message.type === type) {
-        handler(message.payload).then((response) => {
-          chrome.runtime.sendMessage({ type: `${type}_RESPONSE`, payload: response });
-        }).catch((error) => {
+    chrome.runtime.onMessage.addListener(async (message) => {
+      if (message.source === 'WTF' && message.type === type) {
+        try {
+          const response = await handler(message.payload);
+          void chrome.runtime.sendMessage({ source: 'WTF', type: `${type}_RESPONSE`, payload: response });
+        } catch (error) {
           console.error(`WTF.AsyncChromeMessageManager.addExtensionMessageHandler ${type}_RESPONSE`, error);
-        });
+        }
       }
     });
   }
@@ -77,12 +84,12 @@ export default class AsyncChromeMessageManager {
     type: K,
     payload: ChromeMessageContentTypes[K]["payload"]
   ): Promise<ChromeMessageContentTypes[K]["response"]> {
-    const message: MessageData<K> = { type, payload };
+    const message: MessageData<K> = {  source: 'WTF', type, payload };
 
     return new Promise((resolve, reject) => {
       try {
         const listener = (response: MessageDataResponse<K>) => {
-          if (response.type === `${type}_RESPONSE`) {
+          if (response.source === 'WTF' && response.type === `${type}_RESPONSE`) {
             chrome.runtime.onMessage.removeListener(listener);
             resolve(response.payload);
           }
@@ -106,7 +113,7 @@ export default class AsyncChromeMessageManager {
   ) {
     window.postMessage(message, window.location.origin);
     const responseListener = (event: MessageEvent) => {
-      if (event.source === window && event.origin === window.location.origin) {
+      if (event.source === window && event.origin === window.location.origin && event.data.source === 'WTF' && event.data.type === `${message.type}_RESPONSE`) {
         listener(event.data);
         window.removeEventListener("message", responseListener);
       }
@@ -127,7 +134,9 @@ export default class AsyncChromeMessageManager {
         }
       });
     } else if (this.source === "contentScript") {
-      chrome.runtime.sendMessage(message);
+      void chrome.runtime.sendMessage(message).catch((error) => {
+        console.error('WTF.AsyncChromeMessageManager.sendExtensionMessage', error);
+      });
     }
   }
 }

@@ -38,6 +38,15 @@
         "https://web.whatsapp.com/*"
       ],
       "run_at": "document_start"
+    },
+    {
+      "js": [
+        "js/wa-js.js"
+      ],
+      "matches": [
+        "https://web.whatsapp.com/*"
+      ],
+      "world": "MAIN"
     }
   ],
   "externally_connectable": {
