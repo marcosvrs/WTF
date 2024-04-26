@@ -173,8 +173,12 @@
         "message": "Don't forget to add the area code for each contact.",
         "description": "Prefix footer note popup log"
     },
-    "messagePlaceholderPopup": {
+    "contactsPlaceholderPopup": {
         "message": "Add the list of numbers for message sending, separated by commas or each number on a new line.",
+        "description": "Placeholder of the contacts field of the popup"
+    },
+    "messagePlaceholderPopup": {
+        "message": "Write a message.",
         "description": "Placeholder of the message field of the popup"
     },
     "defaultMessage": {

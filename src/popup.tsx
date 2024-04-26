@@ -10,11 +10,12 @@ import { ChromeMessageTypes } from './types/ChromeMessageTypes';
 
 const PopupMessageManager = new AsyncChromeMessageManager('popup');
 
-class Popup extends Component<{}, { contacts: string, duplicatedContacts: number, status?: QueueStatus, confirmed: boolean }> {
+class Popup extends Component<{}, { contacts: string, message: string, duplicatedContacts: number, status?: QueueStatus, confirmed: boolean }> {
   constructor(props: {}) {
     super(props);
     this.state = {
       contacts: '',
+      message: '',
       duplicatedContacts: 0,
       status: undefined,
       confirmed: true,
@@ -32,6 +33,7 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
   messagesNotSentPopup = chrome.i18n.getMessage('messagesNotSentPopup');
   prefixFooterNotePopup = chrome.i18n.getMessage('prefixFooterNotePopup');
   messagePlaceholderPopup = chrome.i18n.getMessage('messagePlaceholderPopup');
+  contactsPlaceholderPopup = chrome.i18n.getMessage('contactsPlaceholderPopup');
   cancelButtonLabel = chrome.i18n.getMessage('cancelButtonLabel');
   okButtonLabel = chrome.i18n.getMessage('okButtonLabel');
   optionsButtonLabel = chrome.i18n.getMessage('optionsButtonLabel');
@@ -48,6 +50,11 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
 
     this.updateStatus();
     this.queueStatusListener = window.setInterval(this.updateStatus, 100);
+
+    chrome.storage.local.get(
+      { message: this.defaultMessage },
+      data => { this.setState({ message: data.message }); }
+    );
   }
 
   updateStatus = () => {
@@ -60,7 +67,7 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
     clearInterval(this.queueStatusListener);
   }
 
-  componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{ contacts: string, status?: QueueStatus, confirmed: boolean }>, snapshot?: any) {
+  componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{ contacts: string, message: string, status?: QueueStatus, confirmed: boolean }>, snapshot?: any) {
     if (!prevState.status?.isProcessing && this.state.status?.isProcessing) {
       this.setState({ confirmed: false });
     }
@@ -68,6 +75,10 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
 
   handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     this.setState({ contacts: event.target.value.replace(/[^\d\n\t,;]*/g, '') });
+  }
+
+  handleMessageChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    this.setState({ message: event.target.value });
   }
 
   parseContacts = (prefix: number) => {
@@ -90,10 +101,10 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
 
   handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     const language = chrome.i18n.getUILanguage();
-    chrome.storage.local.get({ message: this.defaultMessage, attachment: null, buttons: [], delay: 0, prefix: language === 'pt_BR' ? 55 : 0 }, async data => {
+    chrome.storage.local.get({ attachment: null, buttons: [], delay: 0, prefix: language === 'pt_BR' ? 55 : 0 }, async data => {
       let i = 0;
       for (const contact of this.parseContacts(data.prefix)) {
-        PopupMessageManager.sendMessage(ChromeMessageTypes.SEND_MESSAGE, { contact, message: data.message, attachment: data.attachment, buttons: data.buttons, delay: data.delay });
+        PopupMessageManager.sendMessage(ChromeMessageTypes.SEND_MESSAGE, { contact, message: this.state.message, attachment: data.attachment, buttons: data.buttons, delay: data.delay });
       }
     });
     event.preventDefault();
@@ -158,9 +169,16 @@ class Popup extends Component<{}, { contacts: string, duplicatedContacts: number
         <Box className="w-96 h-96" bodyClassName="p-4" footer={this.prefixFooterNotePopup}>
           <ControlTextArea
             className="flex-auto"
+            value={this.state.message}
+            onChange={this.handleMessageChange}
+            placeholder={this.messagePlaceholderPopup}
+            required
+          />
+          <ControlTextArea
+            className="flex-auto"
             value={this.state.contacts}
             onChange={this.handleChange}
-            placeholder={this.messagePlaceholderPopup}
+            placeholder={this.contactsPlaceholderPopup}
             required
           />
           <div className="flex justify-between items-center">
