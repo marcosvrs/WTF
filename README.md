@@ -14,12 +14,44 @@ Alternatively, you can download the `extension.zip` file from the [latest releas
 
 Note that this extension is intended for legitimate and ethical use cases only. Any misuse or abuse of the extension is not the responsibility of the developers.
 
-## Loading an unpacked extension
-1. Go to the Extensions page by entering `chrome://extensions` in a new tab. (By design `chrome://` URLs are not linkable.)
+## Building from Source
+
+If you prefer to build the extension from the source code, follow these steps:
+
+### Prerequisites
+
+- Ensure you have the latest Node.js and npm installed. You can follow the instructions to install them from [Node.js official website](https://nodejs.org/).
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/marcosvrs/wtf.git
+cd wtf
+```
+
+### Install Dependencies
+
+```bash
+npm install
+```
+
+### Build the Extension
+
+```bash
+npm run build
+```
+
+This will compile the TypeScript and bundle the JavaScript files into the `dist` directory, ready for local development and testing.
+
+### Load the Extension in Chrome
+
+1. Go to the Extensions page by entering `chrome://extensions` in a new tab.
     - Alternatively, click on the Extensions menu puzzle button and select **Manage Extensions** at the bottom of the menu.
     - Or, click the Chrome menu, hover over **More Tools**, then select **Extensions**.
 2. Enable Developer Mode by clicking the toggle switch next to **Developer mode**.
-3. Click the **Load unpacked** button and select the extension directory.
+3. Click the **Load unpacked** button and select the `dist` directory.
+
+Now, the WTF Chrome Extension should be loaded in your Chrome browser, and you can start using it immediately.
 
 ## Disclaimer
 This extension is not affiliated with or endorsed by WhatsApp™ or Facebook™. The use of this extension is at your own risk. The developers are not responsible for any damages, legal consequences, or other liabilities that may arise from the use of this extension.
