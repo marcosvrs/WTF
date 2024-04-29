@@ -1,26 +1,29 @@
 # WTF Chrome Extension
-This is an open-source Chrome Extension that allows you to send messages in bulk via WhatsApp™ Web. You need to have WhatsApp™ Web open in your browser while using this extension.
+
+This open-source Chrome Extension allows you to send messages in bulk via WhatsApp™ Web. Make sure WhatsApp™ Web is open in your browser while using this extension.
 
 ## Installation
-You can install the extension from the [Chrome Web Store](https://chrome.google.com/webstore/detail/wtf/kcdlihaidnmkenhlnofkjfoachidbnif).
-Alternatively, you can download the `extension.zip` file from the [latest release](https://github.com/marcosvrs/wtf/releases) and load it as an [unpacked extension in Chrome](#loading-an-unpacked-extension).
+
+Install the extension directly from the [Chrome Web Store](https://chrome.google.com/webstore/detail/wtf/kcdlihaidnmkenhlnofkjfoachidbnif).
+Alternatively, download the `extension.zip` file from the [latest release](https://github.com/marcosvrs/wtf/releases) and [load the extension in Chrome](#load-the-extension-in-chrome).
 
 ## Usage
+
 1. Open WhatsApp™ Web in your Chrome browser.
 2. Click on the WTF extension icon in the toolbar.
-3. Click on the **Options** button to configure the message and attachment you want to send.
-4. Paste the phone numbers list you want to send.
-4. Click on the **Send** button to start sending the messages.
+3. Click **Options** to configure the message and attachment you wish to send.
+4. Back in the Popup, paste the list of phone numbers you want to send messages.
+5. Click **Send** to start the messages delivery.
 
-Note that this extension is intended for legitimate and ethical use cases only. Any misuse or abuse of the extension is not the responsibility of the developers.
+This extension is intended for legitimate and ethical use only. Please use this extension responsibly. The developers and owners are not responsible for any misuse or abuse of the extension.
 
 ## Building from Source
 
-If you prefer to build the extension from the source code, follow these steps:
+If you prefer to build the extension from source code, follow these steps:
 
 ### Prerequisites
 
-- Ensure you have the latest Node.js and npm installed. You can follow the instructions to install them from [Node.js official website](https://nodejs.org/).
+- Ensure you have the latest Node.js and npm installed. Follow the installation instructions on the [Node.js official website](https://nodejs.org/).
 
 ### Clone the Repository
 
@@ -41,32 +44,38 @@ npm install
 npm run build
 ```
 
-This will compile the TypeScript and bundle the JavaScript files into the `dist` directory, ready for local development and testing.
+This compiles and bundles the JavaScript files into the `dist` directory, which is then ready for local development and testing.
 
 ### Load the Extension in Chrome
 
-1. Go to the Extensions page by entering `chrome://extensions` in a new tab.
-    - Alternatively, click on the Extensions menu puzzle button and select **Manage Extensions** at the bottom of the menu.
-    - Or, click the Chrome menu, hover over **More Tools**, then select **Extensions**.
-2. Enable Developer Mode by clicking the toggle switch next to **Developer mode**.
+1. Navigate to the Extensions page `chrome://extensions`.
+   - Alternatively, click on the Extensions menu puzzle button and select **Manage Extensions** at the bottom of the menu.
+   - Or, click the Chrome menu, hover over **More Tools**, then select **Extensions**.
+2. Enable Developer Mode by toggling the switch next to **Developer mode**.
 3. Click the **Load unpacked** button and select the `dist` directory.
 
-Now, the WTF Chrome Extension should be loaded in your Chrome browser, and you can start using it immediately.
+The WTF Chrome Extension is now loaded in your Chrome browser.
 
 ## Disclaimer
-This extension is not affiliated with or endorsed by WhatsApp™ or Facebook™. The use of this extension is at your own risk. The developers are not responsible for any damages, legal consequences, or other liabilities that may arise from the use of this extension.
+
+This extension is not affiliated with or endorsed by WhatsApp™ or Meta Platforms, Inc. and affiliates. The use of this extension is at your own risk and the developers are not responsible for any damages, legal consequences, or other liabilities that may arise from the use of this extension.
 
 ## Acknowledgments
+
 This project uses the following packages:
-- [@wppconnect/wa-js](https://github.com/wppconnect-team/wa-js) (Apache License 2.0)
-- [react](https://github.com/facebook/react) (MIT License)
-- [react-dom](https://github.com/facebook/react) (MIT License)
+
+- [@playwright/test](https://github.com/microsoft/playwright) (Apache License 2.0)
+- [@tsconfig/recommended](https://github.com/tsconfig/bases) (MIT License)
 - [@types](https://github.com/DefinitelyTyped/DefinitelyTyped) (MIT License)
+- [@wppconnect/wa-js](https://github.com/wppconnect-team/wa-js) (Apache License 2.0)
 - [autoprefixer](https://github.com/postcss/autoprefixer) (MIT License)
 - [copy-webpack-plugin](https://github.com/webpack-contrib/copy-webpack-plugin) (MIT License)
 - [css-loader](https://github.com/webpack-contrib/css-loader) (MIT License)
 - [cssnano](https://github.com/cssnano/cssnano) (MIT License)
 - [postcss-loader](https://github.com/webpack-contrib/postcss-loader) (MIT License)
+- [qrcode-terminal](https://github.com/gtanner/qrcode-terminal) (Apache License 2.0)
+- [react-dom](https://github.com/facebook/react) (MIT License)
+- [react](https://github.com/facebook/react) (MIT License)
 - [rimraf](https://github.com/isaacs/rimraf) (ISC License)
 - [speed-measure-webpack-plugin](https://github.com/stephencookdev/speed-measure-webpack-plugin) (MIT License)
 - [style-loader](https://github.com/webpack-contrib/style-loader) (MIT License)
@@ -75,5 +84,3 @@ This project uses the following packages:
 - [typescript](https://github.com/microsoft/TypeScript) (Apache License 2.0)
 - [webpack-cli](https://github.com/webpack/webpack-cli) (MIT License)
 - [webpack-merge](https://github.com/survivejs/webpack-merge) (MIT License)
-- [@playwright/test](https://github.com/microsoft/playwright) (Apache License 2.0)
-- [qrcode-terminal](https://github.com/gtanner/qrcode-terminal) (MIT License)

@@ -1,0 +1,29 @@
+WTF Chrome Extension
+Copyright (c) 2020-present Marcos V. Rubido
+
+This product includes software developed by the open-source community and is provided under various licenses.
+
+### Included Dependencies
+- [@playwright/test](https://github.com/microsoft/playwright) (Apache License 2.0)
+- [@tsconfig/recommended](https://github.com/tsconfig/bases) (MIT License)
+- [@types](https://github.com/DefinitelyTyped/DefinitelyTyped) (MIT License)
+- [@wppconnect/wa-js](https://github.com/wppconnect-team/wa-js) (Apache License 2.0)
+- [autoprefixer](https://github.com/postcss/autoprefixer) (MIT License)
+- [copy-webpack-plugin](https://github.com/webpack-contrib/copy-webpack-plugin) (MIT License)
+- [css-loader](https://github.com/webpack-contrib/css-loader) (MIT License)
+- [cssnano](https://github.com/cssnano/cssnano) (MIT License)
+- [postcss-loader](https://github.com/webpack-contrib/postcss-loader) (MIT License)
+- [qrcode-terminal](https://github.com/gtanner/qrcode-terminal) (Apache License 2.0)
+- [react-dom](https://github.com/facebook/react) (MIT License)
+- [react](https://github.com/facebook/react) (MIT License)
+- [rimraf](https://github.com/isaacs/rimraf) (ISC License)
+- [speed-measure-webpack-plugin](https://github.com/stephencookdev/speed-measure-webpack-plugin) (MIT License)
+- [style-loader](https://github.com/webpack-contrib/style-loader) (MIT License)
+- [tailwindcss](https://github.com/tailwindlabs/tailwindcss) (MIT License)
+- [ts-loader](https://github.com/TypeStrong/ts-loader) (MIT License)
+- [typescript](https://github.com/microsoft/TypeScript) (Apache License 2.0)
+- [webpack-cli](https://github.com/webpack/webpack-cli) (MIT License)
+- [webpack-merge](https://github.com/survivejs/webpack-merge) (MIT License)
+
+### Licenses
+Detailed licensing information for all included components and dependencies can be found in the respective source repositories linked above.
