@@ -17,28 +17,28 @@
   },
   "dependencies": {
     "@wppconnect/wa-js": "^3.2.6",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@playwright/test": "^1.35.1",
+    "@playwright/test": "^1.43.1",
     "@tsconfig/recommended": "^1.0.6",
-    "@types/chrome": "^0.0.239",
-    "@types/react": "^18.2.14",
-    "@types/react-dom": "^18.2.6",
-    "autoprefixer": "^10.4.14",
-    "copy-webpack-plugin": "^11.0.0",
-    "css-loader": "^6.8.1",
-    "cssnano": "^6.0.1",
-    "postcss-loader": "^7.3.3",
+    "@types/chrome": "^0.0.267",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.19",
+    "copy-webpack-plugin": "^12.0.2",
+    "css-loader": "^7.1.1",
+    "cssnano": "^7.0.1",
+    "postcss-loader": "^8.1.1",
     "qrcode-terminal": "^0.12.0",
-    "rimraf": "^5.0.1",
+    "rimraf": "^5.0.5",
     "speed-measure-webpack-plugin": "^1.5.0",
-    "style-loader": "^3.3.3",
-    "tailwindcss": "^3.3.2",
-    "ts-loader": "^9.4.4",
-    "typescript": "^5.1.5",
+    "style-loader": "^4.0.0",
+    "tailwindcss": "^3.4.3",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.5",
     "webpack-cli": "^5.1.4",
-    "webpack-merge": "^5.9.0"
+    "webpack-merge": "^5.10.0"
   }
 }

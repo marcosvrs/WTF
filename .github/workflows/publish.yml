@@ -12,15 +12,18 @@ jobs:
   build_and_release:
     runs-on: ubuntu-latest
     steps:
+      - env:
+        COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+
       - name: Checkout code
         uses: actions/checkout@v4
       
       - name: Update version number
         run: |
           # Determine the version change type based on commit message
-          if [[ "${{ github.event.head_commit.message }}" =~ "#major" ]]; then
+          if [[ "$COMMIT_MESSAGE" =~ "#major" ]]; then
             npm version major --no-git-tag-version
-          elif [[ "${{ github.event.head_commit.message }}" =~ "#minor" ]]; then
+          elif [[ "$COMMIT_MESSAGE" =~ "#minor" ]]; then
             npm version minor --no-git-tag-version
           else
             npm version patch --no-git-tag-version
