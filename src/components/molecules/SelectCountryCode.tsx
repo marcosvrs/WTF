@@ -1,173 +1,220 @@
-import { ControlInput } from '../atoms/ControlFactory';
-import React, { ChangeEvent, Component, createRef } from 'react';
+import type { ChangeEvent } from "react";
+import { Component, createRef } from "react";
+import type { CountryCode } from "../../types/CountryCode";
+import { ControlInput } from "../atoms/ControlFactory";
 
-interface CountryCode {
-    value: number;
-    label: string;
-}
-const language = chrome.i18n.getUILanguage().substring(0, 2);
-let countryCodes: CountryCode[] = [];
-try {
-    countryCodes = require(`../../countryCodes.${language}.json`);
-} catch (e) {
-    console.log(e);
-    countryCodes = require('../../countryCodes.en.json');
-}
+export default class SelectCountryCode extends Component<
+  { options?: CountryCode[] },
+  {
+    isOpen: boolean;
+    searchValue: string;
+    selectedValue: CountryCode | undefined;
+    options: CountryCode[];
+    filteredOptions: CountryCode[];
+  }
+> {
+  constructor(props: { options: CountryCode[] }) {
+    super(props);
+    this.defaultLabelSelectCountryCode = chrome.i18n.getMessage(
+      "defaultLabelSelectCountryCode",
+    );
+    const defaultOptions: CountryCode[] = [
+      { value: 0, label: this.defaultLabelSelectCountryCode },
+    ];
+    const { options = defaultOptions } = props;
+    this.state = {
+      isOpen: false,
+      searchValue: "",
+      selectedValue:
+        chrome.i18n.getUILanguage() === "pt_BR"
+          ? options.find((option) => option.value === 55)
+          : options.find((option) => option.value === 0),
+      options,
+      filteredOptions: options,
+    };
+    void this.loadCountryCodes(defaultOptions);
+  }
 
-export default class SelectCountryCode extends Component<{ options?: CountryCode[] }, {
-    isOpen: boolean,
-    searchValue: string,
-    selectedValue: CountryCode | undefined,
-    options: CountryCode[],
-    filteredOptions: CountryCode[]
-}> {
-    constructor(props: { options: CountryCode[] }) {
-        super(props);
-        this.defaultLabelSelectCountryCode = chrome.i18n.getMessage('defaultLabelSelectCountryCode');
-        const defaultOptions = [{ value: 0, label: this.defaultLabelSelectCountryCode }, ...countryCodes];
-        const { options = defaultOptions } = props;
-        this.state = {
-            isOpen: false,
-            searchValue: '',
-            selectedValue: chrome.i18n.getUILanguage() === 'pt_BR' ? options.find(option => option.value === 55) : options.find(option => option.value === 0),
-            options,
-            filteredOptions: options,
-        };
+  async loadCountryCodes(defaultOptions: CountryCode[] = []) {
+    const language = chrome.i18n.getUILanguage().substring(0, 2);
+    try {
+      const module: { default: CountryCode[] } = (await import(
+        `../../countryCodes.${language}.json`
+      )) as { default: CountryCode[] };
+      this.setState((prevState) => ({
+        ...prevState,
+        options: [...defaultOptions, ...module.default],
+      }));
+    } catch (error) {
+      console.warn(
+        `Language translation not found for ${language}, defaulting to English`,
+        error,
+      );
+      const module: { default: CountryCode[] } = await import(
+        "../../countryCodes.en.json"
+      );
+      this.setState((prevState) => ({
+        ...prevState,
+        options: [...defaultOptions, ...module.default],
+      }));
     }
+  }
 
-    wrapperRef = createRef<HTMLDivElement>();
-    defaultLabelSelectCountryCode: string;
+  wrapperRef = createRef<HTMLDivElement>();
+  defaultLabelSelectCountryCode: string;
 
-    toggleOpen = () => {
-        this.setState(prevState => ({
-            ...prevState,
-            isOpen: !prevState.isOpen
-        }));
-    };
+  toggleOpen = () => {
+    this.setState((prevState) => ({
+      ...prevState,
+      isOpen: !prevState.isOpen,
+    }));
+  };
 
-    handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-        const searchValue = e.target.value.toLowerCase();
-        const filteredOptions = this.state.options.filter((option) =>
-            option.label.toLowerCase().includes(searchValue)
-        );
+  handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    const searchValue = e.target.value.toLowerCase();
+    const filteredOptions = this.state.options.filter((option) =>
+      option.label.toLowerCase().includes(searchValue),
+    );
 
-        this.setState({ searchValue, filteredOptions });
-    };
+    this.setState({ searchValue, filteredOptions });
+  };
 
-    handleSelect = (selectedValue: CountryCode) => {
-        this.setState({ selectedValue, isOpen: false, searchValue: '', filteredOptions: this.state.options });
-    };
+  handleSelect = (selectedValue: CountryCode) => {
+    this.setState({
+      selectedValue,
+      isOpen: false,
+      searchValue: "",
+      filteredOptions: this.state.options,
+    });
+  };
 
-    handleClickOutside = (e: MouseEvent) => {
-        if (e.target instanceof Node && !this.wrapperRef.current?.contains(e.target)) {
-            this.setState({ isOpen: false });
+  handleClickOutside = (e: MouseEvent) => {
+    if (
+      e.target instanceof Node &&
+      !this.wrapperRef.current?.contains(e.target)
+    ) {
+      this.setState({ isOpen: false });
+    }
+  };
+
+  override componentDidMount() {
+    document.addEventListener("mousedown", this.handleClickOutside);
+    void chrome.storage.local.get(
+      { prefix: chrome.i18n.getUILanguage() === "pt_BR" ? 55 : 0 },
+      (data: Record<string, number>) => {
+        if ("prefix" in data) {
+          this.setState({
+            selectedValue: this.state.options.find(
+              (option) => option.value === data["prefix"],
+            ),
+          });
         }
-    };
+      },
+    );
+  }
 
-    componentDidMount() {
-        document.addEventListener('mousedown', this.handleClickOutside);
-        chrome.storage.local.get(
-            { prefix: chrome.i18n.getUILanguage() === 'pt_BR' ? 55 : 0 },
-            data => {
-                this.setState({ selectedValue: this.state.options.find(option => option.value === data.prefix) });
-            });
+  override componentDidUpdate(
+    _prevProps: Readonly<{ options: CountryCode[] }>,
+    prevState: Readonly<{
+      isOpen: boolean;
+      searchValue: string;
+      selectedValue: CountryCode | undefined;
+      options: CountryCode[];
+      filteredOptions: CountryCode[];
+    }>,
+  ) {
+    if (prevState.selectedValue !== this.state.selectedValue) {
+      void chrome.storage.local.set({
+        prefix: this.state.selectedValue?.value ?? 0,
+      });
     }
+  }
 
-    componentDidUpdate(prevProps: Readonly<{ options: CountryCode[] }>, prevState: Readonly<{
-        isOpen: boolean,
-        searchValue: string,
-        selectedValue: CountryCode | undefined,
-        options: CountryCode[],
-        filteredOptions: CountryCode[]
-    }>, snapshot?: any) {
-        if (prevState.selectedValue !== this.state.selectedValue) {
-            chrome.storage.local.set({ prefix: this.state.selectedValue?.value || 0 });
-        }
-    }
+  override componentWillUnmount() {
+    document.removeEventListener("mousedown", this.handleClickOutside);
+  }
 
-    componentWillUnmount() {
-        document.removeEventListener('mousedown', this.handleClickOutside);
-    }
+  override render() {
+    const { isOpen, searchValue, selectedValue, filteredOptions } = this.state;
 
-    render() {
-        const { isOpen, searchValue, selectedValue, filteredOptions } = this.state;
-        const { options } = this.props;
-
-        return (
-            <div className="relative select-none" ref={this.wrapperRef}>
-                <div
-                    className={[
-                        'w-full',
-                        'flex-auto',
-                        'bg-slate-100',
-                        'dark:bg-slate-900',
-                        'border',
-                        'border-slate-400',
-                        'dark:border-slate-600',
-                        'p-2',
-                        'rounded-lg',
-                        'transition-shadow',
-                        'ease-in-out',
-                        'duration-150',
-                        'focus:shadow-equal',
-                        'focus:shadow-blue-800',
-                        'dark:focus:shadow-blue-200',
-                        'focus:outline-none',
-                        'cursor-pointer',
-                        'flex',
-                        'justify-between',
-                        'items-center'
-                    ].join(' ')}
-                    onClick={this.toggleOpen}
-                >
-                    <span>{selectedValue ? selectedValue.label : 'Selecione um Prefixo'}</span>
-                    <svg
-                        className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''
-                            }`}
-                        width="16"
-                        height="16"
-                        viewBox="0 0 16 16"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            d="M4.86133 6.7539L8.00065 9.89322L11.1399 6.7539"
-                            stroke="#374151"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        />
-                    </svg>
-                </div>
-                {
-                    isOpen && (
-                        <div className="absolute w-full mt-1 z-10 border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 rounded-md shadow-lg">
-                            <ControlInput
-                                className="p-2 w-full"
-                                type="text"
-                                placeholder="Procurar"
-                                value={searchValue}
-                                onChange={this.handleSearch}
-                            />
-                            <ul>
-                                {filteredOptions.length ? (
-                                    filteredOptions.map((option, index) => (
-                                        <li
-                                            key={index}
-                                            className={`p-2 cursor-pointer hover:bg-blue-400 dark:hover:bg-blue-600${selectedValue === option ? ' bg-blue-200 dark:bg-blue-800' : ''}`}
-                                            onClick={() => this.handleSelect(option)}
-                                        >
-                                            {option.label}
-                                        </li>
-                                    ))
-                                ) : (
-                                    <li className="p-2 cursor-default text-slate-400 dark:text-slate-600">Nenhum prefixo encontrado</li>
-                                )}
-                            </ul>
-                        </div>
-                    )
-                }
-            </div >
-        );
-    }
+    return (
+      <div className="relative select-none" ref={this.wrapperRef}>
+        <div
+          className={[
+            "w-full",
+            "flex-auto",
+            "bg-slate-100",
+            "dark:bg-slate-900",
+            "border",
+            "border-slate-400",
+            "dark:border-slate-600",
+            "p-2",
+            "rounded-lg",
+            "transition-shadow",
+            "ease-in-out",
+            "duration-150",
+            "focus:shadow-equal",
+            "focus:shadow-blue-800",
+            "dark:focus:shadow-blue-200",
+            "focus:outline-none",
+            "cursor-pointer",
+            "flex",
+            "justify-between",
+            "items-center",
+          ].join(" ")}
+          onClick={this.toggleOpen}
+        >
+          <span>
+            {selectedValue ? selectedValue.label : "Selecione um Prefixo"}
+          </span>
+          <svg
+            className={`transform transition-transform duration-300 ${
+              isOpen ? "rotate-180" : ""
+            }`}
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M4.86133 6.7539L8.00065 9.89322L11.1399 6.7539"
+              stroke="#374151"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+        {isOpen && (
+          <div className="absolute w-full mt-1 z-10 border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 rounded-md shadow-lg">
+            <ControlInput
+              className="p-2 w-full"
+              type="text"
+              placeholder="Procurar"
+              value={searchValue}
+              onChange={this.handleSearch}
+            />
+            <ul>
+              {filteredOptions.length ? (
+                filteredOptions.map((option, index) => (
+                  <li
+                    key={index}
+                    className={`p-2 cursor-pointer hover:bg-blue-400 dark:hover:bg-blue-600${selectedValue === option ? " bg-blue-200 dark:bg-blue-800" : ""}`}
+                    onClick={() => this.handleSelect(option)}
+                  >
+                    {option.label}
+                  </li>
+                ))
+              ) : (
+                <li className="p-2 cursor-default text-slate-400 dark:text-slate-600">
+                  Nenhum prefixo encontrado
+                </li>
+              )}
+            </ul>
+          </div>
+        )}
+      </div>
+    );
+  }
 }

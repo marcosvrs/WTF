@@ -7,7 +7,17 @@
     "watch": "webpack --config webpack/webpack.dev.js --watch --progress",
     "dev": "tsc --noEmit && webpack --config webpack/webpack.dev.js",
     "build": "tsc --noEmit && webpack --config webpack/webpack.prod.js",
-    "clean": "rimraf dist"
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "clean": "rimraf dist",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "**/*.ts?(x)": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   },
   "author": "Marcos V.",
   "license": "MIT",
@@ -21,18 +31,29 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@playwright/test": "^1.43.1",
+    "@playwright/test": "^1.44.1",
     "@tsconfig/recommended": "^1.0.6",
-    "@types/chrome": "^0.0.267",
-    "@types/react": "^18.3.1",
+    "@types/chrome": "^0.0.268",
+    "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^7.11.0",
+    "@typescript-eslint/parser": "^7.11.0",
     "autoprefixer": "^10.4.19",
     "copy-webpack-plugin": "^12.0.2",
-    "css-loader": "^7.1.1",
+    "css-loader": "^7.1.2",
     "cssnano": "^7.0.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-react": "^7.34.2",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.5",
     "postcss-loader": "^8.1.1",
+    "prettier": "^3.2.5",
     "qrcode-terminal": "^0.12.0",
-    "rimraf": "^5.0.5",
+    "rimraf": "^5.0.7",
     "speed-measure-webpack-plugin": "^1.5.0",
     "style-loader": "^4.0.0",
     "tailwindcss": "^3.4.3",

@@ -1,7 +1,7 @@
-import Log from "./Log";
-import { Message } from "./Message";
-import QueueStatus from "./QueueStatus";
-import { ChromeMessageTypes } from "./ChromeMessageTypes";
+import type { ChromeMessageTypes } from "./ChromeMessageTypes";
+import type Log from "./Log";
+import type { Message } from "./Message";
+import type QueueStatus from "./QueueStatus";
 
 export default interface ChromeMessageContentTypes {
   [ChromeMessageTypes.QUEUE_STATUS]: {

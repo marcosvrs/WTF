@@ -90,4 +90,3 @@ Thank you for reading through the contributing guide, and welcome to the WTF Chr
 ## Acknowledgments
 
 Thanks to everyone who spends time contributing to open-source projects. We appreciate your dedications and contributions to making the web a better place.
-

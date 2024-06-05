@@ -31,21 +31,13 @@
   "author": "wtf@marcosvr.com",
   "content_scripts": [
     {
-      "js": [
-        "js/content_script.js"
-      ],
-      "matches": [
-        "https://web.whatsapp.com/*"
-      ],
+      "js": ["js/content_script.js"],
+      "matches": ["https://web.whatsapp.com/*"],
       "run_at": "document_start"
     },
     {
-      "js": [
-        "js/wa-js.js"
-      ],
-      "matches": [
-        "https://web.whatsapp.com/*"
-      ],
+      "js": ["js/wa-js.js"],
+      "matches": ["https://web.whatsapp.com/*"],
       "world": "MAIN"
     }
   ],
@@ -57,23 +49,15 @@
     "open_in_tab": false,
     "page": "options.html"
   },
-  "permissions": [
-    "activeTab",
-    "storage"
-  ],
+  "permissions": ["activeTab", "storage"],
   "short_name": "WTF",
   "storage": {
     "managed_schema": "schema.json"
   },
   "web_accessible_resources": [
     {
-      "matches": [
-        "https://web.whatsapp.com/*"
-      ],
-      "resources": [
-        "js/wa-js.js",
-        "js/wppconnect.js"
-      ]
+      "matches": ["https://web.whatsapp.com/*"],
+      "resources": ["js/wa-js.js", "js/wppconnect.js"]
     }
   ]
 }

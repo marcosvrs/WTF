@@ -1,3 +1,3 @@
-export type Attachment = null | Pick<File, 'name' | 'type' | 'lastModified'> & {
-    url: string | ArrayBuffer
+export type Attachment = Pick<File, "name" | "type" | "lastModified"> & {
+  url: string;
 };

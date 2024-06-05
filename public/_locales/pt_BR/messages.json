@@ -1,212 +1,212 @@
 {
-    "appName": {
-        "message": "WTF",
-        "description": "Nome da extensão"
-    },
-    "appDesc": {
-        "message": "Extensão do Chrome que permite enviar mensagens em massa via WhatsApp™ Web",
-        "description": "Descrição da extensão"
-    },
-    "logTableTitle": {
-        "message": "Log de envio",
-        "description": "Título da tabela de log de envio"
-    },
-    "numberLogTableTitle": {
-        "message": "Número",
-        "description": "Título da coluna de número da tabela de log de envio"
-    },
-    "messageLogTableTitle": {
-        "message": "Mensagem",
-        "description": "Título da coluna de mensagem da tabela de log de envio"
-    },
-    "attachmentLogTableTitle": {
-        "message": "Anexo",
-        "description": "Título da coluna de anexo da tabela de log de envio"
-    },
-    "datetimeLogTableTitle": {
-        "message": "Data/Hora",
-        "description": "Título da coluna de data e hora da tabela de log de envio"
-    },
-    "messageButtonsFormTitle": {
-        "message": "Botões",
-        "description": "Título do formulário de botões"
-    },
-    "importantNoteMessageButtonsForm": {
-        "message": "Importante: O botão do tipo 'ID' pode não funcionar em todas as configurações! Teste antes de enviar em massa!",
-        "description": "Mensagem de nota importante do formulário de botões"
-    },
-    "listTitleNoteMessageButtonsForm": {
-        "message": "Você pode criar 3 tipos de botões:",
-        "description": "Título da lista de nota do formulário de botões"
-    },
-    "firstListItemNoteMessageButtonsForm": {
-        "message": "$openTag$URL$closeTag$: Redireciona a um site.",
-        "description": "Primeiro item da lista de nota do formulário de botões",
-        "placeholders": {
-            "openTag": {
-                "content": "$1",
-                "example": "<b>"
-            },
-            "closeTag": {
-                "content": "$2",
-                "example": "</b>"
-            }
-        }
-    },
-    "secondListItemNoteMessageButtonsForm": {
-        "message": "$openTag$Número de Telefone$closeTag$: Liga a um número.",
-        "description": "Segundo item da lista de nota do formulário de botões",
-        "placeholders": {
-            "openTag": {
-                "content": "$1",
-                "example": "<b>"
-            },
-            "closeTag": {
-                "content": "$2",
-                "example": "</b>"
-            }
-        }
-    },
-    "thirdListItemNoteMessageButtonsForm": {
-        "message": "$openTag$ID$closeTag$: Envia o texto de volta ao remetente.",
-        "description": "Terceiro item da lista de nota do formulário de botões",
-        "placeholders": {
-            "openTag": {
-                "content": "$1",
-                "example": "<b>"
-            },
-            "closeTag": {
-                "content": "$2",
-                "example": "</b>"
-            }
-        }
-    },
-    "typeLabelMessageButtonsForm": {
-        "message": "Tipo",
-        "description": "Label do campo de tipo do formulário de botões"
-    },
-    "valueLabelMessageButtonsForm": {
-        "message": "Conteúdo",
-        "description": "Label do campo de conteúdo do formulário de botões"
-    },
-    "textLabelMessageButtonsForm": {
-        "message": "Texto",
-        "description": "Label do campo de texto do formulário de botões"
-    },
-    "urlTypeMessageButtonsForm": {
-        "message": "URL",
-        "description": "Valor do campo de tipo do formulário de botões"
-    },
-    "phoneNumberTypeMessageButtonsForm": {
-        "message": "Número de Telefone",
-        "description": "Valor do campo de tipo do formulário de botões"
-    },
-    "idTypeMessageButtonsForm": {
-        "message": "ID",
-        "description": "Valor do campo de tipo do formulário de botões"
-    },
-    "attachmentLabelMessageForm": {
-        "message": "Selecione um anexo (Opcional)",
-        "description": "Label do campo de anexo do formulário de mensagem"
-    },
-    "titleMessageForm": {
-        "message": "Elaboração da mensagem",
-        "description": "Título do formulário de mensagem"
-    },
-    "footerLabelMessageForm": {
-        "message": "Se desejar enviar apenas o anexo, mantenha o campo de mensagem vazio.",
-        "description": "Label do campo de rodapé do formulário de mensagem"
-    },
-    "footerSuggestionMessageForm": {
-        "message": "Sugestão: Envie primeiro uma mensagem para o seu próprio número para visualizar a sua mensagem antes de envia-la em massa.",
-        "description": "Sugestão do campo de rodapé do formulário de mensagem"
-    },
-    "delayLabelMessageForm": {
-        "message": "Intervalo entre mensagens",
-        "description": "Label do campo de intervalo do formulário de mensagem"
-    },
-    "countryCodePrefixMessageForm": {
-        "message": "Selecione um prefixo para adicionar automaticamente ao número dos contatos:",
-        "description": "Label do campo de prefixo do código do país do formulário de mensagem"
-    },
-    "defaultLabelSelectCountryCode": {
-        "message": "Sem Prefixo",
-        "description": "Label do valor padrão do código do país"
-    },
-    "duplicatedNumberPopup": {
-        "message": "Número duplicado!",
-        "description": "Log do popup de número duplicado"
-    },
-    "sendingMessagePopup": {
-        "message": "Enviando mensagens...",
-        "description": "Título do popup de envio de mensagem"
-    },
-    "messageTimePopup": {
-        "message": "Tempo:",
-        "description": "Log do popup de tempo de envio"
-    },
-    "sendingPopup": {
-        "message": "Enviando...",
-        "description": "Log do popup de envio"
-    },
-    "waitingPopup": {
-        "message": "Aguardando:",
-        "description": "Log do popup de aguardando"
-    },
-    "messagesSentPopup": {
-        "message": "Enviadas:",
-        "description": "Log do popup de mensagens enviadas"
-    },
-    "messagesLeftPopup": {
-        "message": "Restantes:",
-        "description": "Log do popup de mensagens restantes"
-    },
-    "messagesNotSentPopup": {
-        "message": "Não enviadas:",
-        "description": "Log do popup de mensagens não enviadas"
-    },
-    "duplicatedContactsPopup": {
-        "message": "Contatos duplicados:",
-        "description": "Log do popup de contatos duplicados"
-    },
-    "prefixFooterNotePopup": {
-        "message": "Não se esqueça de adicionar o prefixo DDD da região de cada contato.",
-        "description": "Log do popup de nota de rodapé de prefixo"
-    },
-    "messagePlaceholderPopup": {
-        "message": "Adicione a lista de números para o envio das mensagens, separados por vírgula ou cada número em uma nova linha.",
-        "description": "Placeholder do campo de mensagem do popup"
-    },
-    "defaultMessage": {
-        "message": "Enviado por WTF",
-        "description": "Mensagem padrão"
-    },
-    "addButtonLabel": {
-        "message": "Adicionar",
-        "description": "Label do botão de adicionar"
-    },
-    "updateButtonLabel": {
-        "message": "Atualizar",
-        "description": "Label do botão de atualizar"
-    },
-    "cleanButtonLabel": {
-        "message": "Limpar",
-        "description": "Label do botão de limpar"
-    },
-    "cancelButtonLabel": {
-        "message": "Cancelar",
-        "description": "Label do botão de cancelar"
-    },
-    "okButtonLabel": {
-        "message": "OK",
-        "description": "Label do botão de OK"
-    },
-    "sendButtonLabel": {
-        "message": "Enviar",
-        "description": "Label do botão de enviar"
-    },
-    "optionsButtonLabel": {
-        "message": "Opções",
-        "description": "Label do botão de opções"
+  "appName": {
+    "message": "WTF",
+    "description": "Nome da extensão"
+  },
+  "appDesc": {
+    "message": "Extensão do Chrome que permite enviar mensagens em massa via WhatsApp™ Web",
+    "description": "Descrição da extensão"
+  },
+  "logTableTitle": {
+    "message": "Log de envio",
+    "description": "Título da tabela de log de envio"
+  },
+  "numberLogTableTitle": {
+    "message": "Número",
+    "description": "Título da coluna de número da tabela de log de envio"
+  },
+  "messageLogTableTitle": {
+    "message": "Mensagem",
+    "description": "Título da coluna de mensagem da tabela de log de envio"
+  },
+  "attachmentLogTableTitle": {
+    "message": "Anexo",
+    "description": "Título da coluna de anexo da tabela de log de envio"
+  },
+  "datetimeLogTableTitle": {
+    "message": "Data/Hora",
+    "description": "Título da coluna de data e hora da tabela de log de envio"
+  },
+  "messageButtonsFormTitle": {
+    "message": "Botões",
+    "description": "Título do formulário de botões"
+  },
+  "importantNoteMessageButtonsForm": {
+    "message": "Importante: O botão do tipo 'ID' pode não funcionar em todas as configurações! Teste antes de enviar em massa!",
+    "description": "Mensagem de nota importante do formulário de botões"
+  },
+  "listTitleNoteMessageButtonsForm": {
+    "message": "Você pode criar 3 tipos de botões:",
+    "description": "Título da lista de nota do formulário de botões"
+  },
+  "firstListItemNoteMessageButtonsForm": {
+    "message": "$openTag$URL$closeTag$: Redireciona a um site.",
+    "description": "Primeiro item da lista de nota do formulário de botões",
+    "placeholders": {
+      "openTag": {
+        "content": "$1",
+        "example": "<b>"
+      },
+      "closeTag": {
+        "content": "$2",
+        "example": "</b>"
+      }
     }
+  },
+  "secondListItemNoteMessageButtonsForm": {
+    "message": "$openTag$Número de Telefone$closeTag$: Liga a um número.",
+    "description": "Segundo item da lista de nota do formulário de botões",
+    "placeholders": {
+      "openTag": {
+        "content": "$1",
+        "example": "<b>"
+      },
+      "closeTag": {
+        "content": "$2",
+        "example": "</b>"
+      }
+    }
+  },
+  "thirdListItemNoteMessageButtonsForm": {
+    "message": "$openTag$ID$closeTag$: Envia o texto de volta ao remetente.",
+    "description": "Terceiro item da lista de nota do formulário de botões",
+    "placeholders": {
+      "openTag": {
+        "content": "$1",
+        "example": "<b>"
+      },
+      "closeTag": {
+        "content": "$2",
+        "example": "</b>"
+      }
+    }
+  },
+  "typeLabelMessageButtonsForm": {
+    "message": "Tipo",
+    "description": "Label do campo de tipo do formulário de botões"
+  },
+  "valueLabelMessageButtonsForm": {
+    "message": "Conteúdo",
+    "description": "Label do campo de conteúdo do formulário de botões"
+  },
+  "textLabelMessageButtonsForm": {
+    "message": "Texto",
+    "description": "Label do campo de texto do formulário de botões"
+  },
+  "urlTypeMessageButtonsForm": {
+    "message": "URL",
+    "description": "Valor do campo de tipo do formulário de botões"
+  },
+  "phoneNumberTypeMessageButtonsForm": {
+    "message": "Número de Telefone",
+    "description": "Valor do campo de tipo do formulário de botões"
+  },
+  "idTypeMessageButtonsForm": {
+    "message": "ID",
+    "description": "Valor do campo de tipo do formulário de botões"
+  },
+  "attachmentLabelMessageForm": {
+    "message": "Selecione um anexo (Opcional)",
+    "description": "Label do campo de anexo do formulário de mensagem"
+  },
+  "titleMessageForm": {
+    "message": "Elaboração da mensagem",
+    "description": "Título do formulário de mensagem"
+  },
+  "footerLabelMessageForm": {
+    "message": "Se desejar enviar apenas o anexo, mantenha o campo de mensagem vazio.",
+    "description": "Label do campo de rodapé do formulário de mensagem"
+  },
+  "footerSuggestionMessageForm": {
+    "message": "Sugestão: Envie primeiro uma mensagem para o seu próprio número para visualizar a sua mensagem antes de envia-la em massa.",
+    "description": "Sugestão do campo de rodapé do formulário de mensagem"
+  },
+  "delayLabelMessageForm": {
+    "message": "Intervalo entre mensagens",
+    "description": "Label do campo de intervalo do formulário de mensagem"
+  },
+  "countryCodePrefixMessageForm": {
+    "message": "Selecione um prefixo para adicionar automaticamente ao número dos contatos:",
+    "description": "Label do campo de prefixo do código do país do formulário de mensagem"
+  },
+  "defaultLabelSelectCountryCode": {
+    "message": "Sem Prefixo",
+    "description": "Label do valor padrão do código do país"
+  },
+  "duplicatedNumberPopup": {
+    "message": "Número duplicado!",
+    "description": "Log do popup de número duplicado"
+  },
+  "sendingMessagePopup": {
+    "message": "Enviando mensagens...",
+    "description": "Título do popup de envio de mensagem"
+  },
+  "messageTimePopup": {
+    "message": "Tempo:",
+    "description": "Log do popup de tempo de envio"
+  },
+  "sendingPopup": {
+    "message": "Enviando...",
+    "description": "Log do popup de envio"
+  },
+  "waitingPopup": {
+    "message": "Aguardando:",
+    "description": "Log do popup de aguardando"
+  },
+  "messagesSentPopup": {
+    "message": "Enviadas:",
+    "description": "Log do popup de mensagens enviadas"
+  },
+  "messagesLeftPopup": {
+    "message": "Restantes:",
+    "description": "Log do popup de mensagens restantes"
+  },
+  "messagesNotSentPopup": {
+    "message": "Não enviadas:",
+    "description": "Log do popup de mensagens não enviadas"
+  },
+  "duplicatedContactsPopup": {
+    "message": "Contatos duplicados:",
+    "description": "Log do popup de contatos duplicados"
+  },
+  "prefixFooterNotePopup": {
+    "message": "Não se esqueça de adicionar o prefixo DDD da região de cada contato.",
+    "description": "Log do popup de nota de rodapé de prefixo"
+  },
+  "messagePlaceholderPopup": {
+    "message": "Adicione a lista de números para o envio das mensagens, separados por vírgula ou cada número em uma nova linha.",
+    "description": "Placeholder do campo de mensagem do popup"
+  },
+  "defaultMessage": {
+    "message": "Enviado por WTF",
+    "description": "Mensagem padrão"
+  },
+  "addButtonLabel": {
+    "message": "Adicionar",
+    "description": "Label do botão de adicionar"
+  },
+  "updateButtonLabel": {
+    "message": "Atualizar",
+    "description": "Label do botão de atualizar"
+  },
+  "cleanButtonLabel": {
+    "message": "Limpar",
+    "description": "Label do botão de limpar"
+  },
+  "cancelButtonLabel": {
+    "message": "Cancelar",
+    "description": "Label do botão de cancelar"
+  },
+  "okButtonLabel": {
+    "message": "OK",
+    "description": "Label do botão de OK"
+  },
+  "sendButtonLabel": {
+    "message": "Enviar",
+    "description": "Label do botão de enviar"
+  },
+  "optionsButtonLabel": {
+    "message": "Opções",
+    "description": "Label do botão de opções"
+  }
 }

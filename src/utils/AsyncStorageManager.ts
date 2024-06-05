@@ -1,95 +1,120 @@
-import { Message } from "types/Message";
+import type { Message } from "types/Message";
 
 const DATABASE_NAME = "WTFMessagesDB";
 const MESSAGE_STORE_NAME = "WTFMessagesStore";
 
 export class AsyncStorageManager {
-    private database: IDBDatabase | null = null;
+  private database?: IDBDatabase = undefined;
 
-    async retrieveMessage(hash: number) {
-        if (!this.database) this.database = await this.initializeDatabase();
+  async retrieveMessage(hash: number) {
+    if (!this.database) this.database = await this.initializeDatabase();
 
-        return new Promise<{ hash: string; message: Pick<Message, 'message' | 'attachment' | 'buttons'> }>((resolve, reject) => {
-            const transaction = this.database!.transaction([MESSAGE_STORE_NAME], 'readonly');
-            const messageStore = transaction.objectStore(MESSAGE_STORE_NAME);
-            const request = messageStore.get(hash);
+    return new Promise<{
+      hash: string;
+      message: Pick<Message, "message" | "attachment" | "buttons">;
+    }>((resolve, reject) => {
+      const transaction = this.database?.transaction(
+        [MESSAGE_STORE_NAME],
+        "readonly",
+      );
+      if (!transaction) return reject(new Error("Database not initialized"));
 
-            request.onerror = () => reject(request.error);
-            request.onsuccess = () => resolve(request.result);
-        });
-    }
+      const messageStore = transaction.objectStore(MESSAGE_STORE_NAME);
+      const request = messageStore.get(hash) as IDBRequest<{
+        hash: string;
+        message: Pick<Message, "message" | "attachment" | "buttons">;
+      }>;
 
-    async storeMessage(messageData: Pick<Message, 'message' | 'attachment' | 'buttons'>, hash?: number) {
-        if (!this.database) this.database = await this.initializeDatabase();
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => resolve(request.result);
+    });
+  }
 
-        return new Promise<void>((resolve, reject) => {
-            const transaction = this.database!.transaction([MESSAGE_STORE_NAME], 'readwrite');
-            const messageStore = transaction.objectStore(MESSAGE_STORE_NAME);
+  async storeMessage(
+    messageData: Pick<Message, "message" | "attachment" | "buttons">,
+    hash?: number,
+  ) {
+    if (!this.database) this.database = await this.initializeDatabase();
 
-            hash = hash || AsyncStorageManager.calculateMessageHash(messageData);
+    return new Promise<void>((resolve, reject) => {
+      const transaction = this.database?.transaction(
+        [MESSAGE_STORE_NAME],
+        "readwrite",
+      );
+      if (!transaction) return reject(new Error("Database not initialized"));
 
-            const request = messageStore.add({
-                hash, message: {
-                    message: messageData.message,
-                    attachment: messageData.attachment,
-                    buttons: messageData.buttons
-                }
-            });
+      const messageStore = transaction.objectStore(MESSAGE_STORE_NAME);
 
-            request.onerror = () => {
-                if (request.error?.name === 'ConstraintError')
-                    resolve();
-                else
-                    reject(request.error);
-            };
-            request.onsuccess = () => resolve();
-        });
-    }
+      hash = hash ?? AsyncStorageManager.calculateMessageHash(messageData);
 
-    private async initializeDatabase() {
-        return new Promise<IDBDatabase>((resolve, reject) => {
-            const openRequest = indexedDB.open(DATABASE_NAME, 1);
+      const request = messageStore.add({
+        hash,
+        message: {
+          message: messageData.message,
+          attachment: messageData.attachment,
+          buttons: messageData.buttons,
+        },
+      });
 
-            openRequest.onerror = () => reject(openRequest.error);
-            openRequest.onsuccess = () => resolve(openRequest.result);
-            openRequest.onupgradeneeded = (event) => {
-                const database = (event.target as IDBOpenDBRequest).result;
-                if (!database.objectStoreNames.contains(MESSAGE_STORE_NAME)) {
-                    database.createObjectStore(MESSAGE_STORE_NAME, { keyPath: "hash" });
-                }
-            };
-        });
-    }
+      request.onerror = () => {
+        if (request.error?.name === "ConstraintError") resolve();
+        else reject(request.error);
+      };
+      request.onsuccess = () => resolve();
+    });
+  }
 
-    async clearDatabase() {
-        if (!this.database) this.database = await this.initializeDatabase();
+  private async initializeDatabase() {
+    return new Promise<IDBDatabase>((resolve, reject) => {
+      const openRequest = indexedDB.open(DATABASE_NAME, 1);
 
-        return new Promise<void>((resolve, reject) => {
-            const transaction = this.database!.transaction([MESSAGE_STORE_NAME], 'readwrite');
-            const messageStore = transaction.objectStore(MESSAGE_STORE_NAME);
-            const clearRequest = messageStore.clear();
-
-            clearRequest.onerror = () => reject(clearRequest.error);
-            clearRequest.onsuccess = () => resolve();
-        });
-    }
-
-    static calculateMessageHash(messageData: Pick<Message, 'message' | 'attachment' | 'buttons'>): number {
-        const serialized = JSON.stringify({
-            message: messageData.message,
-            attachment: {
-                name: messageData.attachment?.name,
-                lastModified: messageData.attachment?.lastModified,
-                type: messageData.attachment?.type
-            },
-            buttons: messageData.buttons
-        });
-        let hash = 0;
-        for (let i = 0; i < serialized.length; i++) {
-            hash = (hash + serialized.charCodeAt(i)) & 0xFFFFFFFF; // Ensure it doesn't overflow
+      openRequest.onerror = () => reject(openRequest.error);
+      openRequest.onsuccess = () => resolve(openRequest.result);
+      openRequest.onupgradeneeded = () => {
+        const db = openRequest.result;
+        if (!db.objectStoreNames.contains(MESSAGE_STORE_NAME)) {
+          db.createObjectStore(MESSAGE_STORE_NAME, { keyPath: "hash" });
         }
-        return hash;
+      };
+    });
+  }
+
+  async clearDatabase() {
+    if (!this.database) this.database = await this.initializeDatabase();
+
+    return new Promise<void>((resolve, reject) => {
+      const transaction = this.database?.transaction(
+        [MESSAGE_STORE_NAME],
+        "readwrite",
+      );
+      if (!transaction) return reject(new Error("Database not initialized"));
+
+      const messageStore = transaction.objectStore(MESSAGE_STORE_NAME);
+      const clearRequest = messageStore.clear();
+
+      clearRequest.onerror = () => reject(clearRequest.error);
+      clearRequest.onsuccess = () => resolve();
+    });
+  }
+
+  static calculateMessageHash(
+    messageData: Pick<Message, "message" | "attachment" | "buttons">,
+  ): number {
+    const serialized = JSON.stringify({
+      message: messageData.message,
+      attachment: {
+        name: messageData.attachment?.name,
+        lastModified: messageData.attachment?.lastModified,
+        type: messageData.attachment?.type,
+      },
+      buttons: messageData.buttons,
+    });
+    let hash = 0;
+    for (let i = 0; i < serialized.length; i++) {
+      hash = (hash + serialized.charCodeAt(i)) & 0xffffffff; // Ensure it doesn't overflow
     }
+    return hash;
+  }
 }
 
 const storageManager = new AsyncStorageManager();

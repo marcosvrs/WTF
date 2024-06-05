@@ -1,76 +1,76 @@
 {
-    "type": "object",
-    "properties": {
-        "message": {
-            "title": "Message to be sent to the contact",
-            "type": "string"
+  "type": "object",
+  "properties": {
+    "message": {
+      "title": "Message to be sent to the contact",
+      "type": "string"
+    },
+    "delay": {
+      "title": "Sets the delay between the messages sent",
+      "type": "integer"
+    },
+    "prefix": {
+      "title": "Prefix to be added to the contact number",
+      "type": "integer"
+    },
+    "attachment": {
+      "title": "Attachment to be sent to the contact",
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string"
         },
-        "delay": {
-            "title": "Sets the delay between the messages sent",
-            "type": "integer"
+        "name": {
+          "type": "string"
         },
-        "prefix": {
-            "title": "Prefix to be added to the contact number",
-            "type": "integer"
+        "type": {
+          "type": "string"
         },
-        "attachment": {
-            "title": "Attachment to be sent to the contact",
-            "type": "object",
-            "properties": {
-                "url": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "lastModified": {
-                    "type": "number"
-                }
-            }
-        },
-        "buttons": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "string"
-                    },
-                    "text": {
-                        "type": "string"
-                    },
-                    "phoneNumber": {
-                        "type": "string"
-                    },
-                    "url": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "logs": {
-            "title": "List of logs",
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "level": {
-                        "type": "number"
-                    },
-                    "message": {
-                        "type": "string"
-                    },
-                    "attachment": {
-                        "type": "boolean"
-                    },
-                    "contact": {
-                        "type": "string"
-                    }
-                }
-            }
+        "lastModified": {
+          "type": "number"
         }
+      }
+    },
+    "buttons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "logs": {
+      "title": "List of logs",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "number"
+          },
+          "message": {
+            "type": "string"
+          },
+          "attachment": {
+            "type": "boolean"
+          },
+          "contact": {
+            "type": "string"
+          }
+        }
+      }
     }
+  }
 }

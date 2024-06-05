@@ -1,0 +1,55 @@
+{
+    "plugins": [
+        "react",
+        "@typescript-eslint",
+        "import"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "project": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:react/jsx-runtime",
+        "plugin:import/recommended",
+        "plugin:import/typescript",
+        "plugin:@typescript-eslint/recommended-type-checked",
+        "plugin:@typescript-eslint/stylistic-type-checked",
+        "plugin:prettier/recommended"
+    ],
+    "settings": {
+        "import/resolver": {
+            "typescript": {
+                "project": true
+            }
+        }
+    },
+    "rules": {
+        "@typescript-eslint/consistent-type-imports": "warn",
+        "import/order": [
+            "warn",
+            {
+                "alphabetize": {
+                    "order": "asc"
+                },
+                "groups": [
+                    "builtin",
+                    "external",
+                    "parent",
+                    "sibling",
+                    "index"
+                ]
+            }
+        ]
+    },
+    "ignorePatterns": [
+        "dist/",
+        "node_modules/",
+        "playwright.config.ts",
+        "postcss.config.js",
+        "tailwind.config.js",
+        "tests/",
+        "webpack/"
+    ]
+}

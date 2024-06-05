@@ -1,212 +1,212 @@
 {
-    "appName": {
-        "message": "WTF",
-        "description": "Extension name"
-    },
-    "appDesc": {
-        "message": "Chrome Extension that allows you to send messages in bulk via WhatsApp™ Web",
-        "description": "Extension description"
-    },
-    "logTableTitle": {
-        "message": "Send log",
-        "description": "Title of the send log table"
-    },
-    "numberLogTableTitle": {
-        "message": "Number",
-        "description": "Title of the number column of the send log table"
-    },
-    "messageLogTableTitle": {
-        "message": "Message",
-        "description": "Title of the message column of the send log table"
-    },
-    "attachmentLogTableTitle": {
-        "message": "Attachment",
-        "description": "Title of the attachment column of the send log table"
-    },
-    "datetimeLogTableTitle": {
-        "message": "Date/Time",
-        "description": "Title of the date/time column of the send log table"
-    },
-    "messageButtonsFormTitle": {
-        "message": "Buttons",
-        "description": "Title of the button form"
-    },
-    "importantNoteMessageButtonsForm": {
-        "message": "Important: The 'ID' type button may not work in all settings! Test before sending in bulk!",
-        "description": "Important note message from the button form"
-    },
-    "listTitleNoteMessageButtonsForm": {
-        "message": "You can create 3 types of buttons:",
-        "description": "List title note from the button form"
-    },
-    "firstListItemNoteMessageButtonsForm": {
-        "message": "$openTag$URL$closeTag$: Redirects to a website.",
-        "description": "First item from the list note of the button form",
-        "placeholders": {
-            "openTag": {
-                "content": "$1",
-                "example": "<b>"
-            },
-            "closeTag": {
-                "content": "$2",
-                "example": "</b>"
-            }
-        }
-    },
-    "secondListItemNoteMessageButtonsForm": {
-        "message": "$openTag$Phone Number$closeTag$: Calls a number.",
-        "description": "Second item from the list note of the button form",
-        "placeholders": {
-            "openTag": {
-                "content": "$1",
-                "example": "<b>"
-            },
-            "closeTag": {
-                "content": "$2",
-                "example": "</b>"
-            }
-        }
-    },
-    "thirdListItemNoteMessageButtonsForm": {
-        "message": "$openTag$ID$closeTag$: Sends the text back to the sender.",
-        "description": "Third item from the list note of the button form",
-        "placeholders": {
-            "openTag": {
-                "content": "$1",
-                "example": "<b>"
-            },
-            "closeTag": {
-                "content": "$2",
-                "example": "</b>"
-            }
-        }
-    },
-    "typeLabelMessageButtonsForm": {
-        "message": "Type",
-        "description": "Label of the type field of the button form"
-    },
-    "valueLabelMessageButtonsForm": {
-        "message": "Content",
-        "description": "Label of the content field of the button form"
-    },
-    "textLabelMessageButtonsForm": {
-        "message": "Text",
-        "description": "Label of the text field of the button form"
-    },
-    "urlTypeMessageButtonsForm": {
-        "message": "URL",
-        "description": "Value of the type field of the button form"
-    },
-    "phoneNumberTypeMessageButtonsForm": {
-        "message": "Phone Number",
-        "description": "Value of the type field of the button form"
-    },
-    "idTypeMessageButtonsForm": {
-        "message": "ID",
-        "description": "Value of the type field of the button form"
-    },
-    "attachmentLabelMessageForm": {
-        "message": "Select an attachment (Optional)",
-        "description": "Label of the attachment field of the message form"
-    },
-    "titleMessageForm": {
-        "message": "Message drafting",
-        "description": "Title of the message form"
-    },
-    "footerLabelMessageForm": {
-        "message": "If you wish to send only the attachment, keep the message field empty.",
-        "description": "Label of the footer field of the message form"
-    },
-    "footerSuggestionMessageForm": {
-        "message": "Suggestion: Send a message to your own number first to preview your message before sending it in bulk.",
-        "description": "Suggestion of the footer field of the message form"
-    },
-    "delayLabelMessageForm": {
-        "message": "Interval between messages",
-        "description": "Label of the interval field of the message form"
-    },
-    "countryCodePrefixMessageForm": {
-        "message": "Select a prefix to automatically add to the contact numbers:",
-        "description": "Label of the country code prefix field of the message form"
-    },
-    "defaultLabelSelectCountryCode": {
-        "message": "Without Prefix",
-        "description": "Label of the default value of the country code"
-    },
-    "duplicatedNumberPopup": {
-        "message": "Duplicated number!",
-        "description": "Duplicate number popup log"
-    },
-    "sendingMessagePopup": {
-        "message": "Sending messages...",
-        "description": "Title of the message sending popup"
-    },
-    "messageTimePopup": {
-        "message": "Time:",
-        "description": "Send time popup log"
-    },
-    "sendingPopup": {
-        "message": "Sending...",
-        "description": "Sending popup log"
-    },
-    "waitingPopup": {
-        "message": "Waiting:",
-        "description": "Waiting popup log"
-    },
-    "messagesSentPopup": {
-        "message": "Sent:",
-        "description": "Sent messages popup log"
-    },
-    "messagesLeftPopup": {
-        "message": "Remaining:",
-        "description": "Remaining messages popup log"
-    },
-    "messagesNotSentPopup": {
-        "message": "Not sent:",
-        "description": "Not sent messages popup log"
-    },
-    "duplicatedContactsPopup": {
-        "message": "Duplicated contacts:",
-        "description": "Duplicated contacts popup log"
-    },
-    "prefixFooterNotePopup": {
-        "message": "Don't forget to add the area code for each contact.",
-        "description": "Prefix footer note popup log"
-    },
-    "messagePlaceholderPopup": {
-        "message": "Add the list of numbers for message sending, separated by commas or each number on a new line.",
-        "description": "Placeholder of the message field of the popup"
-    },
-    "defaultMessage": {
-        "message": "Sent by WTF",
-        "description": "Default message"
-    },
-    "addButtonLabel": {
-        "message": "Add",
-        "description": "Label of the add button"
-    },
-    "updateButtonLabel": {
-        "message": "Update",
-        "description": "Label of the update button"
-    },
-    "cleanButtonLabel": {
-        "message": "Clear",
-        "description": "Label of the clear button"
-    },
-    "cancelButtonLabel": {
-        "message": "Cancel",
-        "description": "Label of the cancel button"
-    },
-    "okButtonLabel": {
-        "message": "OK",
-        "description": "Label of the OK button"
-    },
-    "sendButtonLabel": {
-        "message": "Send",
-        "description": "Label of the send button"
-    },
-    "optionsButtonLabel": {
-        "message": "Options",
-        "description": "Label of the options button"
+  "appName": {
+    "message": "WTF",
+    "description": "Extension name"
+  },
+  "appDesc": {
+    "message": "Chrome Extension that allows you to send messages in bulk via WhatsApp™ Web",
+    "description": "Extension description"
+  },
+  "logTableTitle": {
+    "message": "Send log",
+    "description": "Title of the send log table"
+  },
+  "numberLogTableTitle": {
+    "message": "Number",
+    "description": "Title of the number column of the send log table"
+  },
+  "messageLogTableTitle": {
+    "message": "Message",
+    "description": "Title of the message column of the send log table"
+  },
+  "attachmentLogTableTitle": {
+    "message": "Attachment",
+    "description": "Title of the attachment column of the send log table"
+  },
+  "datetimeLogTableTitle": {
+    "message": "Date/Time",
+    "description": "Title of the date/time column of the send log table"
+  },
+  "messageButtonsFormTitle": {
+    "message": "Buttons",
+    "description": "Title of the button form"
+  },
+  "importantNoteMessageButtonsForm": {
+    "message": "Important: The 'ID' type button may not work in all settings! Test before sending in bulk!",
+    "description": "Important note message from the button form"
+  },
+  "listTitleNoteMessageButtonsForm": {
+    "message": "You can create 3 types of buttons:",
+    "description": "List title note from the button form"
+  },
+  "firstListItemNoteMessageButtonsForm": {
+    "message": "$openTag$URL$closeTag$: Redirects to a website.",
+    "description": "First item from the list note of the button form",
+    "placeholders": {
+      "openTag": {
+        "content": "$1",
+        "example": "<b>"
+      },
+      "closeTag": {
+        "content": "$2",
+        "example": "</b>"
+      }
     }
+  },
+  "secondListItemNoteMessageButtonsForm": {
+    "message": "$openTag$Phone Number$closeTag$: Calls a number.",
+    "description": "Second item from the list note of the button form",
+    "placeholders": {
+      "openTag": {
+        "content": "$1",
+        "example": "<b>"
+      },
+      "closeTag": {
+        "content": "$2",
+        "example": "</b>"
+      }
+    }
+  },
+  "thirdListItemNoteMessageButtonsForm": {
+    "message": "$openTag$ID$closeTag$: Sends the text back to the sender.",
+    "description": "Third item from the list note of the button form",
+    "placeholders": {
+      "openTag": {
+        "content": "$1",
+        "example": "<b>"
+      },
+      "closeTag": {
+        "content": "$2",
+        "example": "</b>"
+      }
+    }
+  },
+  "typeLabelMessageButtonsForm": {
+    "message": "Type",
+    "description": "Label of the type field of the button form"
+  },
+  "valueLabelMessageButtonsForm": {
+    "message": "Content",
+    "description": "Label of the content field of the button form"
+  },
+  "textLabelMessageButtonsForm": {
+    "message": "Text",
+    "description": "Label of the text field of the button form"
+  },
+  "urlTypeMessageButtonsForm": {
+    "message": "URL",
+    "description": "Value of the type field of the button form"
+  },
+  "phoneNumberTypeMessageButtonsForm": {
+    "message": "Phone Number",
+    "description": "Value of the type field of the button form"
+  },
+  "idTypeMessageButtonsForm": {
+    "message": "ID",
+    "description": "Value of the type field of the button form"
+  },
+  "attachmentLabelMessageForm": {
+    "message": "Select an attachment (Optional)",
+    "description": "Label of the attachment field of the message form"
+  },
+  "titleMessageForm": {
+    "message": "Message drafting",
+    "description": "Title of the message form"
+  },
+  "footerLabelMessageForm": {
+    "message": "If you wish to send only the attachment, keep the message field empty.",
+    "description": "Label of the footer field of the message form"
+  },
+  "footerSuggestionMessageForm": {
+    "message": "Suggestion: Send a message to your own number first to preview your message before sending it in bulk.",
+    "description": "Suggestion of the footer field of the message form"
+  },
+  "delayLabelMessageForm": {
+    "message": "Interval between messages",
+    "description": "Label of the interval field of the message form"
+  },
+  "countryCodePrefixMessageForm": {
+    "message": "Select a prefix to automatically add to the contact numbers:",
+    "description": "Label of the country code prefix field of the message form"
+  },
+  "defaultLabelSelectCountryCode": {
+    "message": "Without Prefix",
+    "description": "Label of the default value of the country code"
+  },
+  "duplicatedNumberPopup": {
+    "message": "Duplicated number!",
+    "description": "Duplicate number popup log"
+  },
+  "sendingMessagePopup": {
+    "message": "Sending messages...",
+    "description": "Title of the message sending popup"
+  },
+  "messageTimePopup": {
+    "message": "Time:",
+    "description": "Send time popup log"
+  },
+  "sendingPopup": {
+    "message": "Sending...",
+    "description": "Sending popup log"
+  },
+  "waitingPopup": {
+    "message": "Waiting:",
+    "description": "Waiting popup log"
+  },
+  "messagesSentPopup": {
+    "message": "Sent:",
+    "description": "Sent messages popup log"
+  },
+  "messagesLeftPopup": {
+    "message": "Remaining:",
+    "description": "Remaining messages popup log"
+  },
+  "messagesNotSentPopup": {
+    "message": "Not sent:",
+    "description": "Not sent messages popup log"
+  },
+  "duplicatedContactsPopup": {
+    "message": "Duplicated contacts:",
+    "description": "Duplicated contacts popup log"
+  },
+  "prefixFooterNotePopup": {
+    "message": "Don't forget to add the area code for each contact.",
+    "description": "Prefix footer note popup log"
+  },
+  "messagePlaceholderPopup": {
+    "message": "Add the list of numbers for message sending, separated by commas or each number on a new line.",
+    "description": "Placeholder of the message field of the popup"
+  },
+  "defaultMessage": {
+    "message": "Sent by WTF",
+    "description": "Default message"
+  },
+  "addButtonLabel": {
+    "message": "Add",
+    "description": "Label of the add button"
+  },
+  "updateButtonLabel": {
+    "message": "Update",
+    "description": "Label of the update button"
+  },
+  "cleanButtonLabel": {
+    "message": "Clear",
+    "description": "Label of the clear button"
+  },
+  "cancelButtonLabel": {
+    "message": "Cancel",
+    "description": "Label of the cancel button"
+  },
+  "okButtonLabel": {
+    "message": "OK",
+    "description": "Label of the OK button"
+  },
+  "sendButtonLabel": {
+    "message": "Send",
+    "description": "Label of the send button"
+  },
+  "optionsButtonLabel": {
+    "message": "Options",
+    "description": "Label of the options button"
+  }
 }
