@@ -154,16 +154,16 @@
     "description": "Log do popup de aguardando"
   },
   "messagesSentPopup": {
-    "message": "Enviadas:",
-    "description": "Log do popup de mensagens enviadas"
+    "message": "Processadas:",
+    "description": "Log do popup de mensagens processadas"
   },
   "messagesLeftPopup": {
     "message": "Restantes:",
     "description": "Log do popup de mensagens restantes"
   },
   "messagesNotSentPopup": {
-    "message": "Não enviadas:",
-    "description": "Log do popup de mensagens não enviadas"
+    "message": "Na fila:",
+    "description": "Log do popup de mensagens na fila"
   },
   "duplicatedContactsPopup": {
     "message": "Contatos duplicados:",

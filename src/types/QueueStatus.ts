@@ -4,7 +4,7 @@ export default interface QueueStatus {
   processedItems: number;
   remainingItems: number;
   elapsedTime: number;
-  sendingMessage: number | false;
+  processing: number | false;
   waiting: number | false;
   items: {
     detail: unknown;

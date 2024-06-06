@@ -211,7 +211,7 @@ class Popup extends Component<
             <div className="grid grid-cols-2 gap-4 p-4">
               <div>{this.messageTimePopup}</div>
               <div>{this.formatTime(this.state.status?.elapsedTime ?? 0)}</div>
-              {this.state.status?.sendingMessage && (
+              {this.state.status?.processing && (
                 <div className="col-span-2">{this.sendingPopup}</div>
               )}
               {this.state.status?.waiting && <div>{this.waitingPopup}</div>}

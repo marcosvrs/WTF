@@ -95,16 +95,13 @@ async function sendMessage({
     }
     findContact = await window.WPP.contact.queryExists(truncatedNumber);
     if (!findContact) {
-      console.log("Número não encontrado!");
-      return void WebpageMessageManager.sendMessage(
-        ChromeMessageTypes.ADD_LOG,
-        {
-          level: 1,
-          message: "Número não encontrado!",
-          attachment: !!message.attachment,
-          contact,
-        },
-      );
+      void WebpageMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, {
+        level: 1,
+        message: "Number not found!",
+        attachment: !!message.attachment,
+        contact,
+      });
+      throw new Error("Number not found!");
     }
   }
 
@@ -120,11 +117,17 @@ async function sendMessage({
             ? value.messageSendResult
             : undefined;
       if (result !== window.WPP.whatsapp.enums.SendMsgResult.OK) {
-        throw new Error(`Falha ao enviar a mensagem: ${JSON.stringify(value)}`);
+        void WebpageMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, {
+          level: 1,
+          message: `Failed to send the message: ${JSON.stringify(value)}`,
+          attachment: !!message.attachment,
+          contact: contact,
+        });
+        throw new Error(`Failed to send the message: ${JSON.stringify(value)}`);
       } else {
         void WebpageMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, {
           level: 3,
-          message: "Mensagem enviada com sucesso!",
+          message: "Message sent sucessfully!",
           attachment: !!message.attachment,
           contact: contact,
         });

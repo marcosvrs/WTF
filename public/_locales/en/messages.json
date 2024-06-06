@@ -154,16 +154,16 @@
     "description": "Waiting popup log"
   },
   "messagesSentPopup": {
-    "message": "Sent:",
-    "description": "Sent messages popup log"
+    "message": "Processed:",
+    "description": "Processed messages popup log"
   },
   "messagesLeftPopup": {
     "message": "Remaining:",
     "description": "Remaining messages popup log"
   },
   "messagesNotSentPopup": {
-    "message": "Not sent:",
-    "description": "Not sent messages popup log"
+    "message": "Queued:",
+    "description": "Queued messages popup log"
   },
   "duplicatedContactsPopup": {
     "message": "Duplicated contacts:",

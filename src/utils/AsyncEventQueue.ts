@@ -14,7 +14,7 @@ class AsyncEventQueue {
   private remainingItems = 0;
   private items: { detail: unknown; startTime: number; elapsedTime: number }[] =
     [];
-  private sendingMessage: number | false = false;
+  private processing: number | false = false;
   private waiting: number | false = false;
   private aborted = false;
   private paused = false;
@@ -55,9 +55,13 @@ class AsyncEventQueue {
         if (item === undefined) continue;
         this.processedItems++;
         const startTime = Date.now();
-        this.sendingMessage = Date.now();
-        await item.eventHandler(item.detail);
-        this.sendingMessage = false;
+        this.processing = Date.now();
+        try {
+          await item.eventHandler(item.detail);
+        } catch (error) {
+          console.error(error);
+        }
+        this.processing = false;
         const elapsedTime = Date.now() - startTime;
         this.items.push({ detail: item.detail, startTime, elapsedTime });
 
@@ -114,10 +118,10 @@ class AsyncEventQueue {
         : this.endTime - this.startTime,
       isProcessing: this.isProcessing,
       items: this.items,
-      sendingMessage:
-        this.sendingMessage === false
-          ? this.sendingMessage
-          : Date.now() - this.sendingMessage,
+      processing:
+        this.processing === false
+          ? this.processing
+          : Date.now() - this.processing,
       waiting:
         this.waiting === false ? this.waiting : Date.now() - this.waiting,
       processedItems: this.processedItems,
