@@ -1,4 +1,4 @@
-import type QueueStatus from "../types/QueueStatus";
+import type QueueStatus from "types/QueueStatus";
 
 interface QueueItem<T> {
   eventHandler: (detail: T) => Promise<void>;
@@ -40,11 +40,10 @@ class AsyncEventQueue {
 
       while (this.queue.length > 0) {
         if (this.paused) {
-          await new Promise((resolve) => {
-            this.pausePromiseResolve = resolve;
-          });
+          await new Promise((resolve) => (this.pausePromiseResolve = resolve));
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (this.aborted) {
           this.remainingItems = this.queue.length;
           this.queue = [];
@@ -72,11 +71,12 @@ class AsyncEventQueue {
           while (Date.now() - waitStart < waitTarget) {
             await this.wait(100);
             if (this.paused) {
-              await new Promise((resolve) => {
-                this.pausePromiseResolve = resolve;
-              });
+              await new Promise(
+                (resolve) => (this.pausePromiseResolve = resolve),
+              );
             }
 
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (this.aborted) {
               this.remainingItems = this.queue.length;
               this.queue = [];

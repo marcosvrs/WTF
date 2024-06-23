@@ -1,7 +1,8 @@
-import type { ChangeEvent } from "react";
-import { Component, createRef } from "react";
-import type { CountryCode } from "../../types/CountryCode";
+import { type ChangeEvent, Component, createRef } from "react";
+import ENcountryCodes from "../../countryCodes.en.json";
+import PTcountryCodes from "../../countryCodes.pt.json";
 import { ControlInput } from "../atoms/ControlFactory";
+import type { CountryCode } from "types/CountryCode";
 
 export default class SelectCountryCode extends Component<
   { options?: CountryCode[] },
@@ -19,9 +20,9 @@ export default class SelectCountryCode extends Component<
       "defaultLabelSelectCountryCode",
     );
     const defaultOptions: CountryCode[] = [
-      { value: 0, label: this.defaultLabelSelectCountryCode },
-    ];
-    const { options = defaultOptions } = props;
+        { value: 0, label: this.defaultLabelSelectCountryCode },
+      ],
+      { options = defaultOptions } = props;
     this.state = {
       isOpen: false,
       searchValue: "",
@@ -32,32 +33,19 @@ export default class SelectCountryCode extends Component<
       options,
       filteredOptions: options,
     };
-    void this.loadCountryCodes(defaultOptions);
+    this.loadCountryCodes(defaultOptions);
   }
 
-  async loadCountryCodes(defaultOptions: CountryCode[] = []) {
+  loadCountryCodes(defaultOptions: CountryCode[] = []) {
     const language = chrome.i18n.getUILanguage().substring(0, 2);
-    try {
-      const module: { default: CountryCode[] } = (await import(
-        `../../countryCodes.${language}.json`
-      )) as { default: CountryCode[] };
-      this.setState((prevState) => ({
-        ...prevState,
-        options: [...defaultOptions, ...module.default],
-      }));
-    } catch (error) {
-      console.warn(
-        `Language translation not found for ${language}, defaulting to English`,
-        error,
-      );
-      const module: { default: CountryCode[] } = await import(
-        "../../countryCodes.en.json"
-      );
-      this.setState((prevState) => ({
-        ...prevState,
-        options: [...defaultOptions, ...module.default],
-      }));
+    let module = ENcountryCodes;
+    if (language === "pt") {
+      module = PTcountryCodes;
     }
+    this.setState((prevState) => ({
+      ...prevState,
+      options: [...defaultOptions, ...module],
+    }));
   }
 
   wrapperRef = createRef<HTMLDivElement>();
@@ -100,15 +88,16 @@ export default class SelectCountryCode extends Component<
   override componentDidMount() {
     document.addEventListener("mousedown", this.handleClickOutside);
     void chrome.storage.local.get(
-      { prefix: chrome.i18n.getUILanguage() === "pt_BR" ? 55 : 0 },
-      (data: Record<string, number>) => {
-        if ("prefix" in data) {
-          this.setState({
-            selectedValue: this.state.options.find(
-              (option) => option.value === data["prefix"],
-            ),
-          });
-        }
+      ({
+        prefix = chrome.i18n.getUILanguage() === "pt_BR" ? 55 : 0,
+      }: {
+        prefix: number;
+      }) => {
+        this.setState({
+          selectedValue: this.state.options.find(
+            (option) => option.value === prefix,
+          ),
+        });
       },
     );
   }
@@ -201,7 +190,9 @@ export default class SelectCountryCode extends Component<
                   <li
                     key={index}
                     className={`p-2 cursor-pointer hover:bg-blue-400 dark:hover:bg-blue-600${selectedValue === option ? " bg-blue-200 dark:bg-blue-800" : ""}`}
-                    onClick={() => this.handleSelect(option)}
+                    onClick={() => {
+                      this.handleSelect(option);
+                    }}
                   >
                     {option.label}
                   </li>

@@ -1,7 +1,7 @@
 import { Component } from "react";
-import type Log from "../../types/Log";
 import Button from "../atoms/Button";
 import Box from "../molecules/Box";
+import type Log from "types/Log";
 
 export default class LogTable extends Component<
   { className?: string },
@@ -23,9 +23,9 @@ export default class LogTable extends Component<
   cleanButtonLabel = chrome.i18n.getMessage("cleanButtonLabel");
 
   override componentDidMount() {
-    void chrome.storage.local.get({ logs: [] }, (data: Record<string, Log[]>) =>
-      this.setState({ logs: data["logs"] ?? [] }),
-    );
+    void chrome.storage.local.get(({ logs = [] }: { logs: Log[] }) => {
+      this.setState({ logs });
+    });
   }
 
   handleClear = () => {
@@ -34,9 +34,9 @@ export default class LogTable extends Component<
   };
 
   handleUpdate = () => {
-    void chrome.storage.local.get({ logs: [] }, (data: Record<string, Log[]>) =>
-      this.setState({ logs: data["logs"] ?? [] }),
-    );
+    void chrome.storage.local.get(({ logs = [] }: { logs: Log[] }) => {
+      this.setState({ logs });
+    });
   };
 
   override render() {

@@ -17,16 +17,25 @@ export class AsyncStorageManager {
         [MESSAGE_STORE_NAME],
         "readonly",
       );
-      if (!transaction) return reject(new Error("Database not initialized"));
+      if (!transaction) {
+        reject(new Error("Database not initialized"));
+        return;
+      }
 
       const messageStore = transaction.objectStore(MESSAGE_STORE_NAME);
-      const request = messageStore.get(hash) as IDBRequest<{
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const request: IDBRequest<{
         hash: string;
         message: Pick<Message, "message" | "attachment" | "buttons">;
-      }>;
+      }> = messageStore.get(hash);
 
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => {
+        reject(request.error ?? new Error("Unknown error in retrieve Message"));
+      };
+
+      request.onsuccess = () => {
+        resolve(request.result);
+      };
     });
   }
 
@@ -41,11 +50,14 @@ export class AsyncStorageManager {
         [MESSAGE_STORE_NAME],
         "readwrite",
       );
-      if (!transaction) return reject(new Error("Database not initialized"));
+      if (!transaction) {
+        reject(new Error("Database not initialized"));
+        return;
+      }
 
       const messageStore = transaction.objectStore(MESSAGE_STORE_NAME);
 
-      hash = hash ?? AsyncStorageManager.calculateMessageHash(messageData);
+      hash ??= AsyncStorageManager.calculateMessageHash(messageData);
 
       const request = messageStore.add({
         hash,
@@ -58,9 +70,12 @@ export class AsyncStorageManager {
 
       request.onerror = () => {
         if (request.error?.name === "ConstraintError") resolve();
-        else reject(request.error);
+        else
+          reject(request.error ?? new Error("Unknown error in store Message"));
       };
-      request.onsuccess = () => resolve();
+      request.onsuccess = () => {
+        resolve();
+      };
     });
   }
 
@@ -68,8 +83,14 @@ export class AsyncStorageManager {
     return new Promise<IDBDatabase>((resolve, reject) => {
       const openRequest = indexedDB.open(DATABASE_NAME, 1);
 
-      openRequest.onerror = () => reject(openRequest.error);
-      openRequest.onsuccess = () => resolve(openRequest.result);
+      openRequest.onerror = () => {
+        reject(
+          openRequest.error ?? new Error("Unknown error in open Database"),
+        );
+      };
+      openRequest.onsuccess = () => {
+        resolve(openRequest.result);
+      };
       openRequest.onupgradeneeded = () => {
         const db = openRequest.result;
         if (!db.objectStoreNames.contains(MESSAGE_STORE_NAME)) {
@@ -87,13 +108,22 @@ export class AsyncStorageManager {
         [MESSAGE_STORE_NAME],
         "readwrite",
       );
-      if (!transaction) return reject(new Error("Database not initialized"));
+      if (!transaction) {
+        reject(new Error("Database not initialized"));
+        return;
+      }
 
       const messageStore = transaction.objectStore(MESSAGE_STORE_NAME);
       const clearRequest = messageStore.clear();
 
-      clearRequest.onerror = () => reject(clearRequest.error);
-      clearRequest.onsuccess = () => resolve();
+      clearRequest.onerror = () => {
+        reject(
+          clearRequest.error ?? new Error("Unknown error in clear Database"),
+        );
+      };
+      clearRequest.onsuccess = () => {
+        resolve();
+      };
     });
   }
 
@@ -102,11 +132,13 @@ export class AsyncStorageManager {
   ): number {
     const serialized = JSON.stringify({
       message: messageData.message,
-      attachment: {
-        name: messageData.attachment?.name,
-        lastModified: messageData.attachment?.lastModified,
-        type: messageData.attachment?.type,
-      },
+      attachment: messageData.attachment
+        ? {
+            name: messageData.attachment.name,
+            lastModified: messageData.attachment.lastModified,
+            type: messageData.attachment.type,
+          }
+        : undefined,
       buttons: messageData.buttons,
     });
     let hash = 0;

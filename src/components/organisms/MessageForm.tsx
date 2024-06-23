@@ -1,14 +1,14 @@
-import type { ChangeEvent } from "react";
-import { Component, createRef } from "react";
-import type { Attachment } from "../../types/Attachment";
+import { type ChangeEvent, Component, createRef } from "react";
 import Button from "../atoms/Button";
 import { ControlTextArea } from "../atoms/ControlFactory";
 import Box from "../molecules/Box";
 import SelectCountryCode from "../molecules/SelectCountryCode";
+import type { Attachment } from "types/Attachment";
+import type { Message } from "types/Message";
 
 export default class MessageForm extends Component<
   { className?: string },
-  { message: string; attachment?: Attachment | undefined; delay: number }
+  { message: string; attachment?: Attachment | null; delay: number }
 > {
   constructor(props: { className?: string }) {
     super(props);
@@ -38,28 +38,31 @@ export default class MessageForm extends Component<
 
   override componentDidMount() {
     void chrome.storage.local.get(
-      { message: this.defaultMessage, attachment: undefined, delay: 0 },
-      (data) => {
+      ({
+        message = this.defaultMessage,
+        attachment,
+        delay = 0,
+      }: Omit<Message, "contact">) => {
         this.setState({
-          message: data["message"] as string,
-          attachment: data["attachment"] as Attachment | undefined,
-          delay: (data["delay"] as number | undefined) ?? 0,
+          message,
+          attachment,
+          delay,
         });
-        if (data["attachment"] && this.fileRef.current) {
-          const attachment = data["attachment"] as Attachment;
+        if (attachment?.url && this.fileRef.current) {
           void fetch(attachment.url)
             .then((response) => response.blob())
             .then((blob) => {
               const myFile = new File([blob], attachment.name, {
-                type: attachment.type,
-                lastModified: attachment.lastModified,
-              });
-              const dataTransfer = new DataTransfer();
+                  type: attachment.type,
+                  lastModified: attachment.lastModified,
+                }),
+                dataTransfer = new DataTransfer();
               dataTransfer.items.add(myFile);
-              if (this.fileRef.current) {
+              if (this.fileRef.current)
                 this.fileRef.current.files = dataTransfer.files;
-              }
             });
+        } else {
+          console.log("No attachment to set");
         }
       },
     );
@@ -75,28 +78,13 @@ export default class MessageForm extends Component<
   ) {
     const { message, attachment, delay } = this.state;
 
-    if (prevState.message !== message) {
+    if (prevState.message !== message)
       void chrome.storage.local.set({ message });
-    }
 
-    if (prevState.delay !== delay) {
-      void chrome.storage.local.set({ delay });
-    }
+    if (prevState.delay !== delay) void chrome.storage.local.set({ delay });
 
-    if (prevState.attachment?.url !== attachment?.url) {
-      if (!attachment) {
-        void chrome.storage.local.set({ attachment });
-      } else {
-        void chrome.storage.local.set({
-          attachment: {
-            name: attachment.name,
-            type: attachment.type,
-            url: attachment.url,
-            lastModified: attachment.lastModified,
-          },
-        });
-      }
-    }
+    if (prevState.attachment.url !== attachment?.url)
+      void chrome.storage.local.set({ attachment });
   }
 
   handleMessageChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -105,12 +93,18 @@ export default class MessageForm extends Component<
 
   handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      const [file] = event.target.files;
-      if (!file) return;
+      const file = event.target.files.item(0);
+      if (!file) {
+        console.error("No file selected");
+        return;
+      }
 
       const reader = new FileReader();
       reader.onload = (ev) => {
-        if (!ev.target?.result) return;
+        if (!ev.target?.result) {
+          console.error("No file content");
+          return;
+        }
         const decoder = new TextDecoder("utf-8"); // Assuming UTF-8 encoding
 
         this.setState({
@@ -196,7 +190,7 @@ export default class MessageForm extends Component<
               ref={this.fileRef}
               onChange={this.handleFileChange}
             />
-            {!!attachment && (
+            {Boolean(attachment) && (
               <Button variant="danger" onClick={this.handleFileClear}>
                 {this.cleanButtonLabel}
               </Button>
@@ -216,7 +210,9 @@ export default class MessageForm extends Component<
             max="10"
             step="0.1"
             value={this.state.delay}
-            onChange={(e) => this.setState({ delay: +e.target.value })}
+            onChange={(e) => {
+              this.setState({ delay: Number(e.target.value) });
+            }}
             className={[
               "w-full",
               "h-1.5",

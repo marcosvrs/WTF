@@ -4,7 +4,7 @@ import type { Attachment } from "./Attachment";
 export interface Message {
   contact: string;
   message: string;
-  attachment: Attachment;
+  attachment?: Attachment;
   buttons: MessageButtonsTypes[];
   delay?: number;
 }

@@ -1,11 +1,9 @@
 import WPP from "@wppconnect/wa-js";
-import { ChromeMessageTypes } from "./types/ChromeMessageTypes";
-import type { Message } from "./types/Message";
-import AsyncChromeMessageManager from "./utils/AsyncChromeMessageManager";
-import asyncQueue from "./utils/AsyncEventQueue";
-import storageManager, {
-  AsyncStorageManager,
-} from "./utils/AsyncStorageManager";
+import { ChromeMessageTypes } from "types/ChromeMessageTypes";
+import type { Message } from "types/Message";
+import AsyncChromeMessageManager from "utils/AsyncChromeMessageManager";
+import asyncQueue from "utils/AsyncEventQueue";
+import storageManager, { AsyncStorageManager } from "utils/AsyncStorageManager";
 
 declare global {
   interface Window {
@@ -15,15 +13,16 @@ declare global {
 
 const WebpageMessageManager = new AsyncChromeMessageManager("webpage");
 
-async function sendWPPMessage({
+const sendWPPMessage = async ({
   contact,
   message,
   attachment,
   buttons = [],
-}: Message) {
-  if (attachment && buttons.length > 0) {
+}: Message) => {
+  if (attachment?.url && buttons.length > 0) {
     const response = await fetch(attachment.url);
     const data = await response.blob();
+
     return window.WPP.chat.sendFileMessage(
       contact,
       new File([data], attachment.name, {
@@ -44,9 +43,10 @@ async function sendWPPMessage({
       waitForAck: true,
       buttons,
     });
-  } else if (attachment) {
+  } else if (attachment?.url) {
     const response = await fetch(attachment.url);
     const data = await response.blob();
+
     return window.WPP.chat.sendFileMessage(
       contact,
       new File([data], attachment.name, {
@@ -60,21 +60,19 @@ async function sendWPPMessage({
         waitForAck: true,
       },
     );
-  } else {
-    return window.WPP.chat.sendTextMessage(contact, message, {
-      createChat: true,
-      waitForAck: true,
-    });
   }
-}
-
-async function sendMessage({
+  return window.WPP.chat.sendTextMessage(contact, message, {
+    createChat: true,
+    waitForAck: true,
+  });
+};
+const sendMessage = async ({
   contact,
   hash,
 }: {
   contact: string;
   hash: number;
-}) {
+}) => {
   if (!window.WPP.conn.isAuthenticated()) {
     const errorMsg = "Conecte-se primeiro!";
     alert(errorMsg);
@@ -98,7 +96,7 @@ async function sendMessage({
       void WebpageMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, {
         level: 1,
         message: "Number not found!",
-        attachment: !!message.attachment,
+        attachment: Boolean(message.attachment),
         contact,
       });
       throw new Error("Number not found!");
@@ -108,7 +106,7 @@ async function sendMessage({
   contact = findContact.wid.user;
 
   const result = await sendWPPMessage({ contact, ...message });
-  return result?.sendMsgResult.then(
+  return result.sendMsgResult.then(
     (value: { messageSendResult?: string } | string) => {
       const result: string | undefined =
         typeof value === "string"
@@ -120,23 +118,22 @@ async function sendMessage({
         void WebpageMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, {
           level: 1,
           message: `Failed to send the message: ${JSON.stringify(value)}`,
-          attachment: !!message.attachment,
-          contact: contact,
+          attachment: Boolean(message.attachment),
+          contact,
         });
         throw new Error(`Failed to send the message: ${JSON.stringify(value)}`);
       } else {
         void WebpageMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, {
           level: 3,
           message: "Message sent sucessfully!",
-          attachment: !!message.attachment,
-          contact: contact,
+          attachment: Boolean(message.attachment),
+          contact,
         });
       }
     },
   );
-}
-
-async function addToQueue(message: Message) {
+};
+const addToQueue = async (message: Message) => {
   try {
     const messageHash = AsyncStorageManager.calculateMessageHash(message);
     await storageManager.storeMessage(message, messageHash);
@@ -154,13 +151,13 @@ async function addToQueue(message: Message) {
       void WebpageMessageManager.sendMessage(ChromeMessageTypes.ADD_LOG, {
         level: 1,
         message: error.message,
-        attachment: !!message.attachment,
+        attachment: Boolean(message.attachment),
         contact: message.contact,
       });
     }
     throw error;
   }
-}
+};
 
 WebpageMessageManager.addHandler(ChromeMessageTypes.PAUSE_QUEUE, () => {
   try {
@@ -191,17 +188,15 @@ WebpageMessageManager.addHandler(ChromeMessageTypes.STOP_QUEUE, () => {
 
 WebpageMessageManager.addHandler(
   ChromeMessageTypes.SEND_MESSAGE,
-  async (message) => {
-    if (window.WPP.isReady) {
-      return addToQueue(message);
-    } else {
-      return new Promise((resolve, reject) => {
-        window.WPP.webpack.onReady(() => {
-          addToQueue(message).then(resolve).catch(reject);
-        });
-      });
-    }
-  },
+  async (message) =>
+    window.WPP.isReady
+      ? addToQueue(message)
+      : new Promise((resolve, reject) => {
+          window.WPP.webpack.onReady(
+            // eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable
+            () => void addToQueue(message).then(resolve).catch(reject),
+          );
+        }),
 );
 
 WebpageMessageManager.addHandler(ChromeMessageTypes.QUEUE_STATUS, () =>
@@ -210,8 +205,9 @@ WebpageMessageManager.addHandler(ChromeMessageTypes.QUEUE_STATUS, () =>
 
 void storageManager.clearDatabase();
 
-WPP.webpack?.onInjected(() => {
-  console.log("WTF: Loader injected!");
-});
-
-WPP.webpack?.injectLoader();
+// @TODO: Remove workaround to inject the loader
+try {
+  WPP.webpack.injectLoader();
+} catch {
+  window.location.reload();
+}
