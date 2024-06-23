@@ -1,68 +1,70 @@
-import type { ComponentClass } from "react";
-import type React from "react";
-import { Component } from "react";
+import {
+  Component,
+  type InputHTMLAttributes,
+  type SelectHTMLAttributes,
+  type TextareaHTMLAttributes,
+} from "react";
 
-interface ControlPropsMap {
-  input: React.InputHTMLAttributes<HTMLInputElement>;
-  textarea: React.TextareaHTMLAttributes<HTMLTextAreaElement>;
-  select: React.SelectHTMLAttributes<HTMLSelectElement>;
-}
+const classNames = [
+  "w-full",
+  "flex-auto",
+  "bg-slate-100",
+  "dark:bg-slate-900",
+  "border",
+  "border-slate-400",
+  "dark:border-slate-600",
+  "p-1",
+  "rounded-lg",
+  "transition-shadow",
+  "ease-in-out",
+  "duration-150",
+  "focus:shadow-equal",
+  "focus:shadow-blue-800",
+  "dark:focus:shadow-blue-200",
+  "focus:outline-none",
+];
 
-class ControlFactory {
-  static create<T extends keyof ControlPropsMap>(
-    type: T,
-  ): ComponentClass<ControlPropsMap[T]> {
-    return class CustomInput extends Component<ControlPropsMap[T]> {
-      override render() {
-        const { className = "", children } = this.props;
-        const classNames = [
-          "w-full",
-          "flex-auto",
-          "bg-slate-100",
-          "dark:bg-slate-900",
-          "border",
-          "border-slate-400",
-          "dark:border-slate-600",
-          "p-1",
-          "rounded-lg",
-          "transition-shadow",
-          "ease-in-out",
-          "duration-150",
-          "focus:shadow-equal",
-          "focus:shadow-blue-800",
-          "dark:focus:shadow-blue-200",
-          "focus:outline-none",
-        ];
+export class ControlInput extends Component<
+  InputHTMLAttributes<HTMLInputElement>
+> {
+  override render() {
+    const { className = "" } = this.props;
 
-        if (type === "input") {
-          return (
-            <input
-              {...(this.props as ControlPropsMap["input"])}
-              className={[...classNames, ...className.split(" ")].join(" ")}
-            />
-          );
-        } else if (type === "textarea") {
-          return (
-            <textarea
-              {...(this.props as ControlPropsMap["textarea"])}
-              className={[...classNames, ...className.split(" ")].join(" ")}
-            />
-          );
-        } else {
-          return (
-            <select
-              {...(this.props as ControlPropsMap["select"])}
-              className={[...classNames, ...className.split(" ")].join(" ")}
-            >
-              {children}
-            </select>
-          );
-        }
-      }
-    };
+    return (
+      <input
+        {...this.props}
+        className={[...classNames, ...className.split(" ")].join(" ")}
+      />
+    );
   }
 }
 
-export const ControlInput = ControlFactory.create("input");
-export const ControlTextArea = ControlFactory.create("textarea");
-export const ControlSelect = ControlFactory.create("select");
+export class ControlTextArea extends Component<
+  TextareaHTMLAttributes<HTMLTextAreaElement>
+> {
+  override render() {
+    const { className = "" } = this.props;
+    return (
+      <textarea
+        {...this.props}
+        className={[...classNames, ...className.split(" ")].join(" ")}
+      />
+    );
+  }
+}
+
+export class ControlSelect extends Component<
+  SelectHTMLAttributes<HTMLSelectElement>
+> {
+  override render() {
+    const { className = "", children } = this.props;
+    return (
+      <select
+        {...this.props}
+        className={[...classNames, ...className.split(" ")].join(" ")}
+      >
+        {children}
+      </select>
+    );
+  }
+}

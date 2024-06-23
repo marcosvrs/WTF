@@ -1,5 +1,4 @@
-import type { HTMLAttributes, ReactNode } from "react";
-import { Component } from "react";
+import { Component, type HTMLAttributes, type ReactNode } from "react";
 
 interface BoxProps extends HTMLAttributes<HTMLDivElement> {
   title?: string;
@@ -37,7 +36,7 @@ export default class Box extends Component<BoxProps, unknown> {
           ...className.split(" "),
         ].join(" ")}
       >
-        {(!!title || headerButtons) && (
+        {(Boolean(title) || headerButtons) && (
           <div
             className={[
               "p-4",

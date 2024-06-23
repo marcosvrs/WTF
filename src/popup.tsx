@@ -1,15 +1,13 @@
-import type { MessageButtonsTypes } from "@wppconnect/wa-js/dist/chat/functions/prepareMessageButtons";
-import type { ChangeEvent, FormEvent } from "react";
-import { Component } from "react";
+import { type ChangeEvent, Component, type FormEvent } from "react";
 import { createRoot } from "react-dom/client";
-import "./index.css";
-import Button from "./components/atoms/Button";
-import { ControlTextArea } from "./components/atoms/ControlFactory";
-import Box from "./components/molecules/Box";
-import { ChromeMessageTypes } from "./types/ChromeMessageTypes";
-import type QueueStatus from "./types/QueueStatus";
-import AsyncChromeMessageManager from "./utils/AsyncChromeMessageManager";
-import type { Attachment } from "types/Attachment";
+import "index.css";
+import Button from "components/atoms/Button";
+import { ControlTextArea } from "components/atoms/ControlFactory";
+import Box from "components/molecules/Box";
+import { ChromeMessageTypes } from "types/ChromeMessageTypes";
+import { type Message } from "types/Message";
+import type QueueStatus from "types/QueueStatus";
+import AsyncChromeMessageManager from "utils/AsyncChromeMessageManager";
 
 const PopupMessageManager = new AsyncChromeMessageManager("popup");
 
@@ -127,23 +125,22 @@ class Popup extends Component<
   handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     const language = chrome.i18n.getUILanguage();
     void chrome.storage.local.get(
-      {
-        message: this.defaultMessage,
-        attachment: undefined,
-        buttons: [],
-        delay: 0,
-        prefix: language === "pt_BR" ? 55 : 0,
-      },
-      (data) => {
-        for (const contact of this.parseContacts(data["prefix"] as number)) {
+      ({
+        message = this.defaultMessage,
+        attachment,
+        buttons = [],
+        delay = 0,
+        prefix = language === "pt_BR" ? 55 : 0,
+      }: Omit<Message, "contact"> & { prefix: number }) => {
+        for (const contact of this.parseContacts(prefix)) {
           void PopupMessageManager.sendMessage(
             ChromeMessageTypes.SEND_MESSAGE,
             {
               contact,
-              message: data["message"] as string,
-              attachment: data["attachment"] as Attachment,
-              buttons: data["buttons"] as MessageButtonsTypes[],
-              delay: (data["delay"] as number | undefined) ?? 0,
+              message,
+              attachment,
+              buttons,
+              delay,
             },
           );
         }
@@ -153,9 +150,9 @@ class Popup extends Component<
   };
 
   handleOptions = () => {
-    if (chrome.runtime.openOptionsPage) {
+    try {
       void chrome.runtime.openOptionsPage();
-    } else {
+    } catch {
       window.open(chrome.runtime.getURL("options.html"));
     }
   };
@@ -165,13 +162,12 @@ class Popup extends Component<
     const minutes = Math.floor((milliseconds % 3600000) / 60000);
     const seconds = Math.floor((milliseconds % 60000) / 1000);
     const decimal = (milliseconds % 1000).toString().substr(0, 2); // Gets the first 2 decimal places
-
-    const hoursString = hours > 0 ? `${hours}h ` : "";
-    const minutesString = minutes > 0 ? `${minutes}m ` : "";
+    const hoursString = hours > 0 ? `${hours.toString()}h ` : "";
+    const minutesString = minutes > 0 ? `${minutes.toString()}m ` : "";
     const secondsString =
       seconds > 0 || (!hoursString && !minutesString)
-        ? `${seconds}.${decimal}s`
-        : `0.${decimal}s`;
+        ? `${seconds.toString()}.${decimal.toString()}s`
+        : `0.${decimal.toString()}s`;
 
     return `${hoursString}${minutesString}${secondsString}`;
   };
@@ -201,7 +197,9 @@ class Popup extends Component<
               ) : (
                 <Button
                   variant="primary"
-                  onClick={() => this.setState({ confirmed: true })}
+                  onClick={() => {
+                    this.setState({ confirmed: true });
+                  }}
                 >
                   {this.okButtonLabel}
                 </Button>
@@ -231,17 +229,17 @@ class Popup extends Component<
               {this.state.status && (
                 <div className="w-full h-4 bg-gray-300 dark:bg-gray-600 rounded relative col-span-2 self-end">
                   <div
-                    className={`h-4 rounded progress-bar${this.state.status?.isProcessing ? " progress-bar-animated" : ""}`}
+                    className={`h-4 rounded progress-bar${this.state.status.isProcessing ? " progress-bar-animated" : ""}`}
                     style={{
-                      width: `${(this.state.status?.processedItems / (this.state.status?.processedItems + this.state.status?.remainingItems)) * 100}%`,
+                      width: `${((this.state.status.processedItems / (this.state.status.processedItems + this.state.status.remainingItems)) * 100).toString()}%`,
                     }}
                   ></div>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <span className="text-xs font-semibold">
                       {Math.round(
-                        (this.state.status?.processedItems /
-                          (this.state.status?.processedItems +
-                            this.state.status?.remainingItems)) *
+                        (this.state.status.processedItems /
+                          (this.state.status.processedItems +
+                            this.state.status.remainingItems)) *
                           100,
                       )}
                       %
@@ -286,4 +284,4 @@ class Popup extends Component<
   }
 }
 
-createRoot(document.getElementById("root")!).render(<Popup />);
+createRoot(document.getElementById("root") ?? document.body).render(<Popup />);

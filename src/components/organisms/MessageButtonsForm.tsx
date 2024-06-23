@@ -1,9 +1,8 @@
-import type { MessageButtonsTypes } from "@wppconnect/wa-js/dist/chat/functions/prepareMessageButtons";
-import type { ChangeEvent, DragEvent } from "react";
-import { Component } from "react";
+import { type ChangeEvent, Component, type DragEvent } from "react";
 import Button from "../atoms/Button";
 import { ControlInput, ControlSelect } from "../atoms/ControlFactory";
 import Box from "../molecules/Box";
+import { type Message } from "types/Message";
 
 interface ButtonState {
   id: number;
@@ -70,25 +69,27 @@ export default class MessageButtonsForm extends Component<
 
   override componentDidMount() {
     void chrome.storage.local.get(
-      { buttons: [] },
-      (data: Record<string, MessageButtonsTypes[]>) =>
+      ({ buttons = [] }: Pick<Message, "buttons">) => {
         this.setState({
-          buttons:
-            data["buttons"]?.map((button): ButtonState => {
-              const [type] = Object.keys(button).filter(
+          buttons: buttons.map((button): ButtonState => {
+            const [type = ""] = Object.keys(button).filter(
                 (key) => key !== "text",
-              );
+              ),
+              // @ts-expect-error Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'MessageButtonsTypes'. No index signature with a parameter of type 'string' was found on type 'MessageButtonsTypes'.
+              value: string | number = button[type]; // eslint-disable-line @typescript-eslint/no-unsafe-assignment
 
-              const value = button[type as keyof MessageButtonsTypes];
-
-              return {
-                id: type === "id" ? +value : Math.floor(Math.random() * 1000),
-                type: type ?? "",
-                value: value ?? "",
-                text: button.text ?? "",
-              };
-            }) ?? [],
-        }),
+            return {
+              id:
+                type === "id"
+                  ? Number(value)
+                  : Math.floor(Math.random() * 1000),
+              type,
+              value: value.toString(),
+              text: button.text,
+            };
+          }),
+        });
+      },
     );
   }
 
@@ -136,7 +137,7 @@ export default class MessageButtonsForm extends Component<
 
   handleDrag = (event: DragEvent<HTMLTableRowElement>, index: number) => {
     event.dataTransfer.effectAllowed = "move";
-    event.dataTransfer.setData("text/plain", `${index}`);
+    event.dataTransfer.setData("text/plain", index.toString());
     this.setState({ draggedIndex: index });
   };
 
@@ -149,7 +150,7 @@ export default class MessageButtonsForm extends Component<
     event.preventDefault();
     const sourceIndex = event.dataTransfer.getData("text");
     const buttons = [...this.state.buttons];
-    const [draggedItem] = buttons.splice(+sourceIndex, 1);
+    const [draggedItem] = buttons.splice(Number(sourceIndex), 1);
     if (!draggedItem) return;
     buttons.splice(index, 0, draggedItem);
     this.setState({ buttons, draggedIndex: null, dropIndex: null });
@@ -165,7 +166,7 @@ export default class MessageButtonsForm extends Component<
         if (type === "phoneNumber") {
           value = value.replace(/\D/g, "");
         } else if (type === "id") {
-          value = `${button.id}`;
+          value = button.id.toString();
         }
         return {
           id: button.id || 0,
@@ -182,16 +183,16 @@ export default class MessageButtonsForm extends Component<
     this.setState({
       buttons: buttons.map((button) => {
         if (button.id !== id) return button;
-        let value = event.target.value;
+        let { value } = event.target;
         if (button.type === "phoneNumber") {
           value = value.replace(/\D/g, "");
         } else if (button.type === "id") {
-          value = `${button.id}`;
+          value = button.id.toString();
         }
         return {
           id: button.id || 0,
           type: button.type || "",
-          value: value,
+          value,
           text: button.text || "",
         };
       }),
@@ -293,9 +294,15 @@ export default class MessageButtonsForm extends Component<
                 <tr
                   key={button.id}
                   draggable
-                  onDragStart={(event) => this.handleDrag(event, index)}
-                  onDragOver={(event) => this.handleDragOver(event, index)}
-                  onDrop={(event) => this.handleDrop(event, index)}
+                  onDragStart={(event) => {
+                    this.handleDrag(event, index);
+                  }}
+                  onDragOver={(event) => {
+                    this.handleDragOver(event, index);
+                  }}
+                  onDrop={(event) => {
+                    this.handleDrop(event, index);
+                  }}
                   className={`${index === draggedIndex ? "bg-blue-100 dark:bg-blue-900" : ""} ${index === dropIndex ? "border-dashed border-2" : "border"}`}
                 >
                   <td className="border px-4 py-2 cursor-move text-center">
@@ -304,9 +311,9 @@ export default class MessageButtonsForm extends Component<
                   <td className="border px-4 py-2">
                     <ControlSelect
                       value={button.type}
-                      onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-                        this.handleTypeChange(event, button.id)
-                      }
+                      onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+                        this.handleTypeChange(event, button.id);
+                      }}
                     >
                       <option value="url">
                         {this.urlTypeMessageButtonsForm}
@@ -332,9 +339,9 @@ export default class MessageButtonsForm extends Component<
                             : "text"
                       }
                       value={button.value}
-                      onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                        this.handleValueChange(event, button.id)
-                      }
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                        this.handleValueChange(event, button.id);
+                      }}
                       disabled={button.type === "id"}
                     />
                   </td>
@@ -342,15 +349,17 @@ export default class MessageButtonsForm extends Component<
                     <ControlInput
                       type="text"
                       value={button.text}
-                      onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                        this.handleTextChange(event, button.id)
-                      }
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                        this.handleTextChange(event, button.id);
+                      }}
                     />
                   </td>
                   <td className="border text-center align-middle">
                     <Button
                       className="text-3xl text-red-500 hover:text-red-600 dark:hover:text-red-400 p-0 ring-0"
-                      onClick={() => this.handleDeleteButton(button.id)}
+                      onClick={() => {
+                        this.handleDeleteButton(button.id);
+                      }}
                     >
                       ×
                     </Button>

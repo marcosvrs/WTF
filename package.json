@@ -4,17 +4,17 @@
   "description": "WTF Chrome Extension that allows you to send messages in bulk via WhatsApp™ Web",
   "main": "index.js",
   "scripts": {
-    "watch": "webpack --config webpack/webpack.dev.js --watch --progress",
-    "dev": "tsc --noEmit && webpack --config webpack/webpack.dev.js",
-    "build": "tsc --noEmit && webpack --config webpack/webpack.prod.js",
+    "watch": "webpack --mode development --watch --progress",
+    "dev": "tsc && webpack --mode development",
+    "build": "tsc && webpack",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint:fix": "eslint . --fix && yarn format",
     "format": "prettier --write .",
     "clean": "rimraf dist",
     "prepare": "husky"
   },
   "lint-staged": {
-    "**/*.ts?(x)": [
+    "*.{ts,tsx}": [
       "eslint --fix",
       "prettier --write"
     ]
@@ -26,7 +26,7 @@
     "url": "git+https://github.com/marcosvrs/wtf.git"
   },
   "dependencies": {
-    "@wppconnect/wa-js": "^3.3.2",
+    "@wppconnect/wa-js": "^3.4.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
@@ -36,30 +36,36 @@
     "@types/chrome": "^0.0.268",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "@typescript-eslint/eslint-plugin": "^7.11.0",
-    "@typescript-eslint/parser": "^7.11.0",
+    "@typescript-eslint/eslint-plugin": "^7.13.1",
+    "@typescript-eslint/parser": "^7.13.1",
     "autoprefixer": "^10.4.19",
     "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^7.1.2",
-    "cssnano": "^7.0.1",
+    "cssnano": "^7.0.3",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-prettier": "^5.1.3",
-    "eslint-plugin-react": "^7.34.2",
+    "eslint-plugin-react": "^7.34.3",
     "husky": "^9.0.11",
-    "lint-staged": "^15.2.5",
+    "lint-staged": "^15.2.7",
+    "postcss": "8.4.38",
     "postcss-loader": "^8.1.1",
     "prettier": "^3.2.5",
     "qrcode-terminal": "^0.12.0",
     "rimraf": "^5.0.7",
-    "speed-measure-webpack-plugin": "^1.5.0",
     "style-loader": "^4.0.0",
     "tailwindcss": "^3.4.3",
     "ts-loader": "^9.5.1",
     "typescript": "^5.4.5",
-    "webpack-cli": "^5.1.4",
-    "webpack-merge": "^5.10.0"
-  }
+    "webpack": "^5.92.1",
+    "webpack-cli": "^5.1.4"
+  },
+  "engines": {
+    "node": ">=18",
+    "npm": "please-use-yarn",
+    "yarn": "^4.3.1"
+  },
+  "packageManager": "yarn@4.3.1"
 }

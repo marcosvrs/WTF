@@ -31,20 +31,21 @@ export default class AsyncChromeMessageManager {
   >() {
     window.addEventListener(
       "message",
-      (event: MessageEvent<MessageData<K>>) => {
+      (event: Partial<MessageEvent<MessageData<K>>>) => {
         if (
           event.source === window &&
           event.origin === window.location.origin &&
-          event.data.source === "WTF"
+          event.data?.source === "WTF"
         ) {
-          void chrome.runtime.sendMessage(event.data).catch((error) => {
-            console.error(
-              "WTF.AsyncChromeMessageManager.forwardMessagesFromWebpageToPopup",
-              error,
-              event,
-            );
-            return;
-          });
+          void chrome.runtime
+            .sendMessage(event.data)
+            .catch((error: unknown) => {
+              console.error(
+                "WTF.AsyncChromeMessageManager.forwardMessagesFromWebpageToPopup",
+                error,
+                event,
+              );
+            });
         }
       },
     );
@@ -53,7 +54,7 @@ export default class AsyncChromeMessageManager {
   private forwardResponsesFromPopupToWebpage<
     K extends keyof ChromeMessageContentTypes,
   >() {
-    chrome.runtime.onMessage.addListener((message: MessageData<K>) => {
+    chrome.runtime.onMessage.addListener((message: Partial<MessageData<K>>) => {
       if (message.source === "WTF")
         window.postMessage(message, window.location.origin);
     });
@@ -102,12 +103,12 @@ export default class AsyncChromeMessageManager {
   ) {
     window.addEventListener(
       "message",
-      (event: MessageEvent<MessageData<K>>) => {
+      (event: Partial<MessageEvent<MessageData<K>>>) => {
         if (
           event.source === window &&
           event.origin === window.location.origin &&
-          event.data.type === type &&
-          event.data.source === "WTF"
+          event.data?.source === "WTF" &&
+          event.data.type === type
         ) {
           void this.webpageMessageResponseHandler(
             handler,
@@ -145,7 +146,7 @@ export default class AsyncChromeMessageManager {
     type: K,
     handler: MessageHandler<K>,
   ) {
-    chrome.runtime.onMessage.addListener((message: MessageData<K>) => {
+    chrome.runtime.onMessage.addListener((message: Partial<MessageData<K>>) => {
       if (message.source === "WTF" && message.type === type)
         void this.extensionMessageResponseHandler(
           handler,
@@ -163,9 +164,9 @@ export default class AsyncChromeMessageManager {
 
     return new Promise((resolve, reject) => {
       try {
-        const listener = (response: MessageDataResponse<K>) => {
+        const listener = (response?: MessageDataResponse<K>) => {
           if (
-            response.source === "WTF" &&
+            response?.source === "WTF" &&
             response.type === `${type}_RESPONSE`
           ) {
             chrome.runtime.onMessage.removeListener(listener);
@@ -179,8 +180,9 @@ export default class AsyncChromeMessageManager {
         if (this.source !== "webpage") {
           this.sendExtensionMessage(message, listener);
         }
-      } catch (error) {
+      } catch (error: unknown) {
         console.error("WTF.AsyncChromeMessageManager.sendMessage", error);
+        // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
         reject(error);
       }
     });
@@ -191,11 +193,13 @@ export default class AsyncChromeMessageManager {
     listener: (response: MessageDataResponse<K>) => void,
   ) {
     window.postMessage(message, window.location.origin);
-    const responseListener = (event: MessageEvent<MessageDataResponse<K>>) => {
+    const responseListener = (
+      event: Partial<MessageEvent<MessageDataResponse<K>>>,
+    ) => {
       if (
         event.source === window &&
         event.origin === window.location.origin &&
-        event.data.source === "WTF" &&
+        event.data?.source === "WTF" &&
         event.data.type === `${message.type}_RESPONSE`
       ) {
         listener(event.data);
@@ -218,7 +222,7 @@ export default class AsyncChromeMessageManager {
         }
       });
     } else if (this.source === "contentScript") {
-      void chrome.runtime.sendMessage(message).catch((error) => {
+      void chrome.runtime.sendMessage(message).catch((error: unknown) => {
         console.error(
           "WTF.AsyncChromeMessageManager.sendExtensionMessage",
           error,

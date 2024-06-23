@@ -1,5 +1,4 @@
-import type { ButtonHTMLAttributes } from "react";
-import { Component } from "react";
+import { type ButtonHTMLAttributes, Component } from "react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?:
@@ -16,7 +15,6 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 export default class Button extends Component<ButtonProps, unknown> {
   override render() {
     const { variant, children, ...buttonProps } = this.props;
-
     const classNames = [
       "px-4",
       "py-2",
@@ -32,6 +30,7 @@ export default class Button extends Component<ButtonProps, unknown> {
       "ring-transparent",
       "focus:outline-none",
     ];
+
     switch (variant) {
       case "primary":
         classNames.push(

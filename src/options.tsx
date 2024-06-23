@@ -1,9 +1,9 @@
 import { Component } from "react";
 import { createRoot } from "react-dom/client";
-import "./index.css";
-import LogTable from "./components/organisms/LogTable";
-import MessageButtonsForm from "./components/organisms/MessageButtonsForm";
-import MessageForm from "./components/organisms/MessageForm";
+import "index.css";
+import LogTable from "components/organisms/LogTable";
+import MessageButtonsForm from "components/organisms/MessageButtonsForm";
+import MessageForm from "components/organisms/MessageForm";
 
 class Options extends Component<unknown, unknown> {
   override componentDidMount() {
@@ -25,4 +25,6 @@ class Options extends Component<unknown, unknown> {
   }
 }
 
-createRoot(document.getElementById("root")!).render(<Options />);
+createRoot(document.getElementById("root") ?? document.body).render(
+  <Options />,
+);
