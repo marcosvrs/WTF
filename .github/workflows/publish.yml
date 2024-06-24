@@ -19,14 +19,13 @@ jobs:
 
       - name: Use Node.js
         uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
 
-      - name: Run with Node.js + yarn pnp
+      - name: Setup yarn pnp
         run: |
           corepack enable
           yarn set version stable
-          yarn config set enableImmutableInstalls false
-          yarn config set enableScripts false
-          yarn config set nodeLinker pnp
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -41,6 +40,9 @@ jobs:
 
       - name: Install dependencies
         run: yarn --immutable
+
+      - name: Lint
+        run: yarn lint
 
       - name: Build
         run: yarn build
