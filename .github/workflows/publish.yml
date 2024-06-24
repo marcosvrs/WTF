@@ -46,15 +46,15 @@ jobs:
         run: yarn build
 
       - name: Update major version number
-        if: contains(github.event.head_commit.message, '#major')
+        if: ${{ github.ref == 'refs/heads/master' && contains(github.event.head_commit.message, '#major') }}
         run: yarn version major -i
 
       - name: Update minor version number
-        if: contains(github.event.head_commit.message, '#minor')
+        if: ${{ github.ref == 'refs/heads/master' && contains(github.event.head_commit.message, '#minor') }}
         run: yarn version minor -i
 
       - name: Update patch version number
-        if: ${{ !contains(github.event.head_commit.message, '#major') && !contains(github.event.head_commit.message, '#minor') }}
+        if: ${{ github.ref == 'refs/heads/master' && !contains(github.event.head_commit.message, '#major') && !contains(github.event.head_commit.message, '#minor') }}
         run: yarn version patch -i
 
       - name: Update manifest.json version
