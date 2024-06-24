@@ -19,40 +19,52 @@ jobs:
 
       - name: Use Node.js
         uses: actions/setup-node@v4
-      
-      - name: Run with Node.js + yarn pnp
+        with:
+          node-version-file: package.json
+
+      - name: Setup yarn pnp
         run: |
           corepack enable
           yarn set version stable
-          yarn config set enableImmutableInstalls false
-          yarn config set enableScripts false
-          yarn config set nodeLinker pnp
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+      - name: Cache yarn cache directory
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-
 
       - name: Install dependencies
         run: yarn --immutable
+
+      - name: Lint
+        run: yarn lint
 
       - name: Build
         run: yarn build
 
       - name: Update major version number
-        if: contains(github.event.head_commit.message, '#major')
-        run: npm version major --no-git-tag-version
+        if: ${{ github.ref == 'refs/heads/master' && contains(github.event.head_commit.message, '#major') }}
+        run: yarn version major -i
 
       - name: Update minor version number
-        if: contains(github.event.head_commit.message, '#minor')
-        run: npm version minor --no-git-tag-version
+        if: ${{ github.ref == 'refs/heads/master' && contains(github.event.head_commit.message, '#minor') }}
+        run: yarn version minor -i
 
       - name: Update patch version number
-        if: "!contains(github.event.head_commit.message, '#major') && !contains(github.event.head_commit.message, '#minor')"
-        run: npm version patch --no-git-tag-version
+        if: ${{ github.ref == 'refs/heads/master' && !contains(github.event.head_commit.message, '#major') && !contains(github.event.head_commit.message, '#minor') }}
+        run: yarn version patch -i
 
       - name: Update manifest.json version
         if: github.ref == 'refs/heads/master'
         run: |
-          # Update manifest.json version
           echo "VERSION=$(npm pkg get version | tr -d '"')" >> $GITHUB_ENV
-          sed -i "s/\"version\": \".*\"/\"version\": \"$(npm pkg get version | tr -d '"')\"/g" public/manifest.json
-          sed -i "s/\"version\": \".*\"/\"version\": \"$(npm pkg get version | tr -d '"')\"/g" dist/manifest.json
+          sed -i "s/\"version\": \".*\"/\"version\": \"${{ env.VERSION }}\"/g" public/manifest.json
+          sed -i "s/\"version\": \".*\"/\"version\": \"${{ env.VERSION }}\"/g" dist/manifest.json
 
       - name: Commit changes
         if: github.ref == 'refs/heads/master'
