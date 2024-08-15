@@ -694,10 +694,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wppconnect/wa-js@npm:^3.4.0":
-  version: 3.4.0
-  resolution: "@wppconnect/wa-js@npm:3.4.0"
-  checksum: 10c0/0d58108154a2ea887d325085d6c38e56722267faaf06cbac1935e7c483da3d3cf5f535cc415620a710ba22c1ec341bb5ac5bcfa92df4e2ab714071a8d663736a
+"@wppconnect/wa-js@npm:^3.8.2":
+  version: 3.8.2
+  resolution: "@wppconnect/wa-js@npm:3.8.2"
+  checksum: 10c0/a596371a61c30dc141eadaf39b6741446b7651c392c9fb3a0e026da2b89aed9155a9df15ec969f43dc9fdeb23ae9052bfcf342a05da4e7a481101582114999de
   languageName: node
   linkType: hard
 
@@ -6058,7 +6058,7 @@ __metadata:
     "@types/react-dom": "npm:^18.3.0"
     "@typescript-eslint/eslint-plugin": "npm:^7.13.1"
     "@typescript-eslint/parser": "npm:^7.13.1"
-    "@wppconnect/wa-js": "npm:^3.4.0"
+    "@wppconnect/wa-js": "npm:^3.8.2"
     autoprefixer: "npm:^10.4.19"
     copy-webpack-plugin: "npm:^12.0.2"
     css-loader: "npm:^7.1.2"
