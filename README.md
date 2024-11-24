@@ -17,6 +17,10 @@ Alternatively, download the `extension.zip` file from the [latest release](https
 
 This extension is intended for legitimate and ethical use only. Please use this extension responsibly. The developers and owners are not responsible for any misuse or abuse of the extension.
 
+## Issues
+
+If you encounter any problems or have any questions, please check the [Issues](https://github.com/marcosvrs/WTF/issues) section on GitHub. You can search for existing issues to see if your problem has already been reported and, if not, open a new issue.
+
 ## Building from Source
 
 If you prefer to build the extension from source code, follow these steps:
@@ -67,20 +71,31 @@ This project uses the following packages:
 - [@playwright/test](https://github.com/microsoft/playwright) (Apache License 2.0)
 - [@tsconfig/recommended](https://github.com/tsconfig/bases) (MIT License)
 - [@types](https://github.com/DefinitelyTyped/DefinitelyTyped) (MIT License)
+- [@typescript-eslint/eslint-plugin](https://github.com/typescript-eslint/typescript-eslint) (MIT License)
+- [@typescript-eslint/parser](https://github.com/typescript-eslint/typescript-eslint) (BSD 2-Clause License)
 - [@wppconnect/wa-js](https://github.com/wppconnect-team/wa-js) (Apache License 2.0)
 - [autoprefixer](https://github.com/postcss/autoprefixer) (MIT License)
 - [copy-webpack-plugin](https://github.com/webpack-contrib/copy-webpack-plugin) (MIT License)
 - [css-loader](https://github.com/webpack-contrib/css-loader) (MIT License)
 - [cssnano](https://github.com/cssnano/cssnano) (MIT License)
+- [eslint-config-prettier](https://github.com/prettier/eslint-config-prettier) (MIT License)
+- [eslint-import-resolver-typescript](https://github.com/import-js/eslint-plugin-import) (MIT License)
+- [eslint-plugin-import](https://github.com/import-js/eslint-plugin-import) (MIT License)
+- [eslint-plugin-prettier](https://github.com/prettier/eslint-plugin-prettier) (MIT License)
+- [eslint-plugin-react](https://github.com/yannickcr/eslint-plugin-react) (MIT License)
+- [eslint](https://github.com/eslint/eslint) (MIT License)
+- [husky](https://github.com/typicode/husky) (MIT License)
+- [lint-staged](https://github.com/okonet/lint-staged) (MIT License)
 - [postcss-loader](https://github.com/webpack-contrib/postcss-loader) (MIT License)
+- [postcss](https://github.com/postcss/postcss) (MIT License)
+- [prettier](https://github.com/prettier/prettier) (MIT License)
 - [qrcode-terminal](https://github.com/gtanner/qrcode-terminal) (Apache License 2.0)
 - [react-dom](https://github.com/facebook/react) (MIT License)
 - [react](https://github.com/facebook/react) (MIT License)
 - [rimraf](https://github.com/isaacs/rimraf) (ISC License)
-- [speed-measure-webpack-plugin](https://github.com/stephencookdev/speed-measure-webpack-plugin) (MIT License)
 - [style-loader](https://github.com/webpack-contrib/style-loader) (MIT License)
 - [tailwindcss](https://github.com/tailwindlabs/tailwindcss) (MIT License)
 - [ts-loader](https://github.com/TypeStrong/ts-loader) (MIT License)
 - [typescript](https://github.com/microsoft/TypeScript) (Apache License 2.0)
 - [webpack-cli](https://github.com/webpack/webpack-cli) (MIT License)
-- [webpack-merge](https://github.com/survivejs/webpack-merge) (MIT License)
+- [webpack](https://github.com/webpack/webpack) (MIT License)
