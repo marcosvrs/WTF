@@ -5,7 +5,7 @@ import { ControlInput } from "../atoms/ControlFactory";
 import type { CountryCode } from "types/CountryCode";
 
 export default class SelectCountryCode extends Component<
-  { options?: CountryCode[] },
+  {},
   {
     isOpen: boolean;
     searchValue: string;
@@ -14,21 +14,22 @@ export default class SelectCountryCode extends Component<
     filteredOptions: CountryCode[];
   }
 > {
-  constructor(props: { options: CountryCode[] }) {
-    super(props);
+  constructor() {
+    super({});
     this.defaultLabelSelectCountryCode = chrome.i18n.getMessage(
       "defaultLabelSelectCountryCode"
     );
     const defaultOptions: CountryCode[] = [
         { value: 0, label: this.defaultLabelSelectCountryCode },
-      ],
-      { options = defaultOptions } = props;
+      ];
 
     const language = chrome.i18n.getUILanguage().substring(0, 2);
     let module = ENcountryCodes;
+    console.log('EN Country Codes:', ENcountryCodes);
     if (language === "pt") {
       module = PTcountryCodes;
     }
+    const options = [...defaultOptions, ...module];
 
     this.state = {
       isOpen: false,
@@ -37,7 +38,7 @@ export default class SelectCountryCode extends Component<
         chrome.i18n.getUILanguage() === "pt_BR"
           ? options.find((option) => option.value === 55)
           : options.find((option) => option.value === 0),
-      options: [...options, ...module],
+      options,
       filteredOptions: options,
     };
   }
@@ -178,7 +179,7 @@ export default class SelectCountryCode extends Component<
               value={searchValue}
               onChange={this.handleSearch}
             />
-            <ul>
+            <ul className="max-h-60 overflow-y-auto">
               {filteredOptions.length ? (
                 filteredOptions.map((option, index) => (
                   <li
