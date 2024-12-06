@@ -124,7 +124,7 @@ class Popup extends Component<
 
   handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     const language = chrome.i18n.getUILanguage();
-    void chrome.storage.local.get(
+    chrome.storage.local.get(
       ({
         message = this.defaultMessage,
         attachment,

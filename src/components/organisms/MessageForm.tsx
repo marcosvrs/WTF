@@ -37,7 +37,7 @@ export default class MessageForm extends Component<
   );
 
   override componentDidMount() {
-    void chrome.storage.local.get(
+    chrome.storage.local.get(
       ({
         message = this.defaultMessage,
         attachment,
@@ -72,7 +72,7 @@ export default class MessageForm extends Component<
     _prevProps: Readonly<{ className?: string }>,
     prevState: Readonly<{
       message: string;
-      attachment: Attachment;
+      attachment?: Attachment;
       delay: number;
     }>,
   ) {
@@ -83,7 +83,7 @@ export default class MessageForm extends Component<
 
     if (prevState.delay !== delay) void chrome.storage.local.set({ delay });
 
-    if (prevState.attachment.url !== attachment?.url)
+    if (prevState.attachment?.url !== attachment?.url)
       void chrome.storage.local.set({ attachment });
   }
 

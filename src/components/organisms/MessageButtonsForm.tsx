@@ -68,29 +68,25 @@ export default class MessageButtonsForm extends Component<
   idTypeMessageButtonsForm = chrome.i18n.getMessage("idTypeMessageButtonsForm");
 
   override componentDidMount() {
-    void chrome.storage.local.get(
-      ({ buttons = [] }: Pick<Message, "buttons">) => {
-        this.setState({
-          buttons: buttons.map((button): ButtonState => {
-            const [type = ""] = Object.keys(button).filter(
-                (key) => key !== "text",
-              ),
-              // @ts-expect-error Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'MessageButtonsTypes'. No index signature with a parameter of type 'string' was found on type 'MessageButtonsTypes'.
-              value: string | number = button[type]; // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+    chrome.storage.local.get(({ buttons = [] }: Pick<Message, "buttons">) => {
+      this.setState({
+        buttons: buttons.map((button): ButtonState => {
+          const [type = ""] = Object.keys(button).filter(
+              (key) => key !== "text",
+            ),
+            // @ts-expect-error Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'MessageButtonsTypes'. No index signature with a parameter of type 'string' was found on type 'MessageButtonsTypes'.
+            value: string | number = button[type]; // eslint-disable-line @typescript-eslint/no-unsafe-assignment
 
-            return {
-              id:
-                type === "id"
-                  ? Number(value)
-                  : Math.floor(Math.random() * 1000),
-              type,
-              value: value.toString(),
-              text: button.text,
-            };
-          }),
-        });
-      },
-    );
+          return {
+            id:
+              type === "id" ? Number(value) : Math.floor(Math.random() * 1000),
+            type,
+            value: value.toString(),
+            text: button.text,
+          };
+        }),
+      });
+    });
   }
 
   compareArrays = (arr1: ButtonState[], arr2: ButtonState[]): boolean => {

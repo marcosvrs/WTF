@@ -23,7 +23,7 @@ export default class LogTable extends Component<
   cleanButtonLabel = chrome.i18n.getMessage("cleanButtonLabel");
 
   override componentDidMount() {
-    void chrome.storage.local.get(({ logs = [] }: { logs: Log[] }) => {
+    chrome.storage.local.get(({ logs = [] }: { logs: Log[] }) => {
       this.setState({ logs });
     });
   }
@@ -34,7 +34,7 @@ export default class LogTable extends Component<
   };
 
   handleUpdate = () => {
-    void chrome.storage.local.get(({ logs = [] }: { logs: Log[] }) => {
+    chrome.storage.local.get(({ logs = [] }: { logs: Log[] }) => {
       this.setState({ logs });
     });
   };

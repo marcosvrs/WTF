@@ -17,12 +17,19 @@ export default class SelectCountryCode extends Component<
   constructor(props: { options: CountryCode[] }) {
     super(props);
     this.defaultLabelSelectCountryCode = chrome.i18n.getMessage(
-      "defaultLabelSelectCountryCode",
+      "defaultLabelSelectCountryCode"
     );
     const defaultOptions: CountryCode[] = [
         { value: 0, label: this.defaultLabelSelectCountryCode },
       ],
       { options = defaultOptions } = props;
+
+    const language = chrome.i18n.getUILanguage().substring(0, 2);
+    let module = ENcountryCodes;
+    if (language === "pt") {
+      module = PTcountryCodes;
+    }
+
     this.state = {
       isOpen: false,
       searchValue: "",
@@ -30,22 +37,9 @@ export default class SelectCountryCode extends Component<
         chrome.i18n.getUILanguage() === "pt_BR"
           ? options.find((option) => option.value === 55)
           : options.find((option) => option.value === 0),
-      options,
+      options: [...options, ...module],
       filteredOptions: options,
     };
-    this.loadCountryCodes(defaultOptions);
-  }
-
-  loadCountryCodes(defaultOptions: CountryCode[] = []) {
-    const language = chrome.i18n.getUILanguage().substring(0, 2);
-    let module = ENcountryCodes;
-    if (language === "pt") {
-      module = PTcountryCodes;
-    }
-    this.setState((prevState) => ({
-      ...prevState,
-      options: [...defaultOptions, ...module],
-    }));
   }
 
   wrapperRef = createRef<HTMLDivElement>();
@@ -61,7 +55,7 @@ export default class SelectCountryCode extends Component<
   handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     const searchValue = e.target.value.toLowerCase();
     const filteredOptions = this.state.options.filter((option) =>
-      option.label.toLowerCase().includes(searchValue),
+      option.label.toLowerCase().includes(searchValue)
     );
 
     this.setState({ searchValue, filteredOptions });
@@ -87,7 +81,7 @@ export default class SelectCountryCode extends Component<
 
   override componentDidMount() {
     document.addEventListener("mousedown", this.handleClickOutside);
-    void chrome.storage.local.get(
+    chrome.storage.local.get(
       ({
         prefix = chrome.i18n.getUILanguage() === "pt_BR" ? 55 : 0,
       }: {
@@ -95,10 +89,10 @@ export default class SelectCountryCode extends Component<
       }) => {
         this.setState({
           selectedValue: this.state.options.find(
-            (option) => option.value === prefix,
+            (option) => option.value === prefix
           ),
         });
-      },
+      }
     );
   }
 
@@ -110,7 +104,7 @@ export default class SelectCountryCode extends Component<
       selectedValue: CountryCode | undefined;
       options: CountryCode[];
       filteredOptions: CountryCode[];
-    }>,
+    }>
   ) {
     if (prevState.selectedValue !== this.state.selectedValue) {
       void chrome.storage.local.set({

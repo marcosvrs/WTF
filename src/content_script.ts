@@ -7,7 +7,7 @@ const ContentScriptMessageManager = new AsyncChromeMessageManager(
 );
 
 function addLog({ level, message, attachment = false, contact }: Log) {
-  void chrome.storage.local.get(({ logs = [] }: { logs: Log[] }) => {
+  chrome.storage.local.get(({ logs = [] }: { logs: Log[] }) => {
     logs.push({
       level,
       message,
